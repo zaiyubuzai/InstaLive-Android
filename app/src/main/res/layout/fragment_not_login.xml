@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <VideoView
+            android:id="@+id/videoView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/welcomeBG"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@color/yellow_50"
+            android:visibility="gone" />
+
+        <View
+            android:id="@+id/shadow"
+            android:layout_width="match_parent"
+            android:layout_height="165dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:visibility="gone" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/inviteGroupContainer"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_0dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/joinNow"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/inviteGroupProfile"
+                android:layout_width="@dimen/dimen_180dp"
+                android:layout_height="@dimen/dimen_180dp"
+                android:layout_marginTop="@dimen/dimen_100dp"
+                android:src="@color/blue_a100"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/inviteWelcome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen_28dp"
+                android:layout_marginTop="@dimen/dimen_22dp"
+                android:layout_marginEnd="@dimen/dimen_28dp"
+                android:gravity="center_horizontal"
+                android:lineSpacingExtra="7sp"
+                tools:text="You are invited to join the group “TeamCroes21TeamCroes21TeamCroe” from Gilmbher Croes"
+                android:textColor="#ffffff"
+                android:textSize="18sp"
+                android:textStyle="normal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/inviteGroupProfile" />
+
+            <TextView
+                android:id="@+id/inviteExpire"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen_130dp"
+                android:gravity="center_horizontal"
+                android:textColor="#ffffff"
+                android:textSize="13sp"
+                android:textStyle="normal"
+                app:layout_constraintTop_toBottomOf="@+id/inviteWelcome" />
+
+            <TextView
+                android:id="@+id/inviteExpireTime"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="@dimen/dimen_4dp"
+                android:gravity="center_horizontal"
+                android:textColor="#ffffff"
+                android:textSize="32sp"
+                android:textStyle="normal"
+                app:layout_constraintTop_toBottomOf="@+id/inviteExpire"
+                tools:text="12 : 57 : 32" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ImageView
+            android:id="@+id/logo"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_launcher_round"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/guideline2" />
+
+        <TextView
+            android:id="@+id/joinNow"
+            style="@style/yellow_12c_button_style_with_selector"
+            android:layout_width="@dimen/dimen_0dp"
+            android:layout_height="@dimen/dimen_50dp"
+            android:layout_marginStart="@dimen/dimen_28dp"
+            android:layout_marginEnd="@dimen/dimen_28dp"
+            android:layout_marginBottom="@dimen/dimen_58dp"
+            android:text="join"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/hintLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dimen_16dp"
+            android:textColor="#ffffff"
+            android:textSize="16sp"
+            android:textStyle="normal"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/videoView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.30" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

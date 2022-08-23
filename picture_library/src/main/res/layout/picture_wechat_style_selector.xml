@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    android:fitsSystemWindows="true"
+    tools:context="com.luck.picture.lib.PictureSelectorActivity">
+
+
+    <RelativeLayout
+        android:id="@+id/rl_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <View
+            android:id="@+id/titleViewBg"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@color/picture_color_transparent" />
+
+        <RelativeLayout
+            android:id="@+id/rlAlbum"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/picture_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxEms="8"
+                android:maxLines="1"
+                android:text="@string/picture_camera_roll"
+                android:textColor="?picture.title.textColor"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/ivArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@id/picture_title"
+                android:scaleType="centerInside"
+                android:src="?attr/picture.arrow_down.icon" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/picture_right"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/picture_cancel"
+            android:textColor="?picture.right.textColor"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/picture_send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/picture_send_button_default_bg"
+            android:gravity="center"
+            android:textColor="?picture.right.textColor"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/pictureLeftBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/titleViewBg"
+            android:layout_alignBottom="@id/titleViewBg"
+            android:padding="15dp"
+            android:src="?attr/picture.leftBack.icon" />
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/rl_custom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/radius_shape">
+
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tl_tabs"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_below="@+id/iv_close"
+            android:layout_marginTop="10dp"
+            android:visibility="visible"
+            app:tabIndicatorColor="@color/picture_color_white"
+            app:tabTextAppearance="@style/TabLayoutTextSize"
+            app:tabTextColor="@drawable/select_text_color_selecter">
+
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:tag="Images"
+                android:text="Images" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:tag="Videos"
+                android:text="Videos" />
+
+
+        </com.google.android.material.tabs.TabLayout>
+
+
+        <TextView
+            android:id="@+id/tv_video_title"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:text="Videos"
+            android:textColor="#dddde8"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/iv_close"
+            android:layout_width="40dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="10dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:src="@drawable/ic_close_light" />
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_alignParentBottom="true"
+        android:background="?attr/picture.bottom.bg"
+        android:gravity="center_vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/picture_id_preview"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:enabled="false"
+            android:gravity="left|center"
+            android:padding="12dp"
+            android:text="@string/picture_preview"
+            android:textColor="?attr/picture.preview.textColor"
+            android:textSize="14sp" />
+
+        <CheckBox
+            android:id="@+id/cb_original"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:background="@color/picture_color_transparent"
+            android:button="@color/picture_color_transparent"
+            android:gravity="center"
+            android:paddingLeft="5dp"
+            android:text="@string/picture_original_image"
+            android:textColor="@color/picture_color_53575e"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/picture_tvMediaNum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:layout_toLeftOf="@id/picture_tv_ok"
+            android:background="?attr/picture.num.style"
+            android:gravity="center"
+            android:text="0"
+            android:textColor="@color/picture_color_white"
+            android:textSize="12sp"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/picture_tv_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:enabled="false"
+            android:gravity="center|left"
+            android:paddingRight="12dp"
+            android:text="@string/picture_please_select"
+            android:textColor="?attr/picture.complete.textColor"
+            android:textSize="14sp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/select_buttom_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimary"
+        android:gravity="center_vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_selected"
+            android:layout_width="match_parent"
+            android:layout_height="74dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:visibility="gone"
+            android:background="#fff" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/rv_selected"
+            android:background="#00000000" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_below="@id/rv_selected"
+            android:layout_marginTop="2dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tv_select_max"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="16dp"
+                android:text="You can select one or more videos"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_count"
+                android:layout_width="84dp"
+                android:layout_height="32dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="14dp"
+                android:background="@drawable/radius_bg_shape_16"
+                android:gravity="center"
+                android:text="Next (0)"
+                android:textColor="@color/picture_color_white"
+                android:textSize="14sp" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
+    <com.luck.picture.lib.widget.RecyclerPreloadView
+        android:id="@+id/picture_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/select_buttom_layout"
+        android:layout_below="@id/rl_custom"
+        android:background="@color/colorPrimary" />
+
+    <TextView
+        android:id="@+id/tv_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:gravity="center"
+        android:lineSpacingExtra="3dp"
+        android:textColor="@color/picture_color_9b"
+        android:textSize="18sp"
+        android:visibility="invisible" />
+
+
+    <TextView
+        android:id="@+id/send"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/radius_bg_shape_24"
+        android:gravity="center"
+        android:text="@string/send"
+        android:textColor="@color/ucrop_color_white"
+        android:textSize="15sp"
+        android:visibility="gone" />
+
+</RelativeLayout>

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/transparent">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/transparent"
+            app:elevation="@dimen/dimen_0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/transparent"
+                android:layerType="software"
+                app:navigationIcon="@mipmap/icon_back_white" />
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_28dp"
+            android:text="@string/fb_login_name_title"
+            android:textColor="@color/white"
+            android:textSize="28sp"
+            android:layout_marginTop="70dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <RelativeLayout
+            android:id="@+id/rlPortrait"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="@dimen/dimen_10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/title">
+
+            <ImageView
+                android:id="@+id/portrait"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_centerInParent="true"
+                android:src="@color/blue_a100" />
+
+            <ImageView
+                android:id="@+id/imageSelector"
+                android:layout_width="@dimen/dimen_30dp"
+                android:layout_height="@dimen/dimen_30dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:gravity="center"
+                android:src="@color/purple_200"
+                app:layout_constraintBottom_toBottomOf="@+id/portrait"
+                app:layout_constraintEnd_toEndOf="@+id/portrait" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/subTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_28dp"
+            android:layout_marginEnd="@dimen/dimen_28dp"
+            android:text="@string/fb_login_name_desc"
+            android:textColor="#dddde8"
+            android:textSize="15sp"
+            android:layout_marginBottom="@dimen/dimen_16dp"
+            app:layout_constraintBottom_toTopOf="@+id/fullNameInput"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <EditText
+            android:id="@+id/fullNameInput"
+            style="@style/full_name_style"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_50dp"
+            android:layout_marginStart="@dimen/dimen_28dp"
+            android:layout_marginEnd="@dimen/dimen_28dp"
+            android:layout_marginTop="250dp"
+            android:background="@drawable/bg_primary_color_8c"
+            android:gravity="center_vertical"
+            android:hint="@string/fb_login_name_placeholder"
+            android:paddingStart="@dimen/dimen_16dp"
+            android:paddingEnd="@dimen/dimen_16dp"
+            android:textColor="@color/white"
+            android:textColorHint="#788093"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginBottom="@dimen/dimen_88dp"
+            app:strokeLength="4"
+            tools:text="sefsdfisdfsf"/>
+
+        <TextView
+            android:id="@+id/birthdaySubTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="28dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/fb_login_birthday_desc"
+            android:textColor="#dddde8"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toTopOf="@+id/birthdayText"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/birthdayText"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_50dp"
+            android:layout_marginStart="@dimen/dimen_28dp"
+            android:layout_marginEnd="@dimen/dimen_28dp"
+            android:layout_marginTop="@dimen/dimen_40dp"
+            android:background="@drawable/bg_primary_color_8c"
+            android:gravity="center_vertical"
+            android:hint="@string/fb_login_birthday_placeholder"
+            android:paddingStart="@dimen/dimen_16dp"
+            android:paddingEnd="@dimen/dimen_16dp"
+            android:layout_marginBottom="@dimen/dimen_88dp"
+            android:textColor="@color/white"
+            android:textColorHint="#788093"
+            app:layout_constraintTop_toBottomOf="@+id/fullNameInput"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/genderSubTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="28dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/fb_login_gender_desc"
+            android:textColor="#dddde8"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toTopOf="@+id/genderText"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/genderText"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_50dp"
+            android:layout_marginStart="@dimen/dimen_28dp"
+            android:layout_marginEnd="@dimen/dimen_28dp"
+            android:layout_marginTop="@dimen/dimen_40dp"
+            android:background="@drawable/bg_primary_color_8c"
+            android:gravity="center_vertical"
+            android:hint="@string/fb_login_gender_placeholder"
+            android:paddingStart="@dimen/dimen_16dp"
+            android:paddingEnd="@dimen/dimen_16dp"
+            android:layout_marginBottom="@dimen/dimen_88dp"
+            android:textColor="@color/white"
+            android:textColorHint="#788093"
+            app:layout_constraintTop_toBottomOf="@+id/birthdayText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/next"
+            style="@style/yellow_12c_button_style_with_selector"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_50dp"
+            android:layout_marginTop="@dimen/dimen_20dp"
+            android:layout_marginHorizontal="@dimen/dimen_28dp"
+            android:enabled="false"
+            android:text="@string/fb_next"
+            app:layout_constraintTop_toBottomOf="@+id/genderText"/>
+
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:indeterminateTint="#000000"
+            android:visibility="gone"
+            android:layout_marginEnd="@dimen/dimen_16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/next"
+            app:layout_constraintEnd_toEndOf="@+id/next"
+            app:layout_constraintTop_toTopOf="@+id/next" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

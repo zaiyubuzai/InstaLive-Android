@@ -1,0 +1,32 @@
+# This is a Gradle generated file for dependency locking.
+# Manual edits can break the build and are not advised.
+# This file is expected to be part of source control.
+android.arch.core:common:1.1.0
+android.arch.core:runtime:1.1.0
+android.arch.lifecycle:common:1.1.0
+android.arch.lifecycle:livedata-core:1.1.0
+android.arch.lifecycle:runtime:1.1.0
+android.arch.lifecycle:viewmodel:1.1.0
+androidx.core:core-ktx:0.3
+com.android.support:support-annotations:27.1.1
+com.android.support:support-compat:27.1.1
+com.android.support:support-core-ui:27.1.1
+com.android.support:support-core-utils:27.1.1
+com.android.support:support-fragment:27.1.1
+com.evernote:android-job:1.2.6
+com.google.android.gms:play-services-base:15.0.1
+com.google.android.gms:play-services-basement:15.0.1
+com.google.android.gms:play-services-gcm:15.0.1
+com.google.android.gms:play-services-iid:15.0.1
+com.google.android.gms:play-services-stats:15.0.1
+com.google.android.gms:play-services-tasks:15.0.1
+com.google.code.findbugs:jsr305:3.0.1
+io.reactivex.rxjava2:rxandroid:2.0.2
+io.reactivex.rxjava2:rxjava:2.1.17
+io.reactivex.rxjava2:rxkotlin:2.3.0
+org.jetbrains.kotlin:kotlin-stdlib-common:1.2.70
+org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.2.70
+org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.2.70
+org.jetbrains.kotlin:kotlin-stdlib:1.2.70
+org.jetbrains:annotations:13.0
+org.reactivestreams:reactive-streams:1.0.2

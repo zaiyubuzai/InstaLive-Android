@@ -1,0 +1,75 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion TARGET_SDK
+    // buildToolsVersion V_BUILD_TOOLS
+
+    defaultConfig {
+        minSdkVersion MIN_SDK
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        // javaCompileOptions {
+        //     annotationProcessorOptions {
+        //         includeCompileClasspath false
+        //     }
+        // }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+//    buildTypes {
+//        debug {
+//            jniDebuggable true
+//            minifyEnabled true
+//            shrinkResources true
+//            proguardFiles getDefaultProguardFile('proguard-android.txt')
+//        }
+//    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    api deps.kotlin.stdlib
+    implementation deps.support.fragment
+    implementation deps.support.annotations
+    implementation deps.play.gcm  // for task scheduling
+
+    api deps.support.ktx  // Android KTX
+
+    api deps.rx.core
+    api (deps.rx.kotlin) { transitive = false }
+    api (deps.rx.android) { transitive = false }
+    api deps.javax.jsr305  // 以前通过react-native间接引用
+
+    api deps.evernote.job
+
+    // testing
+    testImplementation deps.junit
+    testImplementation deps.mockito.core
+    testImplementation deps.assertj.core
+    androidTestImplementation(deps.support_test.runner) {
+        exclude module: 'support-annotations'
+    }
+    androidTestImplementation(deps.support_test.rules) {
+        exclude module: 'support-annotations'
+    }
+    androidTestImplementation(deps.assertj.android) {
+        exclude module: 'support-annotations'
+    }
+}
+
+configurations {
+    // 应分模块依赖support-v4
+    all*.exclude group: 'com.android.support', module: 'support-v4'
+
+//    all {
+//        // 锁定依赖版本. 参考: https://is.gd/ldTvh0 https://is.gd/oZEZgv
+//        if (it.name ==~ /.*(Runtime|Compile)Classpath$/) {
+//            it.resolutionStrategy.activateDependencyLocking()
+//        }
+//    }
+}

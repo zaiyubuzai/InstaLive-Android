@@ -1,0 +1,82 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion TARGET_SDK
+    // buildToolsVersion V_BUILD_TOOLS
+
+    defaultConfig {
+        minSdkVersion MIN_SDK
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JAVA_VERSION
+        targetCompatibility JAVA_VERSION
+    }
+    lintOptions {
+        abortOnError false
+    }
+    externalNativeBuild {
+        ndkBuild {
+            path "jni/Android.mk"
+        }
+    }
+    buildTypes {
+        debug {
+            externalNativeBuild {
+                ndkBuild {
+                    // debug版关掉包名/指纹验证，方便测试
+                    cFlags "-DFM_URL_SIGN_NO_VERIFICATION"
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    api(project(':framework-core')) {
+        exclude group: 'com.android.support'
+        exclude group: 'com.google.code.findbugs'
+    }
+
+    implementation deps.support.annotations
+    implementation deps.javax.inject
+
+    api deps.okhttp.core
+    api deps.gson
+
+    // 动态库加载的辅助lib, 与ReactNative使用的相同
+    implementation deps.facebook.soloader
+
+    // testing
+    testImplementation deps.junit
+    testImplementation deps.mockito.core
+    testImplementation deps.assertj.core
+    androidTestImplementation(deps.support_test.runner) {
+        exclude module: 'support-annotations'
+    }
+    androidTestImplementation(deps.support_test.rules) {
+        exclude module: 'support-annotations'
+    }
+    androidTestImplementation(deps.assertj.android) {
+        exclude module: 'support-annotations'
+    }
+}
+
+configurations {
+    // 应分模块依赖support-v4
+    all*.exclude group: 'com.android.support', module: 'support-v4'
+
+//    all {
+//        // 锁定依赖版本. 参考: https://is.gd/ldTvh0 https://is.gd/oZEZgv
+//        if (it.name ==~ /.*(Runtime|Compile)Classpath$/) {
+//            it.resolutionStrategy.activateDependencyLocking()
+//        }
+//    }
+}
+

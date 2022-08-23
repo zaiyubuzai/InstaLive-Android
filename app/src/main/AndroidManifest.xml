@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.instalive">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.WRITE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="com.google.android.c2dm.intent.REGISTER" />
+    <uses-permission
+        android:name="android.permission.MODIFY_PHONE_STATE"
+        tools:ignore="ProtectedPermissions" />
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+
+    <application
+        android:name=".InstaLiveApp"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.InstaLive">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:screenOrientation="fullSensor">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="home"
+                    android:scheme="insta_live" />
+                <data
+                    android:host="web"
+                    android:scheme="insta_live" />
+                <data
+                    android:host="profile"
+                    android:scheme="insta_live" />
+                <data
+                    android:host="detail"
+                    android:scheme="insta_live" />
+                <data
+                    android:host="message"
+                    android:scheme="insta_live" />
+                <data
+                    android:host="follow"
+                    android:scheme="insta_live" />
+                <data
+                    android:host="upgrade_app"
+                    android:scheme="insta_live" />
+                <data
+                    android:host="group_invitation"
+                    android:scheme="insta_live" />
+                <data
+                    android:host="group"
+                    android:scheme="insta_live" />
+                <data
+                    android:host="live"
+                    android:scheme="insta_live" />
+                <data
+                    android:host="invite"
+                    android:scheme="insta_live" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".app.login.NotLoginYetActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:screenOrientation="fullSensor" />
+        <activity
+            android:name=".app.login.LoginActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:screenOrientation="fullSensor" />
+        <activity
+            android:name=".app.home.HomeActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="fullSensor" />
+        <activity
+            android:name=".app.home.CreateEventActivity"
+            android:exported="true"
+            android:screenOrientation="fullSensor" />
+        <activity
+            android:name=".app.web.InstaWebActivity"
+            android:exported="true"
+            android:screenOrientation="fullSensor" />
+        <activity
+            android:name=".app.conversation.ConversationListActivity"
+            android:exported="true"
+            android:screenOrientation="fullSensor"/>
+    </application>
+
+</manifest>

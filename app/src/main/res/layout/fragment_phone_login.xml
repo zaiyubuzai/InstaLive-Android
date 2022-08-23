@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/transparent"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/transparent"
+            app:elevation="@dimen/dimen_0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/transparent"
+                android:layerType="software"
+                app:navigationIcon="@mipmap/icon_back_white" />
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <TextView
+            android:id="@+id/phoneLoginTitle2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dimen_28dp"
+            android:layout_marginBottom="73dp"
+            android:lineSpacingExtra="2sp"
+            android:text="@string/fb_login_welcome_to_fambase"
+            android:textColor="#ffffff"
+            android:textSize="28sp"
+            android:textStyle="normal"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@+id/phoneOrEmailLogin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/phoneLoginTitle1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dimen_28dp"
+            android:layout_marginBottom="85dp"
+            android:lineSpacingExtra="2sp"
+            android:text="@string/fb_login_welcome_back"
+            android:textColor="#ffffff"
+            android:textSize="28sp"
+            android:textStyle="normal"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/phoneOrEmailLogin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/signUpDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dimen_28dp"
+            android:layout_marginBottom="@dimen/dimen_16dp"
+            android:text="@string/fb_login_phone_intro"
+            android:textColor="#dddde8"
+            android:textSize="15sp"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toTopOf="@+id/phoneOrEmailLogin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/phoneOrEmailLogin"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_50dp"
+            android:layout_marginStart="@dimen/dimen_28dp"
+            android:layout_marginEnd="@dimen/dimen_28dp"
+            android:layout_marginBottom="@dimen/dimen_88dp"
+            android:background="@drawable/bg_primary_color_8c"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingEnd="12dp"
+            app:layout_constraintBottom_toTopOf="@+id/btnSend"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:id="@+id/selectCountry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="5dp"
+                android:paddingVertical="@dimen/dimen_8dp"
+                android:layerType="software"
+                android:text="CN+86"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="49dp"
+                android:layout_marginStart="11dp"
+                android:background="#1e1e2d" />
+
+            <EditText
+                android:id="@+id/edtPhone"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:imeOptions="actionDone"
+                android:layout_weight="1"
+                android:background="@null"
+                android:hint="phone number"
+                android:inputType="phone"
+                android:maxLength="20"
+                android:textColor="@color/white"
+                android:textColorHint="#788093"
+                android:textSize="15sp" />
+
+            <ImageView
+                android:id="@+id/numberClear"
+                android:layout_width="@dimen/dimen_20dp"
+                android:layout_height="@dimen/dimen_20dp"
+                android:padding="@dimen/dimen_4dp"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/errText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="32dp"
+            android:drawablePadding="8dp"
+            android:layerType="software"
+            android:text="error"
+            android:textColor="#ff3131"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/phoneOrEmailLogin"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/policyText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="32dp"
+            android:layout_marginTop="@dimen/dimen_8dp"
+            android:gravity="center_horizontal"
+            android:text="@string/fb_login_policy"
+            android:textColor="#aab2e6"
+            android:textSize="12sp"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnSend" />
+
+        <TextView
+            android:id="@+id/btnSend"
+            style="@style/yellow_12c_button_style_with_selector"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_50dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginHorizontal="@dimen/dimen_28dp"
+            android:layout_marginTop="345dp"
+            android:enabled="false"
+            android:text="Send"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="28dp" />
+
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:indeterminateTint="#ffffff"
+            android:visibility="gone"
+            android:layout_marginEnd="@dimen/dimen_16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/btnSend"
+            app:layout_constraintEnd_toEndOf="@+id/btnSend"
+            app:layout_constraintTop_toTopOf="@+id/btnSend" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

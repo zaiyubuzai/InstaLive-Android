@@ -1,0 +1,134 @@
+<resources translatable="false">
+    <string name="app_name">InstaLive</string>
+
+    <string name="fb_title_select_country">Select country/region</string>
+
+    <string name="fb_not_login_already_have_account">Already have an account? Log in</string>
+    <string name="fb_login_welcome_to_fambase">Welcome to \nFambase.</string>
+    <string name="fb_login">Login</string>
+    <string name="fb_login_new_phone_number">What\’s your new phone number</string>
+    <string name="fb_login_enter_new_phone_number">Please enter your new phone number</string>
+    <string name="fb_login_phone_intro">Log in with your phone number</string>
+    <string name="fb_login_enter_original_phone">Please enter the original phone number</string>
+    <string name="fb_login_original_phone_number_hint">Original Phone Number</string>
+    <string name="fb_login_policy">By entering your number,  you agree to our\nTerms of Use &amp; Privacy Policy</string>
+    <string name="fb_login_term_service">Terms of Use</string>
+    <string name="fb_login_privacy_policy">Privacy Policy</string>
+    <string name="fb_login_welcome_back">Welcome back!</string>
+    <string name="fb_login_original_phone_number">Don’t worry! Enter your original phone number</string>
+    <string name="fb_login_digit_title">Verification code</string>
+    <string name="fb_login_digit_desc">Please enter the 4 digits code we send to you for the verification</string>
+    <string name="fb_login_digit_code_invalid">That wasn’t right. Please try again or resend code.</string>
+    <string name="fb_login_name_title">Enter your name</string>
+    <string name="fb_login_name_desc">You can change your name once every 180 days.</string>
+    <string name="fb_login_name_placeholder">Name</string>
+    <string name="fb_login_email_verify_title">We sent a new code to your email</string>
+    <string name="fb_login_email_verify_desc">Please enter the 4 digits code we send to your %1$s</string>
+    <string name="fb_login_email_verify_not_email_tip1">I don’t have an email for my account,</string>
+    <string name="fb_login_email_verify_not_email_tip2"><u>contact support</u></string>
+
+    <string name="fb_login_birthday_title">Select your birthday</string>
+    <string name="fb_login_birthday_desc">Please select your birthday below</string>
+    <string name="fb_login_gender_desc">Please select your gender below</string>
+    <string name="fb_login_birthday_placeholder">Birthday</string>
+    <string name="fb_login_gender_placeholder">Gender</string>
+    <string name="fb_login_birthday_error">Sorry, looks like you are NOT eligible for Fambase.\nBut thanks for checking us out!</string>
+
+    <string name="fb_login_username_title">Create a username</string>
+    <string name="fb_login_username_desc">Please create a unique username, you can change your username once every 180 days</string>
+    <string name="fb_login_username_placeholder">Username</string>
+
+    <string name="fb_verify">Verify</string>
+    <string name="fb_verify_your_email">Verify your Email</string>
+    <string name="fb_verify_your_email_desc">Secure your account with a second way to prove who you are.</string>
+    <string name="fb_check_your_email_desc">We emailed %1$s to verify your address.</string>
+    <string name="fb_check_your_email">Check your Email</string>
+
+    <string name="fb_login_lost_access_phone_number">I lost access to my phone number</string>
+    <string name="fb_login_email_title">I can\'t login and don\'t have an email for my account</string>
+    <string name="fb_login_email_content">Username: \nPhone number: \nMore description: </string>
+    <string name="fb_login_old_and_new_same_tip">You can\'t use your original phone number.</string>
+
+    <string name="fb_next">Next</string>
+    <string name="fb_send_code">Send Code</string>
+    <string name="fb_cancel">Cancel</string>
+
+    <string name="fb_take_a_photo">Take a photo</string>
+    <string name="fb_choose_from_photo_gallery">Choose from photo gallery</string>
+
+    <string name="fb_camera_permission_dialog_title">\“InstaLive\” Would Like to Access the Camera</string>
+    <string name="fb_camera_permission_dialog_message">By allowing access to your camera, you\'ll be able to capture photo, scan QR code or start Live.</string>
+    <string name="fb_microphone_permission_dialog_title">\“InstaLive\” Would Like to Access the Microphone</string>
+    <string name="fb_microphone_permission_dialog_message">By allowing access to your microphone, you\'ll be able to start Live.</string>
+    <string name="fb_photo_permission_dialog_title">\"InstaLive\" Would Like to Access the Photo</string>
+    <string name="fb_photo_permission_dialog_message">By allowing access to your photos, you\'ll be able to send photos and videos to friends, or set your profile photo.</string>
+    <string name="fb_allow">Allow</string>
+    <string name="fb_dont_allow">don`t allow</string>
+
+    <string name="fb_fullname_only_one_space">You may input only one space!</string>
+    <string name="fb_fullname_not_start_with_space">You may not start with a space!</string>
+    <string name="fb_fullname_not_end_with_space">You may not end with a space!</string>
+    <string name="fb_username_not_end_with_period">Username can‘t end with a period.</string>
+
+    <string name="fb_up_to_any_chars">Up to %1$s characters.</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="fb_start_a_live">Start a Live</string>
+    <string name="fb_schedule_a_Live">Schedule a Live</string>
+    <string name="fb_my_dashboard">My Dashboard</string>
+    <string name="fb_no_following_is_live_yet">No following is Live yet</string>
+    <string name="fb_new_event">New Event</string>
+    <string name="fb_publish">Publish</string>
+    <string name="fb_new_event_event_name">Event name</string>
+    <string name="fb_date">Date</string>
+    <string name="fb_time">Time</string>
+    <string name="fb_new_event_description_optional">Description(Optional)</string>
+    <string name="fb_new_event_in_the_past">Cannot schedule event in the past.</string>
+    <string name="fb_new_event_within_7_days">You can select a date within 7 days.</string>
+    <string name="fb_today">Today</string>
+    <string name="fb_tomorrow">Tomorrow</string>
+    <string name="fb_interest">Interest</string>
+    <string name="fb_interested">Interested</string>
+    <string name="fb_cancel_event">Cancel Event</string>
+    <string name="fb_canceled">Canceled</string>
+    <string name="fb_cancelled">Cancelled</string>
+    <string name="fb_published">Published</string>
+    <string name="description">description</string>
+    <string name="fb_confirm">Confirm</string>
+    <string name="fb_start_live">Start Live</string>
+    <string name="fb_at_you">\@you</string>
+    <string name="fb_live">live</string>
+    <string name="fb_direct_messages">Direct Messages</string>
+    <string name="fb_share">Share</string>
+    <string name="fb_copied">Copied</string>
+
+    <string-array name="Months">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
+
+    <string-array name="AbbrMonths">
+        <item>Jan</item>
+        <item>Feb</item>
+        <item>Mar</item>
+        <item>Apr</item>
+        <item>May</item>
+        <item>Jun</item>
+        <item>Jul</item>
+        <item>Aug</item>
+        <item>Sep</item>
+        <item>Oct</item>
+        <item>Nov</item>
+        <item>Dec</item>
+    </string-array>
+</resources>

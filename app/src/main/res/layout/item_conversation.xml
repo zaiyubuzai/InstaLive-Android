@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="conversationEntity"
+            type="com.venus.dm.db.entity.ConversationsEntity" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/dimen_4dp"
+        android:background="?attr/selectableItemBackground">
+
+        <ImageView
+            android:id="@+id/avatar"
+            android:layout_width="@dimen/dimen_52dp"
+            android:layout_height="@dimen/dimen_52dp"
+            android:layout_marginVertical="@dimen/dimen_4dp"
+            android:layout_marginStart="@dimen/dimen_16dp"
+            android:src="@color/colorPrimaryDark"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/pinIcon"
+            isVisible="@{conversationEntity.isPin == 1}"
+            android:layout_width="21dp"
+            android:layout_height="21dp"
+            android:layout_marginStart="@dimen/dimen_12dp"
+            android:src="@color/purple_200"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_16dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="#ffffff"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintEnd_toStartOf="@+id/icMute"
+            app:layout_constraintBottom_toBottomOf="@+id/avatar"
+            app:layout_constraintStart_toEndOf="@+id/avatar"
+            app:layout_constraintTop_toTopOf="@+id/avatar"
+            tools:text="asdfasdfasdfasdfasdfasdfasdfasdfasdfas" />
+
+        <ImageView
+            android:id="@+id/icMute"
+            isVisible="@{conversationEntity.mute == 1}"
+            android:layout_width="@dimen/dimen_16dp"
+            android:layout_height="@dimen/dimen_16dp"
+            android:layout_marginHorizontal="9dp"
+            android:layerType="software"
+            android:src="@drawable/picture_btn_music_shape"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/frameLayout"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toEndOf="@+id/name"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <FrameLayout
+            android:id="@+id/frameLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dimen_16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/redDot"
+                isVisible="@{conversationEntity.unreadCount > 0 &amp;&amp; conversationEntity.mute == 0 &amp;&amp; conversationEntity.living != 1 &amp;&amp; conversationEntity.beingAt != 1}"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dimen_20dp"
+                android:background="@drawable/picture_btn_music_shape"
+                android:gravity="center"
+                android:minWidth="@dimen/dimen_20dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:text="@{(conversationEntity.unreadCount &lt; 100) ? Integer.toString(conversationEntity.unreadCount) : @string/fb_live }"
+                android:textColor="#ffffff"
+                android:textSize="12sp"
+                android:visibility="gone"
+                tools:text="99+"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/unreadDot"
+                isVisible="@{conversationEntity.unreadCount > 0 &amp;&amp; conversationEntity.mute == 1 &amp;&amp; conversationEntity.living != 1 &amp;&amp; conversationEntity.beingAt != 1}"
+                android:layout_width="@dimen/dimen_10dp"
+                android:layout_height="@dimen/dimen_10dp"
+                android:background="@drawable/picture_btn_music_shape"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/atMe"
+                isVisible="@{conversationEntity.beingAt == 1 &amp;&amp; conversationEntity.living != 1}"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dimen_20dp"
+                android:background="@drawable/picture_btn_music_shape"
+                android:visibility="gone"
+                android:textColor="#ffffff"
+                android:textSize="12sp"
+                android:gravity="center"
+                android:lineSpacingExtra="4sp"
+                android:paddingHorizontal="9dp"
+                android:text="@string/fb_at_you"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/living"
+                isVisible="@{conversationEntity.living == 1}"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dimen_20dp"
+                android:background="@drawable/picture_btn_music_shape"
+                android:lineSpacingExtra="4sp"
+                android:paddingHorizontal="9dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="@string/fb_live"
+                android:textColor="#ffffff"
+                android:textSize="12sp"
+                android:visibility="gone"
+                android:textStyle="normal"
+                app:layout_constraintBottom_toBottomOf="@+id/content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/content" />
+        </FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
