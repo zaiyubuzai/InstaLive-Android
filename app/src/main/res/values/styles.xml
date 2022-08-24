@@ -71,4 +71,10 @@
     <style name="ShapeAppearanceOverlay.App.CornerSize36dp" parent="">
         <item name="cornerSize">36dp</item>
     </style>
+
+    <style name="btn_shadow">
+        <item name="android:shadowColor">#19000000</item>
+        <item name="android:shadowRadius">4</item>
+        <item name="android:shadowDy">2</item>
+    </style>
 </resources>

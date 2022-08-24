@@ -24,7 +24,6 @@
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <uses-permission android:name="android.permission.VIBRATE" />
-
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
 
@@ -36,7 +35,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.InstaLive">
-
+        <activity
+            android:name=".app.conversation.MessageActivity"
+            android:exported="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -113,7 +114,7 @@
         <activity
             android:name=".app.conversation.ConversationListActivity"
             android:exported="true"
-            android:screenOrientation="fullSensor"/>
+            android:screenOrientation="fullSensor" />
     </application>
 
 </manifest>

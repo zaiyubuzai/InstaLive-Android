@@ -556,6 +556,19 @@ fun <T> doubleFunc(
     }
 }
 
+fun View.alphaClick(onClick: (view: View) -> Unit) {
+
+    setOnTouchListener { v, event ->
+        Timber.d("alphaClick: ${MotionEvent.actionToString(event.action)}")
+        if (event.action == MotionEvent.ACTION_DOWN) {
+            this.alpha = 0.2f
+        } else if (event.action == MotionEvent.ACTION_UP || event.action == MotionEvent.ACTION_CANCEL){
+            this.alpha = 1f
+        }
+        false
+    }
+    setOnClickListener(onClick)
+}
 
 @SuppressLint("RestrictedApi")
 fun View.expand(dx: Int, dy: Int) {

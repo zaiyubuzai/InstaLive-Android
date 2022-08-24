@@ -7,6 +7,7 @@ import android.util.DisplayMetrics
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
+import com.example.instalive.db.InstaLiveDBProvider
 import com.example.instalive.utils.FlipperInitializer
 import com.venus.framework.rest.UrlSignature
 import timber.log.Timber
@@ -60,6 +61,8 @@ class InstaLiveApp: Application(), ViewModelStoreOwner {
         if (BuildConfig.DEBUG) {
             FlipperInitializer.initFlipper(this)
         }
+
+        InstaLiveDBProvider.db.directMessagingDao()
     }
 
     fun addActivity(activity: Activity) {

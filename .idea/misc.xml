@@ -4,11 +4,14 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/drawable-v24/bg_edit.xml" value="0.34444444444444444" />
+        <entry key="app/src/main/res/drawable/bg_282f3f_8c.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_bottom_282f3f_36c1.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_btn_disable_3a_12.xml" value="0.4" />
         <entry key="app/src/main/res/drawable/bg_btn_yellow_12c.xml" value="0.4" />
         <entry key="app/src/main/res/drawable/bg_btn_yellow_gray_12c_selector.xml" value="0.4" />
         <entry key="app/src/main/res/drawable/bg_primary_color_8c.xml" value="0.4197916666666667" />
+        <entry key="app/src/main/res/drawable/bg_red_dot.xml" value="0.34444444444444444" />
+        <entry key="app/src/main/res/drawable/bg_text_white_10c.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_verify_code.xml" value="0.4046875" />
         <entry key="app/src/main/res/drawable/btn_text_black_65779e_color_selector.xml" value="0.4" />
         <entry key="app/src/main/res/drawable/btn_text_yellow_65779e_color_selector.xml" value="0.34444444444444444" />
@@ -18,6 +21,7 @@
         <entry key="app/src/main/res/layout/activity_home.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_insta_web.xml" value="0.38958333333333334" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.4036458333333333" />
+        <entry key="app/src/main/res/layout/activity_message.xml" value="0.31965811965811963" />
         <entry key="app/src/main/res/layout/dialog_live_event.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/dialog_other_profile.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/dialog_select_country.xml" value="0.4036458333333333" />
@@ -38,6 +42,7 @@
         <entry key="app/src/main/res/layout/item_country_code_layout.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/item_interested_member_layout.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/login_activity.xml" value="0.4036458333333333" />
+        <entry key="app/src/main/res/layout/message_bottom_layout.xml" value="0.3311965811965812" />
         <entry key="picture_library/src/main/res/drawable/picture_btn_music_shape.xml" value="0.34444444444444444" />
         <entry key="picture_library/src/main/res/drawable/picture_image_placeholder.xml" value="0.24635416666666668" />
       </map>

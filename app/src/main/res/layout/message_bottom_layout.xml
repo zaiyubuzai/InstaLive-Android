@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#3d4559">
+
+    <com.example.instalive.view.MaxLimitRecyclerView
+        android:id="@+id/mentionListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintBottom_toTopOf="@+id/editorBG"
+        android:layout_marginBottom="@dimen/dimen_8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="@color/colorPrimaryDark"
+        app:limit_maxHeight="248dp" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/loadingMention"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dimen_40dp"
+        android:layout_gravity="center"
+        android:padding="@dimen/dimen_0dp"
+        android:scaleX="1.7"
+        android:scaleY="1.7"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/mentionListView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_fileName="lotLoading.json"
+        app:lottie_loop="true" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/editorBG"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dimen_10dp"
+        app:layout_goneMarginStart="@dimen/dimen_16dp"
+        android:layout_marginEnd="@dimen/dimen_12dp"
+        android:layout_marginVertical="@dimen/dimen_8dp"
+        android:background="@drawable/bg_282f3f_8c"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/barrier"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1">
+
+        <View
+            android:layout_width="1px"
+            android:layout_height="1px"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <EditText
+            android:id="@+id/edtChatInput"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+            android:hint="@string/fb_start_a_message"
+            android:imeOptions="actionSend"
+            android:inputType="textMultiLine"
+            android:ellipsize="end"
+            android:lineSpacingExtra="6sp"
+            android:maxLength="1000"
+            android:maxLines="3"
+            android:minHeight="@dimen/dimen_40dp"
+            android:paddingHorizontal="@dimen/dimen_8dp"
+            android:paddingVertical="@dimen/dimen_4dp"
+            android:textColor="@color/white"
+            android:textColorHint="#65779e"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+
+        <LinearLayout
+            android:id="@+id/constraintLayout"
+            android:layout_width="match_parent"
+            android:gravity="center_vertical"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:layout_marginTop="@dimen/dimen_10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/deleteReply"
+                android:layout_width="@dimen/dimen_16dp"
+                android:layout_height="@dimen/dimen_16dp"
+                android:layout_marginStart="@dimen/dimen_8dp"
+                android:src="@drawable/item_close"/>
+
+            <TextView
+                android:id="@+id/reply"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="@dimen/dimen_16dp"
+                android:ellipsize="end"
+                android:lineSpacingExtra="6sp"
+                android:maxLines="2"
+                android:textColor="#65779e"
+                android:textSize="15sp"
+                android:textStyle="normal"
+                tools:text="Replying to fullname " />
+
+        </LinearLayout>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:barrierDirection="left"
+        app:constraint_referenced_ids="btnSend, ll_btn"/>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/btnSend"
+        android:layout_width="@dimen/dimen_32dp"
+        android:layout_height="@dimen/dimen_32dp"
+        android:layout_marginEnd="@dimen/dimen_12dp"
+        android:layerType="software"
+        android:padding="@dimen/dimen_4dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/editorBG"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/editorBG"
+        app:srcCompat="@mipmap/ic_send_message_no2" />
+
+    <LinearLayout
+        android:id="@+id/ll_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/btnPic"
+            android:layout_width="@dimen/dimen_32dp"
+            android:layout_height="@dimen/dimen_32dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp"
+            android:layerType="software"
+            android:padding="@dimen/dimen_4dp"
+            app:srcCompat="@mipmap/ic_con_bottom_pic" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/btnGift"
+            android:layout_width="@dimen/dimen_32dp"
+            android:layout_height="@dimen/dimen_32dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp"
+            android:layerType="software"
+            android:padding="@dimen/dimen_4dp"
+            app:srcCompat="@mipmap/ic_gift_message" />
+
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/btnLike"
+            android:layout_width="@dimen/dimen_32dp"
+            android:layout_height="@dimen/dimen_32dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp"
+            android:layerType="software"
+            android:padding="@dimen/dimen_4dp"
+            app:srcCompat="@mipmap/ic_heart_message" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- KsgLikeView-->
+    <declare-styleable name="KsgLikeView">
+        <!-- 进入动画 时长-->
+        <attr name="ksg_enter_duration" format="integer" />
+        <!--路径动画 时长-->
+        <attr name="ksg_curve_duration" format="integer" />
+        <attr name="ksg_image_width" format="dimension" />
+    </declare-styleable>
+
+    <!--MaxLimitRecyclerView-->
+    <declare-styleable name="MaxLimitRecyclerView">
+        <attr name="limit_maxHeight" format="reference|dimension" />
+        <attr name="limit_maxWidth" format="reference|dimension" />
+    </declare-styleable>
+</resources>

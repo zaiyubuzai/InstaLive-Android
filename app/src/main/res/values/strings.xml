@@ -110,6 +110,9 @@
     <string name="fb_did_not_get_the_code_span">Resend Code</string>
     <string name="fb_code_count_down">Resend Code %1$ss</string>
     <string name="fb_code_sent">Code Sent</string>
+    <string name="fb_new_messages">new messages</string>
+    <string name="fb_someone_at_you">Someone \@you</string>
+    <string name="fb_start_a_message">start a message</string>
 
     <string-array name="Months">
         <item>January</item>
