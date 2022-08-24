@@ -151,11 +151,26 @@ class PhoneLoginFragment : BaseFragment<PhoneLoginViewModel, FragmentPhoneLoginB
 //            val number = "$currentCountryCode${edtPhone.text}"
 //            val timestamp = sharedViewModel.phonePasscodeMap["${number}_phone"]
 //            if (timestamp != null && System.currentTimeMillis() - timestamp < 60 * 1000) {
-                toPasscode(0)
+//                toPasscode(0)
 //            } else {
 ////                //fixme 网络请求
 //                btnSend.isEnabled = false
 //            }
+
+            val number = "$currentCountryCode${edtPhone.text}"
+            val timestamp = sharedViewModel.phonePasscodeMap["${number}_phone"]
+            if (timestamp != null && System.currentTimeMillis() - timestamp < 60 * 1000) {
+                if (activity is LoginActivity) {
+                    sharedViewModel.startGlobalVerifyCodePhoneTicking(timestamp)
+                    (activity as LoginActivity).redirectPhonePasscode(
+                        number,
+                        currentCountryCode
+                    )
+                }
+            } else {
+                viewModel.sendPhonePasscode(number, source, currentCountryCode)
+                btnSend.isEnabled = false
+            }
         }
         edtPhone.doAfterTextChanged {
             it?.let {

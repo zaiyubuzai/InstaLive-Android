@@ -105,6 +105,8 @@ public class UrlSignatureInterceptor implements Interceptor, HttpConstants {
 
         if (CONTENT_TYPE_FORM.equals(originContentType)) {
             return signFormBody(request);
+        } else if (originContentType == null){
+            return signNullBody(request);
         }
 
 //        if (CONTENT_TYPE_MULTIPART_FORM.equals(originContentType)) {
@@ -112,6 +114,43 @@ public class UrlSignatureInterceptor implements Interceptor, HttpConstants {
 //        }
 
         return request;
+    }
+
+    private Request signNullBody(Request request) {
+        RequestBody requestBody = request.body();
+        assert requestBody != null;
+
+        RequestBody newRequestBody;
+        final Map<String, Object> params = new HashMap<>();
+        StringBuilder stringBuffer = new StringBuilder();
+        try {
+            // ToDo 此处可对参数做签名处理
+            final long ts = nowMillis();
+            params.put(PARAM_TIMESTAMP, ts);
+            stringBuffer.append("ts=");
+            stringBuffer.append(ts);
+
+            String signature = signUrl(HTTP_POST, getBaseUrl(request.url()), params);
+            if (Utils.isNotEmpty(signature)) {
+                stringBuffer.append("&");
+                stringBuffer.append("sign=");
+                stringBuffer.append(signature);
+            }
+            /**
+             * String sign = SignUtil.sign(signParams);
+             * jsonObject.put("sign", sign);
+             */
+            newRequestBody = RequestBody.create(MediaType.parse("text/html"), stringBuffer.toString());
+
+        } catch (Exception e) {
+            newRequestBody = requestBody;
+            e.printStackTrace();
+        }
+        final long contentLength = stringBuffer.length();
+        return request.newBuilder()
+                .header("Content-Length", String.valueOf(contentLength))  // 长度发生了变化需改写header
+                .post(newRequestBody)
+                .build();
     }
 
     private Request signFormBody(Request request) {

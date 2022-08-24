@@ -102,6 +102,10 @@
     <string name="fb_share">Share</string>
     <string name="fb_copied">Copied</string>
 
+    <string name="fb_failed_to_load_browser">Failed to load browser.</string>
+    <string name="fb_something_goes_wrong_error_code">Something goes wrong. You may try later.(%1$s)</string>
+    <string name="fb_poor_network_you_may_try_later">Poor network. You may try later.</string>
+
     <string-array name="Months">
         <item>January</item>
         <item>February</item>

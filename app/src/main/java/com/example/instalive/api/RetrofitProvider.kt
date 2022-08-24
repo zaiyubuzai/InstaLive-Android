@@ -14,8 +14,7 @@ import com.example.instalive.http.InstaApi
 import com.example.instalive.utils.FlipperInitializer
 import com.example.instalive.utils.SysUtils
 import com.venus.framework.rest.signature.UrlSignatureConfig
-import com.venus.framework.rest.signature.VenusPlayUrlSignatureInterceptor
-import com.venus.framework.rest.signature.VenusUrlSignatureInterceptor
+import com.venus.framework.rest.signature.UrlSignatureInterceptor
 import com.venus.framework.util.Tracker
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
@@ -33,7 +32,7 @@ object RetrofitProvider: BaseProvider() {
     var pagePath: String = ""
 
     override fun getBaseUrl(): String {
-        return ""
+        return "https://api-test.halley.link/"
     }
 
     override fun createApi(retrofit: Retrofit) {
@@ -41,14 +40,14 @@ object RetrofitProvider: BaseProvider() {
     }
 
     override fun addInterceptor(builder: OkHttpClient.Builder): OkHttpClient.Builder {
-        val interceptor: Interceptor = if (BuildConfig.BUILD_TYPE == "debug") {
-            VenusUrlSignatureInterceptor(object : UrlSignatureConfig {
+        val interceptor: Interceptor =
+            UrlSignatureInterceptor(object : UrlSignatureConfig {
                 override fun isSignatureRequired(url: HttpUrl?): Boolean {
                     return true
                 }
 
                 override fun getApiBaseUrl(): String {
-                    return ""
+                    return "https://api-test.halley.link/"
                 }
 
                 override fun getTracker(): Tracker? {
@@ -59,46 +58,28 @@ object RetrofitProvider: BaseProvider() {
                     return appInstance
                 }
             })
-        } else {
-            VenusPlayUrlSignatureInterceptor(object : UrlSignatureConfig {
-                override fun isSignatureRequired(url: HttpUrl?): Boolean {
-                    return true
-                }
-
-                override fun getApiBaseUrl(): String {
-                    return ""
-                }
-
-                override fun getTracker(): Tracker? {
-                    return null
-                }
-
-                override fun getContext(): Context {
-                    return appInstance
-                }
-            })
-        }
         builder.addInterceptor(interceptor)
             .addNetworkInterceptor { chain ->
                 val newBuilder = chain.request().newBuilder()
-                newBuilder.addHeader("X-FM-DI", "")
+                newBuilder.addHeader("X-FB-DI", "")
                 val lat = SessionPreferences.lastLat ?: SessionPreferences.lat
                 val lon = SessionPreferences.lastLon ?: SessionPreferences.lon
                 if (lat != null && lon != null) {
-                    newBuilder.addHeader("X-FM-LC", "$lat,$lon")
+                    newBuilder.addHeader("X-FB-LC", "$lat,$lon")
                 }
                 val acc = SessionPreferences.lastLocAcc
                 if (acc != null) {
-                    newBuilder.addHeader("X-FM-LCA", acc)
+                    newBuilder.addHeader("X-FB-LCA", acc)
                 }
-                newBuilder.addHeader("X-FM-UA", getAgent())
+                newBuilder.addHeader("X-FB-UA", getAgent())
                 newBuilder.addHeader("Accept-Language", Locale.getDefault().toLanguageTag())
-                newBuilder.addHeader("X-FM-TIMEZONE", SysUtils.getTimezone())
+                newBuilder.addHeader("X-FB-TIMEZONE", SysUtils.getTimezone())
+                newBuilder.addHeader("X-FB-FA", SysUtils.getTimezone())
                 if (SessionPreferences.id.isNotEmpty()) {
-                    newBuilder.addHeader("X-FM-UI", SessionPreferences.id)
+                    newBuilder.addHeader("X-FB-UI", SessionPreferences.id)
                 }
                 if (SessionPreferences.token.isNotEmpty()) {
-                    newBuilder.addHeader("X-FM-UT", SessionPreferences.token)
+                    newBuilder.addHeader("X-FB-UT", SessionPreferences.token)
                 }
 //                if (BuildConfig.FLAVOR == "internaltest"||BuildConfig.FLAVOR == "stage"){
 //                    newBuilder.addHeader("X-FM-INTERNALTEST", "1")
@@ -113,7 +94,7 @@ object RetrofitProvider: BaseProvider() {
         return super.addInterceptor(builder)
     }
 
-    private fun getAgent(): String {
+    fun getAgent(): String {
         val begin = System.currentTimeMillis()
         var ua = userAgent ?: generateUA()
         if (pagePath.isNotEmpty()) {
@@ -124,6 +105,18 @@ object RetrofitProvider: BaseProvider() {
         return ua
     }
 
+    //Accept-Language
+    //User-Agent
+    //Content-Type
+    //X-FB-LC  APP-LOCATION
+    //X-FB-LCA LOCATION-ACCURACY
+    //X-FB-DI  DEVICE-ID
+    //X-FB-UI  USER-ID
+    //X-FB-UT  USER-TOKEN
+    //X-FB-UA  USER-AGENT
+    //X-FB-FA  DEVICE-IDFA
+    //X-FB-MEM IOS-MEMORY-STATUS
+    //X-FB-WEB
     private fun generateUA(): String {
         val builder = StringBuilder()
         builder

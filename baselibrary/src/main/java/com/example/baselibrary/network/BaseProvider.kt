@@ -26,28 +26,7 @@ abstract class BaseProvider {
 
         val retrofit = Retrofit.Builder()
             .baseUrl(getBaseUrl())
-            .addConverterFactory(
-                GsonConverterFactory.create(
-                    gsonBuilder.serializeNulls()
-                        .registerTypeAdapter(String::class.java, StringAdapter())
-                        .registerTypeAdapter(Int::class.java, IntAdapter())
-                        .registerTypeAdapterFactory(
-                            CollectionTypeAdapterFactory(
-                                ConstructorConstructor(
-                                    try {
-                                        val field =
-                                            gsonBuilder.javaClass.getDeclaredField("instanceCreators")
-                                        field.isAccessible = true
-                                        field.get(gsonBuilder) as Map<Type, InstanceCreator<*>>
-                                    } catch (e: Exception) {
-                                        mapOf<Type, InstanceCreator<*>>()
-                                    }
-                                )
-                            )
-                        )
-                        .create()
-                )
-            )
+            .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()
 

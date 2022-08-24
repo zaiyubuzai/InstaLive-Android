@@ -29,9 +29,9 @@ inline void initStrConfig(char **out, uint8_t *bytes, size_t len) {
 
 inline char* getUrlSignatureKey() {
     if (URL_SIGNATURE_KEY == NULL) {
-        // bytes of 'Ad$iOI34HNlK'
+        // bytes of 'Ut$pRI67KYQD'
         int len = 12;
-        uint8_t ptrBytes[] = {65, 100, 36, 105, 79, 73, 51, 52, 72, 78, 108, 75};
+        uint8_t ptrBytes[] = {0x55, 0x74, 0x24, 0x70, 0x52, 0x49, 0x36, 0x37, 0x4B, 0x59, 0x51, 0x44};
         initStrConfig(&URL_SIGNATURE_KEY, ptrBytes, len);
     }
 
@@ -40,9 +40,9 @@ inline char* getUrlSignatureKey() {
 
 inline char* getEncodedUrlSignatureKey() {
     if (URL_ENCODED_SIGNATURE_KEY == NULL) {
-        // bytes of '&Ad$iOI34HNlK'
+        // bytes of '&Ut$pRI67KYQD'
         int len = 13;
-        uint8_t ptrBytes[] = {38, 65, 100, 36, 105, 79, 73, 51, 52, 72, 78, 108, 75};
+        uint8_t ptrBytes[] = {0x26, 0x55, 0x74, 0x24, 0x70, 0x52, 0x49, 0x36, 0x37, 0x4B, 0x59, 0x51, 0x44};
         initStrConfig(&URL_ENCODED_SIGNATURE_KEY, ptrBytes, len);
     }
 
@@ -51,9 +51,9 @@ inline char* getEncodedUrlSignatureKey() {
 
 inline char* getMarsUrlSignatureKey() {
     if (URL_SIGNATURE_KEY == NULL) {
-        // bytes of 'Ad$iOI34HNlK'
+        // bytes of 'Ut$pRI67KYQD'
         int len = 12;
-        uint8_t ptrBytes[] = {65, 100, 36, 105, 79, 73, 51, 52, 72, 78, 108, 75};
+        uint8_t ptrBytes[] = {0x55, 0x74, 0x24, 0x70, 0x52, 0x49, 0x36, 0x37, 0x4B, 0x59, 0x51, 0x44};
         initStrConfig(&URL_SIGNATURE_KEY, ptrBytes, len);
     }
 
@@ -62,9 +62,9 @@ inline char* getMarsUrlSignatureKey() {
 
 inline char* getMarsEncodedUrlSignatureKey() {
     if (URL_ENCODED_SIGNATURE_KEY == NULL) {
-        // bytes of '&Ad$iOI34HNlK'
+        // bytes of '&Ut$pRI67KYQD'
         int len = 13;
-        uint8_t ptrBytes[] = {38, 65, 100, 36, 105, 79, 73, 51, 52, 72, 78, 108, 75};
+        uint8_t ptrBytes[] = {0x26, 0x55, 0x74, 0x24, 0x70, 0x52, 0x49, 0x36, 0x37, 0x4B, 0x59, 0x51, 0x44};
         initStrConfig(&URL_ENCODED_SIGNATURE_KEY, ptrBytes, len);
     }
 

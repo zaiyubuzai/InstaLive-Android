@@ -7,7 +7,7 @@ plugins {
 
 android {
     compileSdk 32
-
+//    ext.DEFAULT_APP_ID = "com.example.instalive"
     defaultConfig {
         applicationId "com.example.instalive"
         minSdk 23

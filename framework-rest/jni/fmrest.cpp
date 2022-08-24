@@ -5,9 +5,9 @@
 typedef char* (*GET_STR)();
 typedef bool (*VALIDATOR)(char*);
 
-static char *FM_PKG_PREFIX = NULL;
-static char *FM_FINGERPRINT = NULL;
-static char *FM_STAGE_FINGERPRINT = NULL;
+static char *IL_PKG_PREFIX = NULL;
+static char *IL_FINGERPRINT = NULL;
+static char *IL_STAGE_FINGERPRINT = NULL;
 static char *CRYPTOWALLET_PKG_PREFIX = NULL;
 static char *CUBE_PKG_PREFIX = NULL;
 static char *CUBE_FINGERPRINT = NULL;
@@ -61,49 +61,50 @@ inline void releaseUTFChars(JNIEnv *&env, jstring &jstr, const char *&cstr) {
     }
 }
 
-inline char *getFmPkgPrefix() {
-    if (FM_PKG_PREFIX == NULL) {
-        int len = 23;
+inline char *getIlPkgPrefix() {
+    if (IL_PKG_PREFIX == NULL) {
+        int len = 21;
+        //com.example.instalive
         uint8_t ptrBytes[] = {
-                99, 111, 109, 46, 116, 104, 105, 114, 100, 114, 111,
-                99, 107, 46, 102, 105, 118, 101, 109, 105, 108, 101, 115,
+                99, 111, 109, 46, 101, 120, 97, 109, 112, 108, 101,
+                46, 105, 110, 115, 116, 97, 108, 105, 118, 101,
         };
-        FM_PKG_PREFIX = (char *) malloc(len + 1);
-        memcpy(FM_PKG_PREFIX, ptrBytes, len);
-        FM_PKG_PREFIX[len] = '\0';
+        IL_PKG_PREFIX = (char *) malloc(len + 1);
+        memcpy(IL_PKG_PREFIX, ptrBytes, len);
+        IL_PKG_PREFIX[len] = '\0';
     }
 
-    return FM_PKG_PREFIX;
+    return IL_PKG_PREFIX;
 }
 
 inline char *getFmFingerprint() {
-    if (FM_FINGERPRINT == NULL) {
+    if (IL_FINGERPRINT == NULL) {
         uint8_t ptrBytes[] = {
                 0xDB, 0xB9, 0x25, 0x9D, 0x66, 0xBD, 0x1E, 0xEA, 0xF9, 0xD8,
                 0xEE, 0x7A, 0x25, 0x48, 0xCC, 0x61, 0xAA, 0x60, 0xB8, 0xB5,
         };
-        FM_FINGERPRINT = (char *) malloc(41);
+        IL_FINGERPRINT = (char *) malloc(41);
         for (int i = 0; i < 20; ++i) {
-            sprintf(&FM_FINGERPRINT[i * 2], "%02X", ptrBytes[i]);
+            sprintf(&IL_FINGERPRINT[i * 2], "%02X", ptrBytes[i]);
         }
     }
 
-    return FM_FINGERPRINT;
+    return IL_FINGERPRINT;
 }
 
 inline char *getFmStageFingerprint() {
-    if (FM_STAGE_FINGERPRINT == NULL) {
+    if (IL_STAGE_FINGERPRINT == NULL) {
         uint8_t ptrBytes[] = {
                 0x06, 0xE9, 0x13, 0xF5, 0xB9, 0xDA, 0xD0, 0x33, 0xD7, 0xA3,
                 0x3B, 0x23, 0xF2, 0xEB, 0x9F, 0x27, 0x7A, 0xC8, 0xEA, 0xBF,
         };
-        FM_STAGE_FINGERPRINT = (char *) malloc(41);
+        IL_STAGE_FINGERPRINT = (char *) malloc(41);
         for (int i = 0; i < 20; ++i) {
-            sprintf(&FM_STAGE_FINGERPRINT[i * 2], "%02X", ptrBytes[i]);
+            sprintf(&IL_STAGE_FINGERPRINT[i * 2], "%02X", ptrBytes[i]);
         }
     }
 
-    return FM_STAGE_FINGERPRINT;
+    return IL_STAGE_FINGERPRINT;
 }
 
 inline char *getCryptoWalletPkgPrefix() {
@@ -477,7 +478,7 @@ Java_com_venus_framework_rest_UrlSignature_signUrl(JNIEnv *env,
                                                        jobjectArray paramNames,
                                                        jobjectArray paramValues) {
     return signUrl(env, type, context, method, url, paramNames, paramValues,
-        getUrlSignatureKey, getEncodedUrlSignatureKey, getFmPkgPrefix, validateFingerprint);
+        getUrlSignatureKey, getEncodedUrlSignatureKey, getIlPkgPrefix, validateFingerprint);
 }
 
 JNIEXPORT jstring JNICALL
@@ -549,7 +550,7 @@ Java_com_venus_framework_rest_UrlSignature_signWebUrl(JNIEnv *env,
                                                           jobjectArray paramNames,
                                                           jobjectArray paramValues) {
     return signUrl(env, type, context, method, url, paramNames, paramValues,
-        getWebUrlSignatureKey, getEncodedWebUrlSignatureKey, getFmPkgPrefix, validateFingerprint);
+        getWebUrlSignatureKey, getEncodedWebUrlSignatureKey, getIlPkgPrefix, validateFingerprint);
 }
 
 JNIEXPORT jstring JNICALL
@@ -593,7 +594,7 @@ Java_com_venus_framework_rest_UrlSignature_signCollectUrl(JNIEnv *env,
                                                               jclass type,
                                                               jobject context,
                                                               jbyteArray param) {
-    if (!checkAuthorized(env, context, getFmPkgPrefix, validateFingerprint)) {
+    if (!checkAuthorized(env, context, getIlPkgPrefix, validateFingerprint)) {
        return env->NewStringUTF("");
     }
     const char *data = getStringFromByteArray(env, param);

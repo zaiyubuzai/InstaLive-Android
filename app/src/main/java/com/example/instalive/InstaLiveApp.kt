@@ -2,12 +2,14 @@ package com.example.instalive
 
 import android.app.Activity
 import android.app.Application
+import android.content.Context
 import android.util.DisplayMetrics
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import com.example.instalive.utils.FlipperInitializer
 import com.venus.framework.rest.UrlSignature
+import timber.log.Timber
 import kotlin.properties.Delegates
 
 class InstaLiveApp: Application(), ViewModelStoreOwner {
@@ -38,6 +40,16 @@ class InstaLiveApp: Application(), ViewModelStoreOwner {
     }
     private val store: ViewModelStore by lazy {
         ViewModelStore()
+    }
+
+    override fun attachBaseContext(base: Context?) {
+        //初始化打印日志
+        Timber.plant(object : Timber.DebugTree() {
+            override fun isLoggable(tag: String?, priority: Int): Boolean {
+                return BuildConfig.DEBUG
+            }
+        })
+        super.attachBaseContext(base)
     }
 
     override fun onCreate() {
