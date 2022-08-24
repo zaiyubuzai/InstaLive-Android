@@ -44,13 +44,17 @@ import splitties.systemservices.inputMethodManager
 import splitties.views.onClick
 import java.util.*
 
-
+@ExperimentalStdlibApi
 class AddProfileInfoFragment :
     BaseFragment<AddProfileInfoViewModel, FragmentAddProfileInfoBinding>() {
     var phone: String? by argOrNull()
     var passcode: String? by argOrNull()
     var source: String by arg()
     var title: String by arg()
+
+    val birthDay = "2000-01-01"
+    val gender = 1
+
     private var isShowToUser = true
     private var permissionDialog: AlertDialog? = null
     override fun initViewModel(): AddProfileInfoViewModel {
@@ -61,7 +65,6 @@ class AddProfileInfoFragment :
         return DataBindingConfig(R.layout.fragment_add_profile_info, viewModel)
     }
 
-    @OptIn(ExperimentalStdlibApi::class)
     override fun initData(savedInstanceState: Bundle?) {
         screenName = "login_view"
         fullNameInput.requestFocus()
@@ -77,7 +80,7 @@ class AddProfileInfoFragment :
                 marsToast(getString(R.string.fb_fullname_not_start_with_space))
             } else {
                 fullNameInput.hideKeyboard()
-                (activity as LoginActivity).redirectSelectOwnRole()
+                viewModel.checkUsernameAvailability(fullNameInput.text.toString())
                 next.isEnabled = false
             }
         }
@@ -124,6 +127,15 @@ class AddProfileInfoFragment :
                 next?.isEnabled = it.length > 1
             }
         }
+        initObserver()
+    }
+
+    private fun initObserver(){
+        viewModel.checkUsernameData.observe(this, {
+            (activity as LoginActivity).redirectSelectOwnRole(
+                phone, passcode, "", fullNameInput.text.toString(), birthDay, gender
+            )
+        })
     }
 
     private fun checkPhotoPermission() {

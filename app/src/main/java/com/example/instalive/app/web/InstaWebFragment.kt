@@ -224,22 +224,22 @@ class InstaWebFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Bridg
 
         private fun getHeaders(): Map<String, String> {
             val header = mutableMapOf<String, String>()
-            header["X-FB-DI"] = ""
+            header["X-FM-DI"] = ""
             val lat = SessionPreferences.lastLat ?: SessionPreferences.lat
             val lon = SessionPreferences.lastLon ?: SessionPreferences.lon
             if (lat != null && lon != null) {
-                header["X-FB-LC"] = "$lat,$lon"
+                header["X-FM-LC"] = "$lat,$lon"
             }
             val acc = SessionPreferences.lastLocAcc
             if (acc != null) {
-                header["X-FB-LCA"] = acc
+                header["X-FM-LCA"] = acc
             }
-            header["X-FB-UA"] = RetrofitProvider.getAgent()
+            header["X-FM-UA"] = RetrofitProvider.getAgent()
             if (SessionPreferences.id.isNotEmpty()) {
-                header["X-FB-UI"] = SessionPreferences.id
+                header["X-FM-UI"] = SessionPreferences.id
             }
             if (SessionPreferences.token.isNotEmpty()) {
-                header["X-FB-UT"] = SessionPreferences.token
+                header["X-FM-UT"] = SessionPreferences.token
             }
             return header
         }

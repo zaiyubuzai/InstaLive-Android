@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/drawable-v24/bg_edit.xml" value="0.34444444444444444" />
+        <entry key="app/src/main/res/drawable/bg_bottom_282f3f_36c1.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_btn_disable_3a_12.xml" value="0.4" />
         <entry key="app/src/main/res/drawable/bg_btn_yellow_12c.xml" value="0.4" />
         <entry key="app/src/main/res/drawable/bg_btn_yellow_gray_12c_selector.xml" value="0.4" />
@@ -18,7 +19,9 @@
         <entry key="app/src/main/res/layout/activity_insta_web.xml" value="0.38958333333333334" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/dialog_live_event.xml" value="0.3311965811965812" />
+        <entry key="app/src/main/res/layout/dialog_other_profile.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/dialog_select_country.xml" value="0.4036458333333333" />
+        <entry key="app/src/main/res/layout/fragment_add_profile_info.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/fragment_birthday.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/fragment_email_login.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/fragment_full_name.xml" value="0.4036458333333333" />

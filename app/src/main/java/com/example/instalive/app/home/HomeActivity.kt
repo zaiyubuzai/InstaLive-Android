@@ -4,9 +4,7 @@ import android.os.Bundle
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.example.baselibrary.views.DataBindingConfig
-import com.example.baselibrary.views.EmptyViewModel
 import com.example.instalive.R
-import com.example.instalive.app.Constants.EXTRA_CUSTOM_ROLE
 import com.example.instalive.app.base.InstaBaseActivity
 import com.example.instalive.databinding.ActivityHomeBinding
 import com.example.instalive.utils.ShareUtility
@@ -16,7 +14,7 @@ import timber.log.Timber
 
 import com.example.baselibrary.utils.marsToast
 
-import android.content.DialogInterface
+import android.net.Uri
 
 import android.text.InputFilter
 import android.text.InputFilter.LengthFilter
@@ -25,11 +23,13 @@ import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import com.example.instalive.app.SessionPreferences
 import com.example.instalive.app.conversation.ConversationListActivity
-import com.venus.dm.db.entity.ConversationsEntity
+import com.example.instalive.app.ui.OtherProfileDialog
+import com.lxj.xpopup.XPopup
+import com.venus.dm.model.UserData
 import splitties.activities.start
 
 @ExperimentalStdlibApi
-class HomeActivity : InstaBaseActivity<EmptyViewModel, ActivityHomeBinding>() {
+class HomeActivity : InstaBaseActivity<HomeViewModel, ActivityHomeBinding>() {
 
     private val IS_DESTORY = "is_destory"
     private val CURRENT_ROLE = "current_role"
@@ -55,7 +55,7 @@ class HomeActivity : InstaBaseActivity<EmptyViewModel, ActivityHomeBinding>() {
     }
 
     override fun initData(savedInstanceState: Bundle?) {
-        role = intent.getIntExtra(EXTRA_CUSTOM_ROLE, 1)
+        role = SessionPreferences.identity
         if (role == 1) {//host
             btnCoins.isVisible = false
             switchFragment(hostFragment)
@@ -87,7 +87,7 @@ class HomeActivity : InstaBaseActivity<EmptyViewModel, ActivityHomeBinding>() {
 
         }
         btnDM.onClick {
-            start<ConversationListActivity> {  }
+            start<ConversationListActivity> { }
         }
     }
 
@@ -95,15 +95,44 @@ class HomeActivity : InstaBaseActivity<EmptyViewModel, ActivityHomeBinding>() {
         val inputServer = EditText(this)
         inputServer.filters = arrayOf<InputFilter>(LengthFilter(100))
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-        builder.setTitle("Invite").setIcon(android.R.drawable.ic_dialog_info).setView(inputServer)
+        builder.setTitle("Invite").setView(inputServer)
             .setNegativeButton(R.string.fb_cancel, null)
         builder.setPositiveButton(
-            R.string.fb_confirm,
-            DialogInterface.OnClickListener { dialog, which ->
-                val sign = inputServer.text.toString()
-                marsToast(sign)
-            })
+            R.string.fb_confirm
+        ) { _, _ ->
+            val sign = inputServer.text.toString()
+            val uri = Uri.parse(sign)
+            val userId = uri.getQueryParameter("id")
+            if (userId != null) {
+                viewModel.getUserDetail(userId, null) {
+                    showOtherProfileDialog(null, it)
+                }
+            }
+            marsToast(sign)
+        }
         builder.show()
+    }
+
+    private fun showOtherProfileDialog(userId: String?, userData: UserData?) {
+        XPopup.Builder(this)
+            .isDestroyOnDismiss(true)
+            .asCustom(
+                OtherProfileDialog(
+                    this,
+                    userId,
+                    "",
+                    userData,
+                    0,
+                    0,
+                    null,
+                    null,
+                    false,
+                    false,
+                    false,
+                    false,
+                    3,
+                )
+            ).show()
     }
 
     private fun switchFragment(fragment: Fragment) {
@@ -153,8 +182,8 @@ class HomeActivity : InstaBaseActivity<EmptyViewModel, ActivityHomeBinding>() {
         }
     }
 
-    override fun initViewModel(): EmptyViewModel {
-        return getActivityViewModel(EmptyViewModel::class.java)
+    override fun initViewModel(): HomeViewModel {
+        return getActivityViewModel(HomeViewModel::class.java)
     }
 
     override fun getDataBindingConfig(): DataBindingConfig {

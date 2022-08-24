@@ -6,14 +6,26 @@ import com.example.baselibrary.views.BaseFragment
 import com.example.baselibrary.views.DataBindingConfig
 import com.example.instalive.R
 import com.example.instalive.app.Constants
+import com.example.instalive.app.SESSION
 import com.example.instalive.app.home.HomeActivity
 import com.example.instalive.databinding.FragmentSelectOwnRoleBinding
+import com.jeremyliao.liveeventbus.LiveEventBus
 import kotlinx.android.synthetic.main.fragment_select_own_role.*
+import splitties.fragmentargs.arg
+import splitties.fragmentargs.argOrNull
 import splitties.fragments.start
 import splitties.views.onClick
 
 @ExperimentalStdlibApi
 class SelectOwnRoleFragment : BaseFragment<SelectOwnRoleViewModel, FragmentSelectOwnRoleBinding>() {
+
+    var phone: String? by argOrNull()
+    var passcode: String? by argOrNull()
+    var portrait: String by arg()
+    var username: String by arg()
+    var birthDay: String by arg()
+    var gender: String by arg()
+
     override fun initViewModel(): SelectOwnRoleViewModel {
         return getActivityViewModel(SelectOwnRoleViewModel::class.java)
     }
@@ -25,17 +37,20 @@ class SelectOwnRoleFragment : BaseFragment<SelectOwnRoleViewModel, FragmentSelec
     override fun initData(savedInstanceState: Bundle?) {
         asHost.onClick{
             marsToast("host")
-            start<HomeActivity> {
-                this.putExtra(Constants.EXTRA_CUSTOM_ROLE, 1)
-            }
-            requireActivity().finish()
+            viewModel.phoneLogin(phone?:"",passcode?:"", username, portrait, birthDay, gender, "1")
         }
         asViewer.onClick{
             marsToast("viewer")
+            viewModel.phoneLogin(phone?:"",passcode?:"", username, portrait, birthDay, gender, "2")
+        }
+
+        viewModel.loginResponse.observe(this, {
+            SESSION.saveLoginData(it)
             start<HomeActivity> {
                 this.putExtra(Constants.EXTRA_CUSTOM_ROLE, 2)
             }
+            LiveEventBus.get(Constants.EVENT_BUS_KEY_LOGIN).post(Constants.EVENT_BUS_LOGIN_SUCCESS)
             requireActivity().finish()
-        }
+        })
     }
 }

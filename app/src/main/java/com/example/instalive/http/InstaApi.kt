@@ -2,8 +2,12 @@ package com.example.instalive.http
 
 import com.example.baselibrary.api.BaseApi
 import com.example.baselibrary.api.BaseResponse
+import com.example.baselibrary.model.PresignData
 import com.example.instalive.model.*
 import com.venus.dm.model.UserData
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import retrofit2.Response
 import retrofit2.http.*
 
 interface InstaApi : BaseApi {
@@ -27,17 +31,17 @@ interface InstaApi : BaseApi {
 
     @FormUrlEncoded
     @POST("api/core/appauth/login/mobile/")
-    suspend fun loginPhone(
+    suspend fun loginByPhone(
         @Field("phone") phone: String,
         @Field("passcode") passcode: String,
-        @Field("user_name") userName: String,
-        @Field("portrait") portrait: String,
-        @Field("birth") birth: String,
-        @Field("gender") gender: String,
-        @Field("identity") identity: String,
+        @Field("user_name") userName: String?,
+        @Field("portrait") portrait: String?,
+        @Field("birth") birth: String?,
+        @Field("gender") gender: String?,
+        @Field("identity") identity: String?,
         @Field("fullname") nickname: String?,
-        @Field("timezone") timezone: String,
-        @Field("s") s: String
+        @Field("timezone") timezone: String?,
+        @Field("s") s: String?
     ): BaseResponse<LoginData>
 
     @FormUrlEncoded
@@ -107,6 +111,19 @@ interface InstaApi : BaseApi {
         @Field("conversation_id") conId: String,
     ): BaseResponse<PresignData>
 
+    @Multipart
+    @POST
+    suspend fun uploadResourceToS3(
+        @Url url: String,
+        @Part("key") key: RequestBody,
+        @Part("AWSAccessKeyId") keyId: RequestBody,
+        @Part("policy") policy: RequestBody,
+        @Part("signature") sig: RequestBody,
+        @Part("acl") acl: RequestBody?,
+        @Part("x-amz-security-token") token: RequestBody,
+        @Part file: MultipartBody.Part,
+    ): Response<Unit>
+
     //上报设备
     @FormUrlEncoded
     @POST("api/core/notification/register_device/")
@@ -124,8 +141,8 @@ interface InstaApi : BaseApi {
     ): BaseResponse<NotificationSettingsData>
 
     @FormUrlEncoded
-    @POST("/api/dm/conversation/create/")
-    suspend fun initConversation(
+    @POST("api/dm/conversation/create/")
+    suspend fun createConversation(
         @Field("target_user_id") userId: String
     ): BaseResponse<Any>
 

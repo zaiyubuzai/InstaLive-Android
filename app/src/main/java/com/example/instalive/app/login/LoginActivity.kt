@@ -142,9 +142,9 @@ class LoginActivity : AppCompatActivity() {
 
     fun redirectFullName(phone: String, passcode: String) {
         phonePasscodeFragment?.let {
-            if (fullNameFragment !== null && (fullNameFragment.isAdded || null != supportFragmentManager.findFragmentByTag(
+            if (fullNameFragment.isAdded || null != supportFragmentManager.findFragmentByTag(
                     "fullNameFragment"
-                ))
+                )
             ) {
                 supportFragmentManager.beginTransaction()
                     .hide(it)
@@ -205,14 +205,35 @@ class LoginActivity : AppCompatActivity() {
         executePT()
     }
 
-    fun redirectSelectOwnRole() {
+    fun redirectSelectOwnRole(
+        phone: String?,
+        passcode: String?,
+        portrait: String,
+        username: String,
+        birthDay: String,
+        gender: Int
+    ) {
         val transaction = supportFragmentManager.beginTransaction()
         transaction.hide(fullNameFragment)
         if (selectOwnRoleFragment.isAdded
             || null != supportFragmentManager.findFragmentByTag("selectOwnRoleFragment")){
-            transaction.show(selectOwnRoleFragment.apply {  })
+            transaction.show(selectOwnRoleFragment.apply {
+                this.phone = phone
+                this.passcode = passcode
+                this.portrait = portrait
+                this.username = username
+                this.birthDay = birthDay
+                this.gender = gender.toString()
+            })
         } else{
-            transaction.add(R.id.fragmentContainer, selectOwnRoleFragment.apply {  }).addToBackStack("selectOwnRoleFragment")
+            transaction.add(R.id.fragmentContainer, selectOwnRoleFragment.apply {
+                this.phone = phone
+                this.passcode = passcode
+                this.portrait = portrait
+                this.username = username
+                this.birthDay = birthDay
+                this.gender = gender.toString()
+            }).addToBackStack("selectOwnRoleFragment")
         }
         transaction.commit()
         executePT()

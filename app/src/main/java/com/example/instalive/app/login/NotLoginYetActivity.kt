@@ -5,9 +5,11 @@ import android.os.Bundle
 import com.example.baselibrary.utils.BarUtils
 import com.example.baselibrary.views.DataBindingConfig
 import com.example.instalive.R
+import com.example.instalive.app.Constants
 import com.example.instalive.app.Constants.EXTRA_LOGIN_SOURCE
 import com.example.instalive.app.base.InstaBaseActivity
 import com.example.instalive.databinding.FragmentNotLoginBinding
+import com.jeremyliao.liveeventbus.LiveEventBus
 import kotlinx.android.synthetic.main.fragment_not_login.*
 import kotlinx.coroutines.*
 import splitties.activities.start
@@ -38,6 +40,12 @@ class NotLoginYetActivity : InstaBaseActivity<NotLoginYetViewModel, FragmentNotL
                 putExtra(EXTRA_LOGIN_SOURCE, source)
             }
         }
+
+        LiveEventBus.get(Constants.EVENT_BUS_KEY_LOGIN).observe(this, {
+            if (it == Constants.EVENT_BUS_LOGIN_SUCCESS){
+                finish()
+            }
+        })
     }
 
     override fun initViewModel(): NotLoginYetViewModel {

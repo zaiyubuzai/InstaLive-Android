@@ -61,25 +61,25 @@ object RetrofitProvider: BaseProvider() {
         builder.addInterceptor(interceptor)
             .addNetworkInterceptor { chain ->
                 val newBuilder = chain.request().newBuilder()
-                newBuilder.addHeader("X-FB-DI", "")
+                newBuilder.addHeader("X-FM-DI", "")
                 val lat = SessionPreferences.lastLat ?: SessionPreferences.lat
                 val lon = SessionPreferences.lastLon ?: SessionPreferences.lon
                 if (lat != null && lon != null) {
-                    newBuilder.addHeader("X-FB-LC", "$lat,$lon")
+                    newBuilder.addHeader("X-FM-LC", "$lat,$lon")
                 }
                 val acc = SessionPreferences.lastLocAcc
                 if (acc != null) {
-                    newBuilder.addHeader("X-FB-LCA", acc)
+                    newBuilder.addHeader("X-FM-LCA", acc)
                 }
-                newBuilder.addHeader("X-FB-UA", getAgent())
+                newBuilder.addHeader("X-FM-UA", getAgent())
                 newBuilder.addHeader("Accept-Language", Locale.getDefault().toLanguageTag())
-                newBuilder.addHeader("X-FB-TIMEZONE", SysUtils.getTimezone())
-                newBuilder.addHeader("X-FB-FA", SysUtils.getTimezone())
+                newBuilder.addHeader("X-FM-TIMEZONE", SysUtils.getTimezone())
+                newBuilder.addHeader("X-FM-FA", SysUtils.getTimezone())
                 if (SessionPreferences.id.isNotEmpty()) {
-                    newBuilder.addHeader("X-FB-UI", SessionPreferences.id)
+                    newBuilder.addHeader("X-FM-UI", SessionPreferences.id)
                 }
                 if (SessionPreferences.token.isNotEmpty()) {
-                    newBuilder.addHeader("X-FB-UT", SessionPreferences.token)
+                    newBuilder.addHeader("X-FM-UT", SessionPreferences.token)
                 }
 //                if (BuildConfig.FLAVOR == "internaltest"||BuildConfig.FLAVOR == "stage"){
 //                    newBuilder.addHeader("X-FM-INTERNALTEST", "1")
@@ -108,16 +108,16 @@ object RetrofitProvider: BaseProvider() {
     //Accept-Language
     //User-Agent
     //Content-Type
-    //X-FB-LC  APP-LOCATION
-    //X-FB-LCA LOCATION-ACCURACY
-    //X-FB-DI  DEVICE-ID
-    //X-FB-UI  USER-ID
-    //X-FB-UT  USER-TOKEN
-    //X-FB-UA  USER-AGENT
-    //X-FB-FA  DEVICE-IDFA
-    //X-FB-MEM IOS-MEMORY-STATUS
-    //X-FB-WEB
-    private fun generateUA(): String {
+    //X-FM-LC  APP-LOCATION
+    //X-FM-LCA LOCATION-ACCURACY
+    //X-FM-DI  DEVICE-ID
+    //X-FM-UI  USER-ID
+    //X-FM-UT  USER-TOKEN
+    //X-FM-UA  USER-AGENT
+    //X-FM-FA  DEVICE-IDFA
+    //X-FM-MEM IOS-MEMORY-STATUS
+    //X-FM-WEB
+    fun generateUA(): String {
         val builder = StringBuilder()
         builder
             .append("os:android,os_version:${Build.VERSION.RELEASE}")

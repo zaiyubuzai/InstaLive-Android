@@ -2,11 +2,17 @@ package com.example.instalive
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
 import com.example.instalive.app.SessionPreferences
+import com.example.instalive.app.home.HomeActivity
 import com.example.instalive.app.login.NotLoginYetActivity
 import com.example.instalive.utils.DeeplinkHelper
 import com.example.instalive.utils.DeeplinkHelper.DEEPLINK_SCHEME
 import com.example.instalive.utils.DeeplinkHelper.HTTPS_SCHEME
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import splitties.activities.start
 import timber.log.Timber
 
@@ -17,9 +23,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         handleIntentDeeplink()
-        if (SessionPreferences.id.isEmpty()){
-            start<NotLoginYetActivity> {  }
-            finish()
+        lifecycleScope.launch(Dispatchers.IO){
+            delay(2000)
+            withContext(Dispatchers.Main){
+                if (SessionPreferences.id.isEmpty()){
+                    start<NotLoginYetActivity> {  }
+                    finish()
+                } else {
+                    start<HomeActivity> {  }
+                }
+                finish()
+            }
         }
     }
     private fun handleIntentDeeplink(): Boolean {

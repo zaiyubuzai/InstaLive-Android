@@ -96,23 +96,13 @@ abstract class BaseRemoteRepository {
         }
     }
 
-    protected fun responseError(mError: BaseRepositoryError) {
+    open fun responseError(mError: BaseRepositoryError) {}
 
-    }
+    open fun httpError(mError: HttpException) {}
 
-    protected fun httpError(mError: HttpException) {
+    open fun repositorySocketTimeout() {}
 
-    }
-
-    protected fun repositorySocketTimeout() {
-
-    }
-
-    protected fun repositoryIOException() {
-
-    }
-
-
+    open fun repositoryIOException() {}
 
     protected fun <T> processListData(
         response: BaseResponse<List<T>>,

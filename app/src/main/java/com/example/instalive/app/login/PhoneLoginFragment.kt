@@ -8,6 +8,7 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
+import com.example.baselibrary.api.StatusEvent
 import com.example.baselibrary.model.CountryCodeData
 import com.example.baselibrary.utils.hideKeyboard
 import com.example.baselibrary.utils.onDone
@@ -134,9 +135,9 @@ class PhoneLoginFragment : BaseFragment<PhoneLoginViewModel, FragmentPhoneLoginB
 
         edtPhone.requestFocus()
         edtPhone.showKeyboard()
-        inputMethodManager.toggleSoftInput(
+        inputMethodManager.showSoftInput(
+            edtPhone,
             InputMethodManager.SHOW_FORCED,
-            InputMethodManager.HIDE_IMPLICIT_ONLY
         )
         selectCountry.onClick {
             edtPhone.hideKeyboard()
@@ -148,25 +149,10 @@ class PhoneLoginFragment : BaseFragment<PhoneLoginViewModel, FragmentPhoneLoginB
             })
         }
         btnSend.onClick {
-//            val number = "$currentCountryCode${edtPhone.text}"
-//            val timestamp = sharedViewModel.phonePasscodeMap["${number}_phone"]
-//            if (timestamp != null && System.currentTimeMillis() - timestamp < 60 * 1000) {
-//                toPasscode(0)
-//            } else {
-////                //fixme 网络请求
-//                btnSend.isEnabled = false
-//            }
-
             val number = "$currentCountryCode${edtPhone.text}"
             val timestamp = sharedViewModel.phonePasscodeMap["${number}_phone"]
             if (timestamp != null && System.currentTimeMillis() - timestamp < 60 * 1000) {
-                if (activity is LoginActivity) {
-                    sharedViewModel.startGlobalVerifyCodePhoneTicking(timestamp)
-                    (activity as LoginActivity).redirectPhonePasscode(
-                        number,
-                        currentCountryCode
-                    )
-                }
+                toPasscode(timestamp, number)
             } else {
                 viewModel.sendPhonePasscode(number, source, currentCountryCode)
                 btnSend.isEnabled = false
@@ -201,20 +187,37 @@ class PhoneLoginFragment : BaseFragment<PhoneLoginViewModel, FragmentPhoneLoginB
             }
         }
 
-        viewModel.errorCodeLiveData.observe(this, {
-            btnSend.isEnabled = true
-
-            errText.isVisible = true
-            errText.text = viewModel.errorMessageLiveData.value
-        })
+        initObserver()
 
     }
 
-    private fun toPasscode(timestamp: Long){
+    private fun initObserver(){
+        viewModel.phoneVerifyResult.observe(this, {
+            val number = "$currentCountryCode${edtPhone.text}"
+            val timestamp = System.currentTimeMillis()
+            sharedViewModel.phonePasscodeMap["${number}_phone"] = timestamp
+            btnSend.isEnabled = true
+            if (it != null) {
+                toPasscode(timestamp, number)
+            }
+        })
+
+        viewModel.errorCodeLiveData.observe(this, {
+            btnSend?.isEnabled = true
+            errText?.isVisible = true
+            errText?.text = viewModel.errorMessageLiveData.value
+        })
+
+        viewModel.loadingStatsLiveData.observe(this, {
+            progress?.isVisible = it == StatusEvent.LOADING
+        })
+    }
+
+    private fun toPasscode(timestamp: Long, phone: String){
         if (activity is LoginActivity) {
             sharedViewModel.startGlobalVerifyCodePhoneTicking(timestamp)
             (activity as LoginActivity).redirectPhonePasscode(
-                "$currentCountryCode${edtPhone.text}",
+                phone,
                 currentCountryCode
             )
         }
@@ -237,10 +240,11 @@ class PhoneLoginFragment : BaseFragment<PhoneLoginViewModel, FragmentPhoneLoginB
             mainHandler.postDelayed({
                 edtPhone?.requestFocus()
                 edtPhone?.showKeyboard()
-                inputMethodManager.toggleSoftInput(
+                inputMethodManager.showSoftInput(
+                    edtPhone,
                     InputMethodManager.SHOW_FORCED,
-                    InputMethodManager.HIDE_IMPLICIT_ONLY
                 )
+
             }, 300)
         }
     }
