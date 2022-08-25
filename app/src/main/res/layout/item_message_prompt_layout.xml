@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="messageEntity"
+            type="com.venus.dm.db.entity.MessageEntity" />
+    </data>
+
+    <TextView
+        android:id="@+id/contentView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:lineSpacingExtra="5sp"
+        android:maxLines="4"
+        android:paddingHorizontal="@dimen/dimen_32dp"
+        android:paddingBottom="@dimen/dimen_16dp"
+        android:text="@{messageEntity.content}"
+        android:textColor="#dddde8"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="asdfasdfasdfasdfhlvzasdfasdfasdffaasdfasdfvkjs;vvja;slkdvjopqiwejrvl;kanmsdv" />
+
+</layout>

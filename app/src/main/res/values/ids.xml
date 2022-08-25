@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="comment" type="id" />
+    <item name="message_tag_first" type="id" />
+</resources>

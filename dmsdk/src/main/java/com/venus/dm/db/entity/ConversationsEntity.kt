@@ -8,7 +8,6 @@ import java.io.Serializable
 @Entity(tableName = "conversations")
 open class ConversationsEntity : Serializable {
 
-
     constructor(
         id: Int,
         userId: String,

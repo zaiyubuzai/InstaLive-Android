@@ -1,12 +1,12 @@
 package com.example.baselibrary.views
 
 import android.content.Context
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.ViewModel
 import com.lxj.xpopup.core.BottomPopupView
 
+/**
+ * 再次启动popup时，ViewModel中的LiveData必须重制
+ */
 abstract class BaseBottomPopup<VMD : ViewModel>(context: Context) :
     BottomPopupView(context) {
 

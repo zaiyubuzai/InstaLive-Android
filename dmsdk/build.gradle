@@ -69,4 +69,6 @@ dependencies {
 
     //live event bus
     implementation 'com.jeremyliao:live-event-bus-x:1.7.3'
+
+    api 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:3.0.0-RC3'
 }

@@ -1,4 +1,4 @@
-package com.example.baselibrary.views
+package com.example.baselibrary.ui
 
 import android.text.Selection
 import android.text.method.BaseMovementMethod

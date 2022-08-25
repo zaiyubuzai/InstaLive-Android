@@ -9,8 +9,11 @@
         <entry key="app/src/main/res/drawable/bg_btn_disable_3a_12.xml" value="0.4" />
         <entry key="app/src/main/res/drawable/bg_btn_yellow_12c.xml" value="0.4" />
         <entry key="app/src/main/res/drawable/bg_btn_yellow_gray_12c_selector.xml" value="0.4" />
+        <entry key="app/src/main/res/drawable/bg_message_gift_prompt.xml" value="0.34444444444444444" />
+        <entry key="app/src/main/res/drawable/bg_message_gift_prompt_highlight.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_primary_color_8c.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/bg_red_dot.xml" value="0.34444444444444444" />
+        <entry key="app/src/main/res/drawable/bg_reply.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_text_white_10c.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_verify_code.xml" value="0.4046875" />
         <entry key="app/src/main/res/drawable/btn_text_black_65779e_color_selector.xml" value="0.4" />
@@ -41,8 +44,21 @@
         <entry key="app/src/main/res/layout/item_conversation.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/item_country_code_layout.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/item_interested_member_layout.xml" value="0.3311965811965812" />
+        <entry key="app/src/main/res/layout/item_message_gift_prompt_layout.xml" value="0.3311965811965812" />
+        <entry key="app/src/main/res/layout/item_message_image_me_layout.xml" value="0.3311965811965812" />
+        <entry key="app/src/main/res/layout/item_message_important_prompt_layout.xml" value="0.3311965811965812" />
+        <entry key="app/src/main/res/layout/item_message_live_prompt_layout.xml" value="0.3311965811965812" />
+        <entry key="app/src/main/res/layout/item_message_me_layout.xml" value="0.3311965811965812" />
+        <entry key="app/src/main/res/layout/item_message_new_message.xml" value="0.3311965811965812" />
+        <entry key="app/src/main/res/layout/item_message_not_support_layout.xml" value="0.3311965811965812" />
+        <entry key="app/src/main/res/layout/item_message_prompt_layout.xml" value="0.3311965811965812" />
+        <entry key="app/src/main/res/layout/item_message_recharge_prompt_layout.xml" value="0.3311965811965812" />
+        <entry key="app/src/main/res/layout/item_message_reply_layout.xml" value="0.3311965811965812" />
+        <entry key="app/src/main/res/layout/item_message_time_layout.xml" value="0.3311965811965812" />
+        <entry key="app/src/main/res/layout/item_message_video_me_layout.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/login_activity.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/message_bottom_layout.xml" value="0.3311965811965812" />
+        <entry key="app/src/main/res/layout/popup_simple_text_viewer.xml" value="0.3311965811965812" />
         <entry key="picture_library/src/main/res/drawable/picture_btn_music_shape.xml" value="0.34444444444444444" />
         <entry key="picture_library/src/main/res/drawable/picture_image_placeholder.xml" value="0.24635416666666668" />
       </map>

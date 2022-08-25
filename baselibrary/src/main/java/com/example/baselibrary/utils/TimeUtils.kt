@@ -66,6 +66,23 @@ object TimeUtils {
     }
 
 
-
+    fun formatMessageTime(timestamp: Long):String {
+        var ts = timestamp
+        if (timestamp > System.currentTimeMillis() * 1000) {
+            ts = timestamp / 10000L
+        }
+        val span = System.currentTimeMillis() / 1000 - ts / 1000 //距离现在的时间跨度，秒
+        return when {
+            span < 86400 -> {
+                SimpleDateFormat("HH:mm", Locale.getDefault()).format(ts)
+            }
+            span < 604800 -> {
+                SimpleDateFormat("EEEE HH:mm", Locale.getDefault()).format(ts)
+            }
+            else -> {
+                SimpleDateFormat("MM-dd-yyyy HH:mm", Locale.getDefault()).format(ts)
+            }
+        }
+    }
 
 }

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="messageEntity"
+            type="com.venus.dm.db.entity.MessageEntity" />
+
+        <variable
+            name="contentStr"
+            type="String" />
+
+        <variable
+            name="highlight"
+            type="Integer" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/dimen_16dp">
+
+        <ImageView
+            android:id="@+id/avatar"
+            imageViewAvatar="@{messageEntity.senderPortrait}"
+            android:layout_width="@dimen/dimen_36dp"
+            android:layout_height="@dimen/dimen_36dp"
+            android:layout_marginStart="@dimen/dimen_16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/roleIcon"
+            android:layout_width="@dimen/dimen_18dp"
+            android:layout_height="@dimen/dimen_18dp"
+            android:layout_marginStart="@dimen/dimen_22dp"
+            android:layout_marginTop="@dimen/dimen_22dp"
+            app:layout_constraintStart_toStartOf="@+id/avatar"
+            app:layout_constraintTop_toTopOf="@+id/avatar" />
+
+        <RelativeLayout
+            android:id="@+id/messageContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dimen_12dp"
+            android:gravity="start"
+            android:paddingStart="@dimen/dimen_4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/avatar"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:id="@+id/usernameLL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+<!--                <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                    android:id="@+id/levelIconContainer"-->
+<!--                    isVisible="@{messageEntity.userRole != 1}"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginEnd="@dimen/dimen_4dp"-->
+<!--                    android:background="@drawable/bg_level_icon"-->
+<!--                    android:minWidth="35dp"-->
+<!--                    android:paddingHorizontal="@dimen/dimen_2dp"-->
+<!--                    android:visibility="visible"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent">-->
+
+<!--                    <ImageView-->
+<!--                        android:id="@+id/levelIconView"-->
+<!--                        setLevelIcon="@{level}"-->
+<!--                        android:layout_width="@dimen/dimen_17dp"-->
+<!--                        android:layout_height="13dp"-->
+<!--                        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                        app:layout_constraintStart_toStartOf="parent"-->
+<!--                        app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/levelTextView"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:includeFontPadding="false"-->
+<!--                        android:lineSpacingExtra="0sp"-->
+<!--                        android:text="@{level.toString()}"-->
+<!--                        android:textColor="#ffffff"-->
+<!--                        android:textSize="13sp"-->
+<!--                        android:textStyle="normal"-->
+<!--                        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                        app:layout_constraintEnd_toEndOf="parent"-->
+<!--                        app:layout_constraintStart_toEndOf="@+id/levelIconView"-->
+<!--                        app:layout_constraintTop_toTopOf="parent"-->
+<!--                        tools:text="4" />-->
+<!--                </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+                <TextView
+                    android:id="@+id/username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:layout_marginEnd="@dimen/dimen_28dp"
+                    android:lineSpacingExtra="6sp"
+                    android:singleLine="true"
+                    android:text="@{messageEntity.senderName}"
+                    android:textColor="#aab2e6"
+                    android:textSize="13sp"
+                    tools:text="al;ksdjfal;skdjfal;sdkjfasdfasdfasdfasdfasdfasasdfasdfasd" />
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/giftMessageContainer"
+                android:layout_width="190dp"
+                android:layout_height="35dp"
+                android:layout_below="@id/usernameLL"
+                android:layout_marginTop="@dimen/dimen_4dp"
+                android:background="@{highlight == 0 ? @drawable/bg_message_gift_prompt : @drawable/bg_message_gift_prompt_highlight}">
+
+                <TextView
+                    android:id="@+id/content"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dimen_8dp"
+                    android:ellipsize="end"
+                    android:lineSpacingExtra="0sp"
+                    android:maxLines="1"
+                    android:text="@{contentStr}"
+                    android:textColor="#ffffff"
+                    android:textSize="14sp"
+                    android:textStyle="normal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/giftIcon"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Sent a Stars" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/giftIcon"
+                    android:layout_width="31dp"
+                    android:layout_height="31dp"
+                    android:layout_marginEnd="@dimen/dimen_8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </RelativeLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

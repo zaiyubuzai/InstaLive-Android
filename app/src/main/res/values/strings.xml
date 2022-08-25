@@ -113,6 +113,11 @@
     <string name="fb_new_messages">new messages</string>
     <string name="fb_someone_at_you">Someone \@you</string>
     <string name="fb_start_a_message">start a message</string>
+    <string name="fb_new_messages2">Unread Messages</string>
+    <string name="fb_recharge">Recharge</string>
+    <string name="fb_reply_message_deleted_content">Message has expired or been deleted</string>
+    <string name="fb_send_a_gift">Send a %1$s</string>
+    <string name="fb_send">Send</string>
 
     <string-array name="Months">
         <item>January</item>

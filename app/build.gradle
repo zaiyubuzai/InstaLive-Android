@@ -85,4 +85,7 @@ dependencies {
     debugImplementation ("com.facebook.flipper:flipper-network-plugin:${flipper_version}") {
         exclude group: 'com.squareup.okhttp3'
     }
+
+    //svga
+    implementation 'com.github.svga:SVGAPlayer-Android:2.6.1'
 }

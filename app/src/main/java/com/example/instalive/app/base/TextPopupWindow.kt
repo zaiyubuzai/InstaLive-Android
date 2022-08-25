@@ -1,0 +1,48 @@
+package com.example.instalive.app.base
+
+import android.app.Activity
+import android.widget.PopupWindow
+import android.graphics.drawable.ColorDrawable
+import android.view.*
+
+import com.example.instalive.R
+import com.example.instalive.databinding.PopupSimpleTextViewerBinding
+import splitties.views.onClick
+
+
+class TextPopupWindow(private val activity: Activity, private val content: String) : PopupWindow(activity) {
+
+    val binding: PopupSimpleTextViewerBinding by lazy {
+        PopupSimpleTextViewerBinding.inflate(LayoutInflater.from(activity))
+    }
+
+    init {
+        contentView = binding.root
+        contentView.setOnClickListener { dismiss() }
+        initView()
+        width = ViewGroup.LayoutParams.MATCH_PARENT
+        height = ViewGroup.LayoutParams.MATCH_PARENT
+        isOutsideTouchable = true
+        isFocusable = true
+        setBackgroundDrawable(ColorDrawable(0x55000000))
+    }
+
+    var onOkListener: (() -> Unit)? = null
+
+    private fun initView() {
+        binding.messageContent.text = content
+        binding.close.onClick{
+            dismiss()
+        }
+    }
+
+    fun show() {
+        if (activity.window.decorView.windowToken != null) {
+            showAtLocation(
+                activity.window.decorView, Gravity.CENTER, WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT
+            )
+        }
+    }
+
+}

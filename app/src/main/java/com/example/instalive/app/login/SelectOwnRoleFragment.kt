@@ -46,9 +46,7 @@ class SelectOwnRoleFragment : BaseFragment<SelectOwnRoleViewModel, FragmentSelec
 
         viewModel.loginResponse.observe(this, {
             SESSION.saveLoginData(it)
-            start<HomeActivity> {
-                this.putExtra(Constants.EXTRA_CUSTOM_ROLE, 2)
-            }
+            start<HomeActivity> {}
             LiveEventBus.get(Constants.EVENT_BUS_KEY_LOGIN).post(Constants.EVENT_BUS_LOGIN_SUCCESS)
             requireActivity().finish()
         })

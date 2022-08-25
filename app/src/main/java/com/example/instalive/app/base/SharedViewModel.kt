@@ -2,6 +2,7 @@ package com.example.instalive.app.base
 
 import androidx.lifecycle.MutableLiveData
 import com.example.baselibrary.views.BaseViewModel
+import com.venus.dm.db.entity.ConversationsEntity
 import kotlinx.coroutines.*
 
 class SharedViewModel: BaseViewModel() {
@@ -9,6 +10,8 @@ class SharedViewModel: BaseViewModel() {
     val verifyCodePhoneLeft = MutableLiveData<Int>()
     var verifyCodePhoneJob: Job? = null
     val phonePasscodeMap = mutableMapOf<String, Long>()
+
+    val currentConversationData = MutableLiveData<ConversationsEntity>()
 
     fun startGlobalVerifyCodePhoneTicking(timestamp: Long) {
         verifyCodePhoneJob?.cancel()

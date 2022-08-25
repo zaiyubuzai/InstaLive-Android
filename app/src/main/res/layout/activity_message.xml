@@ -35,7 +35,7 @@
                     android:layout_height="match_parent">
 
                     <ImageView
-                        android:id="@+id/leftMenu"
+                        android:id="@+id/back"
                         android:layout_width="@dimen/dimen_34dp"
                         android:layout_height="@dimen/dimen_34dp"
                         android:layout_marginStart="9dp"
@@ -51,8 +51,8 @@
                         android:layout_height="@dimen/dimen_10dp"
                         android:layout_marginTop="1dp"
                         android:background="@drawable/bg_red_dot"
-                        app:layout_constraintEnd_toEndOf="@+id/leftMenu"
-                        app:layout_constraintTop_toTopOf="@+id/leftMenu"
+                        app:layout_constraintEnd_toEndOf="@+id/back"
+                        app:layout_constraintTop_toTopOf="@+id/back"
                         tools:visibility="visible" />
 
                     <androidx.appcompat.widget.AppCompatImageView

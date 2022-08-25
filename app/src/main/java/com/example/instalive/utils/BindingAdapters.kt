@@ -14,6 +14,10 @@ import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
+import splitties.dimensions.dp
 import timber.log.Timber
 import java.math.RoundingMode
 import java.text.DecimalFormat
@@ -204,6 +208,17 @@ fun musicLength(view: TextView, length: Int = 0) {
     view.text = s
 }
 
+@BindingAdapter("imageViewAvatar")
+fun setImageViewAvatar(view: ImageView, uri: String?) {
+    if (view.context == null) return
+    val options = RequestOptions.bitmapTransform(RoundedCorners(view.context.dp(12)))
+    Glide.with(view.context)
+        .load(uri)
+        .apply(options)
+        .skipMemoryCache(false)
+        .diskCacheStrategy(DiskCacheStrategy.ALL)
+        .into(view)
+}
 
 @BindingAdapter("drawableTopVector")
 fun setDrawableTopVector(view: TextView, @DrawableRes res: Int) {
