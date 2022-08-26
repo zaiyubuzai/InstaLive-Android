@@ -3,32 +3,41 @@ package com.example.instalive.app.conversation
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ArrayAdapter
-import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.baselibrary.utils.BarUtils
 import com.example.baselibrary.views.BaseActivity
 import com.example.baselibrary.views.DataBindingConfig
 import com.example.instalive.BuildConfig
-import splitties.alertdialog.appcompat.*
 import com.example.instalive.R
+import com.example.instalive.app.Constants
 import com.example.instalive.databinding.ActivityConversationListBinding
 import com.venus.dm.db.entity.ConversationsEntity
 import kotlinx.android.synthetic.main.activity_conversation_list.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import splitties.activities.start
+import timber.log.Timber
 
 @ExperimentalStdlibApi
 class ConversationListActivity : BaseActivity<ConversationListViewModel, ActivityConversationListBinding>() {
 
     private lateinit var messagesListAdapter: ConversationListAdapter
 
+    private var isFirstRefresh: Boolean = true
+
     override fun initData(savedInstanceState: Bundle?) {
-        BarUtils.setStatusBarLightMode(this, true)
+        BarUtils.setStatusBarLightMode(this, false)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.title = getString(R.string.fb_direct_messages)
+        viewModel.getConversationList()
         initList()
     }
 
@@ -39,7 +48,9 @@ class ConversationListActivity : BaseActivity<ConversationListViewModel, Activit
                     conversationsEntity: ConversationsEntity,
                     position: Int
                 ) {
-
+                    start<MessageActivity> {
+                        this.putExtra(Constants.EXTRA_CONVERSATION_ENTITY, conversationsEntity)
+                    }
                 }
 
                 override fun onConversationLongClicked(conversationsEntity: ConversationsEntity) {
@@ -59,29 +70,34 @@ class ConversationListActivity : BaseActivity<ConversationListViewModel, Activit
 
             })
         messagesList.layoutManager = LinearLayoutManager(this)
+        messagesList.itemAnimator = null
+        messagesList.setHasFixedSize(true)
         messagesList.adapter = messagesListAdapter
-//        lifecycleScope.launch {
-//            viewModel.getConversationFlow().collectLatest {
-//                messagesListAdapter.submitData(it)
-//            }
-//        }
-//        lifecycleScope.launch {
-//            messagesListAdapter.loadStateFlow.distinctUntilChangedBy {
-//                it.refresh
-//            }.collect {
-//                if (it.append.endOfPaginationReached || it.prepend.endOfPaginationReached) {
-//                    messagesList.scrollToPosition(0)
-//                }
-//                val list = messagesListAdapter.snapshot()
-//                if (list.items.isEmpty()) {
-//                    messagesList.isVisible = false
-//                    messageEmpty.isVisible = true
-//                } else {
-//                    messagesList.isVisible = true
-//                    messageEmpty.isVisible = false
-//                }
-//            }
-//        }
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.conversationsFlow.distinctUntilChanged().collectLatest {
+                delay(1000)
+                Timber.d("collectLatest")
+                val oldList = messagesListAdapter.conversationList
+                val newList = it
+                val result = DiffUtil.calculateDiff(
+                    ConversationListComparator(
+                        newList,
+                        oldList
+                    ), false
+                )
+                withContext(Dispatchers.Main) {
+                    messagesListAdapter.conversationList = it
+                    result.dispatchUpdatesTo(messagesListAdapter)
+                }
+                delay(300)
+                withContext(Dispatchers.Main) {
+                    if (isFirstRefresh && messagesListAdapter.itemCount > 1) {
+                        isFirstRefresh = false
+                        messagesList.scrollToPosition(0)
+                    }
+                }
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {

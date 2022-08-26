@@ -71,4 +71,10 @@ dependencies {
     implementation 'com.jeremyliao:live-event-bus-x:1.7.3'
 
     api 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:3.0.0-RC3'
+
+    //socket io
+    api ('io.socket:socket.io-client:2.0.1') {
+        // excluding org.json which is provided by Android
+        exclude group: 'org.json', module: 'json'
+    }
 }

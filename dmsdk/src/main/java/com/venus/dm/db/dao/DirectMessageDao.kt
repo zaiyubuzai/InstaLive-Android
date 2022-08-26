@@ -119,6 +119,9 @@ interface DirectMessageDao {
     @Query("SELECT max(send_time) FROM messages WHERE conversation_id = :conId AND user_id = :currentUserId")
     fun getLatestRecievedTimetoken(conId: String, currentUserId: String): Long?
 
+    @Query("SELECT max(send_time) FROM messages WHERE user_id = :currentUserId")
+    fun getLatestRecievedTimetoken(currentUserId: String): Long?
+
     @Query("UPDATE conversations SET last_read = :timeToken WHERE conversation_id = :conId AND user_id = :currentUserId")
     fun updateConversationLastRead(conId: String, timeToken: Long, currentUserId: String)
 

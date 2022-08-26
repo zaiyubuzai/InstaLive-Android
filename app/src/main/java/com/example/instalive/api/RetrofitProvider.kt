@@ -61,7 +61,7 @@ object RetrofitProvider: BaseProvider() {
         builder.addInterceptor(interceptor)
             .addNetworkInterceptor { chain ->
                 val newBuilder = chain.request().newBuilder()
-                newBuilder.addHeader("X-FM-DI", "")
+                newBuilder.addHeader("X-FM-DI", appInstance.getDeviceId())
                 val lat = SessionPreferences.lastLat ?: SessionPreferences.lat
                 val lon = SessionPreferences.lastLon ?: SessionPreferences.lon
                 if (lat != null && lon != null) {

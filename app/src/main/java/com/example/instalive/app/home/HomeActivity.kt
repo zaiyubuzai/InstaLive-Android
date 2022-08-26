@@ -74,8 +74,7 @@ class HomeActivity : InstaBaseActivity<HomeViewModel, ActivityHomeBinding>() {
                 switchFragment(hostFragment)
             }
         }
-        btnCoins.onClick {
-        }
+        btnCoins.onClick {}
         btnShare.onClick {
             if (role == 1) {
                 ShareUtility.shareCopy("instalive://profile?id=${SessionPreferences.id}")

@@ -19,6 +19,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.Purchase
 import com.example.baselibrary.utils.BillingHelper
+import com.example.instalive.InstaLiveApp.Companion.appInstance
 import com.example.instalive.R
 import com.example.instalive.api.RetrofitProvider
 import com.example.instalive.app.SessionPreferences
@@ -224,7 +225,7 @@ class InstaWebFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Bridg
 
         private fun getHeaders(): Map<String, String> {
             val header = mutableMapOf<String, String>()
-            header["X-FM-DI"] = ""
+            header["X-FM-DI"] = appInstance.getDeviceId()
             val lat = SessionPreferences.lastLat ?: SessionPreferences.lat
             val lon = SessionPreferences.lastLon ?: SessionPreferences.lon
             if (lat != null && lon != null) {

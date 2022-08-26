@@ -2,12 +2,27 @@ package com.example.instalive.api
 
 import androidx.lifecycle.MutableLiveData
 import com.example.baselibrary.api.RemoteEventEmitter
+import com.example.instalive.model.AppInitData
+import com.example.instalive.model.CacheConfig
 import com.example.instalive.model.LoginData
 import com.venus.dm.model.UserData
 import retrofit2.http.Field
 import retrofit2.http.Query
 
 interface IRemoteRequest {
+
+    suspend fun init(
+        type: Int,
+        liveData: MutableLiveData<AppInitData?>,
+        remoteEventEmitter: RemoteEventEmitter?,
+    )
+
+    suspend fun fetchStringTemplate(stringCache: CacheConfig.Cache)
+
+    suspend fun fetchLevelIcons(leveIcons: CacheConfig.Cache)
+
+    suspend fun fetchCountryCode(countryCode: CacheConfig.Cache)
+
     suspend fun sendPasscode(
         phone: String,
         source: String,

@@ -17,15 +17,13 @@ import com.venus.dm.db.entity.ConversationsEntity
 import com.venus.dm.db.entity.MessageEntity
 import com.venus.framework.util.isNeitherNullNorEmpty
 import kotlinx.android.synthetic.main.activity_message.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.util.*
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.os.Handler
 import android.os.Message
+import android.view.inputmethod.InputMethodManager
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.example.baselibrary.utils.debounceClick
@@ -44,13 +42,15 @@ import com.luck.picture.lib.listener.OnResultCallbackListener
 import com.lxj.xpopup.XPopup
 import com.venus.dm.app.ChatConstants
 import com.venus.dm.model.event.MessageEvent
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import splitties.alertdialog.appcompat.negativeButton
 import splitties.alertdialog.appcompat.positiveButton
 import splitties.dimensions.dp
 import splitties.mainhandler.mainHandler
+import splitties.systemservices.inputMethodManager
 import splitties.views.onClick
+import java.util.concurrent.ConcurrentLinkedQueue
 
 
 @ExperimentalStdlibApi
@@ -63,6 +63,11 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
     private lateinit var layoutManager: LinearLayoutManager
 
     private var messageEventTimestamp = 0L
+
+
+    private val messageEventSyncList = ConcurrentLinkedQueue<MessageEvent>()//消息的队列
+    private var messageEventJob: Job? = null//处理消息队列的线程
+
 
     private var isShowToFirstMessage = false//是否正在显示toFirstMessage按钮
     private var isLoadMentionSearch = false//正在加载@群成员列表
@@ -90,20 +95,34 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
     }
 
     override fun initData(savedInstanceState: Bundle?) {
-        conversationsEntity = intent.getSerializableExtra(Constants.EXTRA_CONVERSATION_ENTITY) as ConversationsEntity
+        conversationsEntity =
+            intent.getSerializableExtra(Constants.EXTRA_CONVERSATION_ENTITY) as ConversationsEntity
+        conId = conversationsEntity.conversationId
         screenName = "message_view"
         viewModel.disappearMessage()
         initView()
         initList()
         initListener()
         initObserver()
+        startMessageEventJob()
     }
 
     private fun initObserver() {
-        TODO("Not yet implemented")
+        LiveEventBus.get(ChatConstants.EVENT_BUS_KEY_MESSAGE_EVENT).observe(this) {
+            if (it is MessageEvent) {
+                Timber.d("MessageEvent type: ${it.type}")
+                Timber.d("time test 收音: ${it.timestamp - messageEventTimestamp}")
+                if (it.timestamp > messageEventTimestamp) {
+                    messageEventSyncList.add(it)
+                }
+            }
+        }
     }
 
     private fun initListener() {
+        back.onClick {
+            onBackPressed()
+        }
         inputContainer.setBottomLayoutActionListener(object :
             MessageBottomLayout.BottomLayoutActionListener {
 
@@ -116,10 +135,10 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
 //                logFirebaseEvent("send_message")
                 if (message != null) {
 //                    if (targetMessage == null) {
-                        viewModel.sendMessage(
-                            conversationsEntity.conversationId,
-                            message,
-                        )
+                    viewModel.sendMessage(
+                        conversationsEntity.conversationId,
+                        message,
+                    )
 //                    } else {
 //                        viewModel.sendMessage(
 //                            RecentConversation.conversationsEntity.type,
@@ -257,7 +276,8 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
                 val time = messageAdapter.messages.lastOrNull()?.sendTime ?: 0L
                 Timber.d("time test 下拉刷新: time = $time")
                 if (time == 0L) return@onLinearMarsLoadMore
-                LiveEventBus.get(ChatConstants.EVENT_BUS_KEY_MESSAGE_EVENT).post(MessageEvent(6, null, null, time))
+                LiveEventBus.get(ChatConstants.EVENT_BUS_KEY_MESSAGE_EVENT)
+                    .post(MessageEvent(6, null, null, time))
             }
         }
 
@@ -280,7 +300,8 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
         chatList.setHasFixedSize(true)
         messageEventTimestamp = System.currentTimeMillis()
         Timber.d("time test 首次: $messageEventTimestamp")
-        LiveEventBus.get(ChatConstants.EVENT_BUS_KEY_MESSAGE_EVENT).post(MessageEvent(6, null, null, 0))
+        LiveEventBus.get(ChatConstants.EVENT_BUS_KEY_MESSAGE_EVENT)
+            .post(MessageEvent(6, null, null, 0))
         chatList.adapter = messageAdapter
         chatList.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
             currentScreenMessages { message ->
@@ -316,7 +337,9 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
         })
 
         messageAdapter.registerAdapterDataObserver(messageAdapterDataObserver)
-
+//        messageEventSyncList.add(
+//            MessageEvent(6, null, null, System.currentTimeMillis())
+//        )
         KeyboardVisibilityEvent.setEventListener(this, this,
             { isOpen ->
                 Timber.d("$isOpen")
@@ -447,13 +470,11 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
     private val messageAdapterDataObserver = object : RecyclerView.AdapterDataObserver() {
         override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
             super.onItemRangeInserted(positionStart, itemCount)
-//            if (!messageSwipedAway) {
-//                context?.let {
-//                    val topSmoothScroller = TopSmoothScroller(it)
-//                    topSmoothScroller.targetPosition = 0
-//                    layoutManager.startSmoothScroll(topSmoothScroller)
-//                }
-//            }
+            if (!messageSwipedAway) {
+                val topSmoothScroller = TopSmoothScroller(this@MessageActivity)
+                topSmoothScroller.targetPosition = 0
+                layoutManager.startSmoothScroll(topSmoothScroller)
+            }
             insertMessage(positionStart)
         }
     }
@@ -638,6 +659,36 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
             })
     }
 
+    private fun startMessageEventJob() {
+        messageEventJob?.cancel()
+        messageEventJob = lifecycleScope.launch(Dispatchers.IO) {
+            while (this.isActive) {
+                try {
+                    val messageEvent = messageEventSyncList.poll()
+                    if (messageEvent != null) {
+                        Timber.d("MessageEvent type 1 : ${messageEvent.type}")
+                        messageAdapter.buildMessageChange(messageEvent, viewModel, conId, {
+                            checkNewMessage()
+                        }) {
+                            if (!messageSwipedAway) {
+                                if (it) {
+                                    scrollToBottom()
+                                } else {
+                                    val topSmoothScroller = TopSmoothScroller(this@MessageActivity)
+                                    topSmoothScroller.targetPosition = 0
+                                    layoutManager.startSmoothScroll(topSmoothScroller)
+                                }
+                            }
+                        }
+                    } else {
+                        delay(100)
+                    }
+                } catch (e: Exception) {
+                }
+            }
+        }
+    }
+
     private fun isFullScreen(recyclerView: RecyclerView?): Boolean {
         if (recyclerView == null) return false
         return recyclerView.computeVerticalScrollExtent() >= recyclerView.height
@@ -655,6 +706,12 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
 
     override fun getDataBindingConfig(): DataBindingConfig {
         return DataBindingConfig(R.layout.activity_message, viewModel)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        messageEventJob?.cancel()
+        messageEventJob = null
     }
 
 }

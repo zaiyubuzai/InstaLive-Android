@@ -251,8 +251,7 @@ class LiveEventDialog(
     }
 
     override fun initViewModel(): LiveEventDialogViewModel {
-        return InstaLiveApp.appInstance.getAppViewModelProvider()
-            .get(LiveEventDialogViewModel::class.java)
+        return LiveEventDialogViewModel()
     }
 
     override fun getImplLayoutId(): Int {

@@ -1,12 +1,15 @@
 package com.example.instalive.api
 
+import androidx.lifecycle.MutableLiveData
 import com.example.baselibrary.api.BaseRemoteRepository
 import com.example.baselibrary.api.RemoteEventEmitter
 import com.example.instalive.app.SessionPreferences
 import com.example.instalive.db.InstaLiveDBProvider
 import com.example.instalive.http.InstaApi
+import com.example.instalive.model.ConversationInfo
+import com.example.instalive.model.ConversationListData
+import com.venus.dm.db.entity.ConversationsEntity
 import com.venus.dm.db.entity.MessageEntity
-import com.venus.framework.util.isNeitherNullNorEmpty
 import kotlinx.coroutines.*
 
 object ConversationDataRepository : BaseRemoteRepository(), IConversationRequest {
@@ -27,6 +30,85 @@ object ConversationDataRepository : BaseRemoteRepository(), IConversationRequest
             withContext(Dispatchers.Main) {
                 result?.invoke()
             }
+        }
+    }
+
+    override suspend fun getConversationList(
+        liveData: MutableLiveData<ConversationListData>,
+        remoteEventEmitter: RemoteEventEmitter
+    ) {
+        val response = safeApiCall(remoteEventEmitter) {
+            instaApi.getConversationList()
+        }
+        if (response?.resultOk() == true) {
+            liveData.postValue(response.data)
+            withContext(Dispatchers.IO){
+                syncConversationList(response.data)
+            }
+        }
+    }
+
+    private suspend fun syncConversationList(conversationListData: ConversationListData){
+        val allConversations = dao.getAllConversations(SessionPreferences.id)
+        allConversations.forEach { ce ->
+            val con =
+                conversationListData.conversationList.filter { it.id == ce.conversationId }
+            if (con.isNullOrEmpty()) {
+                dao.deleteConversation(
+                    ce.conversationId,
+                    SessionPreferences.id
+                )
+            }
+        }
+        conversationListData.conversationList.forEach { ci ->
+            val con = allConversations.firstOrNull { it.conversationId == ci.id }
+            syncConversation(con, ci)
+        }
+    }
+
+    private suspend fun syncConversation(con: ConversationsEntity?, ci: ConversationInfo){
+        val recipient =
+            ci.recipients.firstOrNull { it.id != SessionPreferences.id } ?: return
+        if (con != null) {
+            var shouldUpdate = false
+            if (recipient.nickname != con.recipientName) {
+                con.recipientName = recipient.nickname
+                shouldUpdate = true
+            }
+            if (recipient.username != con.recipientUsername) {
+                con.recipientUsername = recipient.username
+                shouldUpdate = true
+            }
+            if (recipient.portrait != con.recipientPortrait) {
+                con.recipientPortrait = recipient.portrait
+                shouldUpdate = true
+            }
+            if (ci.pin != con.isPin) {
+                con.isPin = ci.pin ?: 0
+                shouldUpdate = true
+            }
+            if (shouldUpdate) {
+                dao.updateConversation(con)
+            }
+        } else {
+            dao.insertConversation(
+                ConversationsEntity(
+                    userId = SessionPreferences.id,
+                    conversationId = ci.id,
+                    recipientId = recipient.id,
+                    recipientName = recipient.nickname,
+                    recipientPortrait = recipient.portrait,
+                    recipientUsername = recipient.username,
+                    living = 0,
+                    chatState = 1,
+                    relationship = recipient.relationship,
+                    lastMsgTimetoken = ci.lastMessageTimestamp ?: 0L,
+                    type = ci.type,
+                    ownerId = SessionPreferences.id,
+                    mute = ci.mute,
+                    isPin = ci.pin ?: 0,
+                )
+            )
         }
     }
 

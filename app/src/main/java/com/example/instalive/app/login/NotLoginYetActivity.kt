@@ -9,6 +9,8 @@ import com.example.instalive.app.Constants
 import com.example.instalive.app.Constants.EXTRA_LOGIN_SOURCE
 import com.example.instalive.app.base.InstaBaseActivity
 import com.example.instalive.databinding.FragmentNotLoginBinding
+import com.example.instalive.utils.DMSocketIO
+import com.example.instalive.utils.SessionHelper
 import com.jeremyliao.liveeventbus.LiveEventBus
 import kotlinx.android.synthetic.main.fragment_not_login.*
 import kotlinx.coroutines.*
@@ -43,6 +45,8 @@ class NotLoginYetActivity : InstaBaseActivity<NotLoginYetViewModel, FragmentNotL
 
         LiveEventBus.get(Constants.EVENT_BUS_KEY_LOGIN).observe(this, {
             if (it == Constants.EVENT_BUS_LOGIN_SUCCESS){
+                SessionHelper.init(3)
+                DMSocketIO.initSocket()
                 finish()
             }
         })

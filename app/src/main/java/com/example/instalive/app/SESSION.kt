@@ -5,24 +5,6 @@ import com.example.instalive.model.LoginData
 import splitties.preferences.Preferences
 import splitties.preferences.edit
 
-//val id: String,
-//    @SerializedName("user_name") val userName: String,
-//    @SerializedName("nickname") val nickName: String?,
-//    @SerializedName("first_name") val firstName: String?,
-//    @SerializedName("last_name") val lastName: String?,
-//    val portrait: String?,
-//    val gender: Int,
-//    val identity: Int,
-//    val lat: String?,
-//    val lon: String?,
-//    val country: String?,
-//    val region: String?,
-//    val city: String?,
-//    val token: String,
-//    val state: Int,
-//    @JsonAdapter(BooleanTypeAdapter::class) @SerializedName("is_anonymous") val isAnonymous: Boolean,
-//    @SerializedName("invite_info") val inviteInfo: Any?,
-//    @JsonAdapter(BooleanTypeAdapter::class) @SerializedName("is_create") val isCreate: Boolean,
 object SESSION {
 
     fun saveLoginData(data: LoginData){
@@ -95,6 +77,7 @@ object SessionPreferences : Preferences("instaLiveUserState") {
 
     //---user stats starts
     var balance by FloatPref("balance", 0f)
+    var initDataJson by StringOrNullPref("init_data_json")
     //---user stats end
 
 }
@@ -102,4 +85,13 @@ object SessionPreferences : Preferences("instaLiveUserState") {
 object InstaLivePreferences : Preferences("instaLiveState") {
     var countryCodeVersion by IntPref("country_code_version", 0)
     var countryCodeJson by StringOrNullPref("country_code_json", null)
+
+    var stringTemplateVersion by IntPref("string_template_version", 0)
+    var stringTemplate by StringOrNullPref("string_template", null)
+
+    var levelIconsVersion by IntPref("level_icon", 0)
+    var levelIconsJson by StringOrNullPref("level_icons_json", null)
+
+    var everydayFirstInitTime by LongPref("everyday_first_init_time", 0L)
+    var firstInitEver by BoolPref("first_init_ever", false)
 }

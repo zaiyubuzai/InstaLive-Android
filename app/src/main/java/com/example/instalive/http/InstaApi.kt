@@ -151,6 +151,9 @@ interface InstaApi : BaseApi {
         @Query("id") id: String,
     ): BaseResponse<ConversationResponseData>
 
+    @GET("api/dm/conversation/list/")
+    suspend fun getConversationList(): BaseResponse<ConversationListData>
+
     @FormUrlEncoded
     @POST("/api/dm/conversation/mute/")
     suspend fun muteConversation(@Field("id") conId: String): BaseResponse<Any>

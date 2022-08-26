@@ -5,12 +5,17 @@ import com.example.baselibrary.api.BaseRemoteRepository
 import com.example.baselibrary.api.BaseRepositoryError
 import com.example.baselibrary.api.LoadRemoteRepository
 import com.example.baselibrary.api.RemoteEventEmitter
+import com.example.baselibrary.model.CountryCodeData
+import com.example.baselibrary.model.CountryCodeListData
+import com.example.instalive.app.InstaLivePreferences
+import com.example.instalive.app.SessionPreferences
 import com.example.instalive.http.InstaApi
-import com.example.instalive.model.LoginData
+import com.example.instalive.model.*
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.venus.dm.model.UserData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.Dispatcher
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.HttpException
@@ -19,6 +24,74 @@ import timber.log.Timber
 object DataRepository : BaseRemoteRepository(), IRemoteRequest {
 
     private val baseApi = RetrofitProvider.baseApi as InstaApi
+
+    override suspend fun init(
+        type: Int,
+        liveData: MutableLiveData<AppInitData?>,
+        remoteEventEmitter: RemoteEventEmitter?,
+    ) {
+        val response = safeApiCall(remoteEventEmitter) {
+            baseApi.init(type)
+        }
+        if (response?.resultOk() == true) {
+            liveData.postValue(response.data)
+            val initData = response.data
+            val initJson = Gson().toJson(initData)
+            SessionPreferences.initDataJson = initJson
+            response.data.cacheConfig.stringTemplate?.let {
+                Timber.d("local version = ${InstaLivePreferences.stringTemplateVersion} new version = ${it.version}")
+                if (InstaLivePreferences.stringTemplateVersion != it.version) {
+                    fetchStringTemplate(it)
+                }
+            }
+
+            response.data.cacheConfig.levelIcons?.let {
+                if (InstaLivePreferences.levelIconsVersion != it.version) {
+                    fetchLevelIcons(it)
+                }
+            }
+
+            response.data.cacheConfig.countryCode?.let {
+                if (InstaLivePreferences.countryCodeVersion != it.version) {
+                    fetchCountryCode(it)
+                }
+            }
+        }
+    }
+
+    override suspend fun fetchStringTemplate(stringCache: CacheConfig.Cache) {
+        val response = safeApiCall(null) {
+            baseApi.getAnyData<StringTemplate>(stringCache.apiPath)
+        }
+        if (response != null) {
+            val string = Gson().toJson(response.data, object : TypeToken<StringTemplate>() {}.type)
+            InstaLiveStringTemplate.cacheTemplate(string)
+            InstaLivePreferences.stringTemplateVersion = stringCache.version
+        }
+    }
+
+    override suspend fun fetchLevelIcons(levelIcons: CacheConfig.Cache) {
+
+    }
+
+    override suspend fun fetchCountryCode(countryCode: CacheConfig.Cache) {
+        val response = safeApiCall(null) {
+            baseApi.getAnyData<CountryCodeListData>(countryCode.apiPath)
+        }
+        if (response != null) {
+            val countryMutableList = mutableListOf<CountryCodeData>()
+            response.data.countryCode.forEach {
+                countryMutableList.addAll(it)
+            }
+            val string = Gson().toJson(
+                countryMutableList.toList(),
+                object : TypeToken<List<CountryCodeData>>() {}.type
+            )
+            Timber.d("country code: $string")
+            InstaLivePreferences.countryCodeJson = string
+            InstaLivePreferences.countryCodeVersion = countryCode.version
+        }
+    }
 
     override suspend fun sendPasscode(
         phone: String,
