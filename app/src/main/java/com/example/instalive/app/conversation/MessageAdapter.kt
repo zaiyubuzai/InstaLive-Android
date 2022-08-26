@@ -826,7 +826,7 @@ class MessageAdapter(
                 }
             }
             6 -> {
-                viewModel.getMessagesByConIdDesc(conId){ messageList ->
+                viewModel.getMessagesByConIdDesc(conId, messageEvent.timestampStart){ messageList ->
                     val temporaryList = messages.toMutableList()
                     messageList.toList().forEachIndexed {index, it ->
                         if (!messageUUIDList.contains(it.uuid)) {

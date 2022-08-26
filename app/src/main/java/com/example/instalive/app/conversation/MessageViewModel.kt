@@ -90,8 +90,8 @@ class MessageViewModel : MessageBaseViewModel() {
                 }
     }
 
-    suspend fun getMessagesByConIdDesc(conId: String, result:  (suspend (List<MessageEntity>) -> Unit)?){
-        val messageEntityList = dao.getMessagesByConIdDesc(conId, SessionPreferences.id, 0)
+    suspend fun getMessagesByConIdDesc(conId: String, timestamp: Long, result:  (suspend (List<MessageEntity>) -> Unit)?){
+        val messageEntityList = dao.getMessagesByConIdDesc(conId, SessionPreferences.id, timestamp)
         if (messageEntityList.isNeitherNullNorEmpty()){
             result?.invoke(messageEntityList)
         }

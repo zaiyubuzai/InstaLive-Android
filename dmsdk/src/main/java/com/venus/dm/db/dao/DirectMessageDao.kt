@@ -13,7 +13,7 @@ interface DirectMessageDao {
     @Query("SELECT * FROM messages WHERE uuid = :uuid AND user_id = :userId")
     fun getMessagedByUuid(uuid: String, userId: String):MessageEntity?
 
-    @Query("SELECT * FROM messages WHERE send_time > :timeToken AND conversation_id = :conId AND user_id = :currentUserId AND state == 1 ORDER BY send_time DESC LIMIT 100")
+    @Query("SELECT * FROM messages WHERE send_time < :timeToken AND conversation_id = :conId AND user_id = :currentUserId AND state == 1 ORDER BY send_time DESC LIMIT 100")
     fun getMessagesByConIdDesc(
         conId: String,
         currentUserId: String,

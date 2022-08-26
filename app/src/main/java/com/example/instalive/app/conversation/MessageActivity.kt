@@ -180,6 +180,7 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
     }
 
     private fun initList() {
+        messageEventTimestamp = System.currentTimeMillis()
         messageAdapter =
             MessageAdapter(
                 mutableListOf(),
@@ -277,7 +278,7 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
                 Timber.d("time test 下拉刷新: time = $time")
                 if (time == 0L) return@onLinearMarsLoadMore
                 LiveEventBus.get(ChatConstants.EVENT_BUS_KEY_MESSAGE_EVENT)
-                    .post(MessageEvent(6, null, null, time))
+                    .post(MessageEvent(6, null, null, System.currentTimeMillis(), timestampStart = time))
             }
         }
 
@@ -298,10 +299,10 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
             }
         })
         chatList.setHasFixedSize(true)
-        messageEventTimestamp = System.currentTimeMillis()
+
         Timber.d("time test 首次: $messageEventTimestamp")
-        LiveEventBus.get(ChatConstants.EVENT_BUS_KEY_MESSAGE_EVENT)
-            .post(MessageEvent(6, null, null, 0))
+//        LiveEventBus.get(ChatConstants.EVENT_BUS_KEY_MESSAGE_EVENT)
+//            .post(MessageEvent(6, null, null, 0))
         chatList.adapter = messageAdapter
         chatList.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
             currentScreenMessages { message ->
@@ -337,9 +338,9 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
         })
 
         messageAdapter.registerAdapterDataObserver(messageAdapterDataObserver)
-//        messageEventSyncList.add(
-//            MessageEvent(6, null, null, System.currentTimeMillis())
-//        )
+        messageEventSyncList.add(
+            MessageEvent(6, null, null, System.currentTimeMillis(), timestampStart = System.currentTimeMillis())
+        )
         KeyboardVisibilityEvent.setEventListener(this, this,
             { isOpen ->
                 Timber.d("$isOpen")
