@@ -4,6 +4,8 @@ import android.app.Activity
 import android.widget.PopupWindow
 import android.graphics.drawable.ColorDrawable
 import android.view.*
+import androidx.constraintlayout.widget.ConstraintSet
+import com.example.baselibrary.utils.BarUtils
 
 import com.example.instalive.R
 import com.example.instalive.databinding.PopupSimpleTextViewerBinding
@@ -30,10 +32,15 @@ class TextPopupWindow(private val activity: Activity, private val content: Strin
     var onOkListener: (() -> Unit)? = null
 
     private fun initView() {
+        val set = ConstraintSet()
+        set.clone(binding.container)
+        set.setMargin(R.id.close, ConstraintSet.TOP, BarUtils.statusBarHeight)
+        set.applyTo(binding.container)
         binding.messageContent.text = content
         binding.close.onClick{
             dismiss()
         }
+        binding.container.onClick{}
     }
 
     fun show() {

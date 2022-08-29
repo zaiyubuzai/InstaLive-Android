@@ -91,7 +91,11 @@ class HashTagHelper private constructor(
             }
             if (mOnHashTagClickListener != null) {
                 // we need to set this in order to get onClick event
-                mTextView?.movementMethod = ClickableMovementMethod.instance
+                val cm = ClickableMovementMethod.instance
+                if (cm != null) {
+                    cm.mOnHashTagClickListener = mOnHashTagClickListener
+                }
+                mTextView?.movementMethod = cm
 
                 // after onClick clicked text become highlighted
                 mTextView?.highlightColor = Color.TRANSPARENT

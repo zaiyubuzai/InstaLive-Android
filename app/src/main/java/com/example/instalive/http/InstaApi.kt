@@ -195,6 +195,13 @@ interface InstaApi : BaseApi {
     ): BaseResponse<DmRecallResponseData>
 
     @FormUrlEncoded
+    @POST("api/dm/chat/pull_unread/")
+    suspend fun pullUnread(
+        @Field("timetoken") timeToken: Long,
+        @Field("pull_uuid") pullUUID: String
+    ): BaseResponse<Any>
+
+    @FormUrlEncoded
     @POST("/api/dm/chat/report_read/")
     suspend fun reportConversationHaveRead(
         @Field("conversation_id") conversationId: String,

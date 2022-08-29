@@ -11,6 +11,7 @@ import com.example.instalive.model.ConversationListData
 import com.venus.dm.db.entity.ConversationsEntity
 import com.venus.dm.db.entity.MessageEntity
 import kotlinx.coroutines.*
+import timber.log.Timber
 
 object ConversationDataRepository : BaseRemoteRepository(), IConversationRequest {
 
@@ -42,13 +43,13 @@ object ConversationDataRepository : BaseRemoteRepository(), IConversationRequest
         }
         if (response?.resultOk() == true) {
             liveData.postValue(response.data)
-            withContext(Dispatchers.IO){
+            withContext(Dispatchers.IO) {
                 syncConversationList(response.data)
             }
         }
     }
 
-    private suspend fun syncConversationList(conversationListData: ConversationListData){
+    private suspend fun syncConversationList(conversationListData: ConversationListData) {
         val allConversations = dao.getAllConversations(SessionPreferences.id)
         allConversations.forEach { ce ->
             val con =
@@ -66,7 +67,7 @@ object ConversationDataRepository : BaseRemoteRepository(), IConversationRequest
         }
     }
 
-    private suspend fun syncConversation(con: ConversationsEntity?, ci: ConversationInfo){
+    private suspend fun syncConversation(con: ConversationsEntity?, ci: ConversationInfo) {
         val recipient =
             ci.recipients.firstOrNull { it.id != SessionPreferences.id } ?: return
         if (con != null) {
@@ -100,13 +101,13 @@ object ConversationDataRepository : BaseRemoteRepository(), IConversationRequest
                     recipientPortrait = recipient.portrait,
                     recipientUsername = recipient.username,
                     living = 0,
-                    chatState = 1,
+                    chatState = ci.state,
                     relationship = recipient.relationship,
                     lastMsgTimetoken = ci.lastMessageTimestamp ?: 0L,
                     type = ci.type,
                     ownerId = SessionPreferences.id,
                     mute = ci.mute,
-                    isPin = ci.pin ?: 0,
+                    isPin = ci.pin,
                 )
             )
         }
@@ -171,5 +172,126 @@ object ConversationDataRepository : BaseRemoteRepository(), IConversationRequest
         }
     }
 
+    override suspend fun pullUnread(
+        timeToken: Long,
+        pullUUID: String,
+        remoteEventEmitter: RemoteEventEmitter?,
+    ) {
+        safeApiCall(remoteEventEmitter, false) {
+            instaApi.pullUnread(timeToken, pullUUID)
+        }
+    }
+
+    override suspend fun reportConversationHaveRead(
+        conversationId: String,
+        timeToken: Long,
+        remoteEventEmitter: RemoteEventEmitter?,
+    ) {
+        safeApiCall(remoteEventEmitter, false) {
+            instaApi.reportConversationHaveRead(conversationId, timeToken)
+        }
+    }
+
+    override suspend fun messageReportACK(
+        uuids: String,
+        remoteEventEmitter: RemoteEventEmitter?,
+    ) {
+        safeApiCall(remoteEventEmitter, false) {
+            instaApi.messageReportACK(uuids)
+        }
+    }
+
+    override suspend fun fetchConversation(
+        conversationId: String,
+        remoteEventEmitter: RemoteEventEmitter?,
+        pendingNotificationMessages: List<MessageEntity>?,
+    ) {
+        Timber.d("ConversationDetail 4 $conversationId")
+        if (conversationId.isEmpty()) return
+        val response = safeApiCall(remoteEventEmitter) {
+            instaApi.conversationDetail(conversationId)
+        }
+        if (response != null) {
+            withContext(Dispatchers.IO) {
+                //单聊
+                val recipient = response.data.recipients?.findLast {
+                    it.id != SessionPreferences.id
+                }
+                if (recipient != null) {
+                    val con = dao.getConversationByConId(
+                        conversationId,
+                        SessionPreferences.id
+                    )
+                    if (con != null) {
+                        var shouldUpdate = false
+                        if (response.data.chatState != con.chatState) {
+                            con.chatState = response.data.chatState ?: 1
+                            shouldUpdate = true
+                        }
+                        if (recipient.portrait != con.recipientPortrait) {
+                            con.recipientPortrait = recipient.portrait
+                            shouldUpdate = true
+                        }
+                        if (recipient.relationship != con.relationship) {
+                            con.relationship = recipient.relationship
+                            shouldUpdate = true
+                        }
+                        if (recipient.nickname != con.recipientName) {
+                            con.recipientName = recipient.nickname
+                            shouldUpdate = true
+                        }
+                        if (recipient.username != con.recipientUsername) {
+                            con.recipientUsername = recipient.nickname
+                            shouldUpdate = true
+                        }
+
+                        if (response.data.mute != con.mute) {
+                            con.mute = response.data.mute
+                            shouldUpdate = true
+                        }
+                        if (response.data.pin != con.isPin) {
+                            con.isPin = response.data.pin
+                            shouldUpdate = true
+                        }
+                        if (shouldUpdate) {
+                            dao.updateConversation(con)
+                        }
+                    } else {
+
+                        dao.insertConversation(
+                            ConversationsEntity(
+                                userId = SessionPreferences.id,
+                                conversationId = response.data.id,
+                                recipientId = recipient.id,
+                                recipientName = recipient.nickname,
+                                recipientPortrait = recipient.portrait,
+                                recipientUsername = recipient.nickname,
+                                living = 0,
+                                chatState = response.data.chatState?:1,
+                                relationship = recipient.relationship,
+                                type = 1,
+                                ownerId = recipient.id,
+                                mute = null,
+                                lastSenderName = "",
+                                memberCount = 2,
+                                isPin = response.data.pin
+                            )
+                        )
+                    }
+//                        if (pendingNotificationMessages != null) {
+//                            withContext(Dispatchers.Main) {
+//                                //补上本地notification
+//                                MarsFirebaseMessagingService.createMessageNotification(
+//                                    pendingNotificationMessages,
+//                                    appInstance,
+//                                    false
+//                                )
+//                            }
+//                        }
+                }
+
+            }
+        }
+    }
 
 }

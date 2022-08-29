@@ -20,6 +20,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.HttpException
 import timber.log.Timber
+import java.lang.Exception
 
 object DataRepository : BaseRemoteRepository(), IRemoteRequest {
 
@@ -149,7 +150,7 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
         resultData: MutableLiveData<String>,
         remoteEventEmitter: RemoteEventEmitter,
     ) {
-        LoadRemoteRepository.uploadDMVideo(
+        LoadRemoteRepository.uploadMedia(
             path,
             "image/*",
             remoteEventEmitter,
@@ -157,7 +158,7 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
                 resultData.postValue(it)
             },
             {
-                return@uploadDMVideo baseApi.preSignPortrait()
+                return@uploadMedia baseApi.preSignPortrait()
             },
             {
                     url: String,
@@ -169,7 +170,7 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
                     token: RequestBody,
                     file: MultipartBody.Part,
                 ->
-                return@uploadDMVideo baseApi.uploadResourceToS3(
+                return@uploadMedia baseApi.uploadResourceToS3(
                     url,
                     key,
                     keyId,
@@ -180,6 +181,93 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
                     file
                 )
             })
+    }
+
+    override suspend fun uploadDMImage(
+        path: String,
+        conId: String,
+        remoteEventEmitter: RemoteEventEmitter,
+        onSuccess: (String) -> Unit,
+    ) {
+        try {
+
+            LoadRemoteRepository.uploadMedia(
+                path,
+                "image/*",
+                remoteEventEmitter,
+                {
+                    onSuccess.invoke(it)
+                },
+                {
+                    return@uploadMedia baseApi.preSignDMImage(conId)
+                },
+                {
+                        url: String,
+                        key: RequestBody,
+                        keyId: RequestBody,
+                        policy: RequestBody,
+                        sig: RequestBody,
+                        acl: RequestBody?,
+                        token: RequestBody,
+                        file: MultipartBody.Part,
+                    ->
+                    return@uploadMedia baseApi.uploadResourceToS3(
+                        url,
+                        key,
+                        keyId,
+                        policy,
+                        sig,
+                        acl,
+                        token,
+                        file
+                    )
+                })
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    override suspend fun uploadDMVideo(
+        path: String,
+        conId: String,
+        remoteEventEmitter: RemoteEventEmitter,
+        onSuccess: (String) -> Unit,
+    ) {
+        try {
+            LoadRemoteRepository.uploadMedia(
+                path,
+                "video/*",
+                remoteEventEmitter,
+                {
+                    onSuccess.invoke(it)
+                },
+                presignFunction = {
+                    return@uploadMedia baseApi.preSignDMVideo(conId)
+                },
+                {
+                        url: String,
+                        key: RequestBody,
+                        keyId: RequestBody,
+                        policy: RequestBody,
+                        sig: RequestBody,
+                        acl: RequestBody?,
+                        token: RequestBody,
+                        file: MultipartBody.Part,
+                    ->
+                    return@uploadMedia baseApi.uploadResourceToS3(
+                        url,
+                        key,
+                        keyId,
+                        policy,
+                        sig,
+                        acl,
+                        token,
+                        file
+                    )
+                })
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override suspend fun checkUsernameAvailability(
@@ -218,7 +306,7 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
             baseApi.getUserDetail(userId, userName)
         }
         if (response?.resultOk() == true) {
-            withContext(Dispatchers.Main){
+            withContext(Dispatchers.Main) {
                 result?.invoke(response.data)
             }
         }

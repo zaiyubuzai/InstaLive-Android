@@ -72,9 +72,20 @@
         <item name="cornerSize">36dp</item>
     </style>
 
+    <style name="ShapeAppearanceOverlay.App.CornerSize12dp" parent="">
+        <item name="cornerSize">12dp</item>
+    </style>
+
     <style name="btn_shadow">
         <item name="android:shadowColor">#19000000</item>
         <item name="android:shadowRadius">4</item>
         <item name="android:shadowDy">2</item>
     </style>
+
+    <style name="anim_style" parent="android:Animation.Dialog">
+        <item name="android:windowEnterAnimation">@anim/dialog_fragment_slide_up</item>
+        <item name="android:windowExitAnimation">@anim/dialog_fragment_slide_down</item>
+    </style>
+
+
 </resources>

@@ -63,8 +63,10 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imageCover"
+                messageImageCover="@{messageEntity}"
                 android:layout_width="140dp"
-                android:layout_height="140dp" />
+                android:layout_height="140dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize12dp"/>
 
             <ProgressBar
                 android:id="@+id/sendingProgress"
@@ -82,14 +84,13 @@
                 isVisible="@{messageEntity.sendStatus == 2}"
                 android:layout_width="@dimen/dimen_18dp"
                 android:layout_height="@dimen/dimen_18dp"
-                android:layout_alignTop="@+id/imageCover"
-                android:layout_alignBottom="@+id/imageCover"
+                android:layout_centerVertical="true"
                 android:layout_marginStart="12dp"
                 android:layout_toEndOf="@+id/imageCover"
                 android:layerType="software"
                 android:src="@drawable/bg_red_dot"
                 android:visibility="gone"
-                tools:visibility="gone" />
+                tools:visibility="visible" />
         </RelativeLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

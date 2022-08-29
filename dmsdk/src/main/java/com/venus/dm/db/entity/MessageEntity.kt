@@ -42,6 +42,10 @@ data class MessageEntity(
     var state: Int = 1,
     @ColumnInfo(name = "render_type") var renderType: Int = 1,
     @ColumnInfo(name = "is_mention_me") var isMentionMe: Int = 0,
+    @ColumnInfo(name = "local_res_path") var localResPath: String? = null,
+    @ColumnInfo(name = "local_thumbnail") var localThumbnail: String? = null,
+    @ColumnInfo(name = "live_id") var liveId: String? = null,
+    @ColumnInfo(name = "show_type") var showType: Int = 0,// 0 都展示（默认）  1 会话中 2 直播中  3 都展示
 ) {
 
     @Transient
@@ -64,62 +68,63 @@ data class MessageEntity(
         const val SEND_STATUS_FAILED = 2
     }
 
-    class Payload {
-        val content: String? = null
-        var url: String? = null
-        var cover: String? = null
-        val height: Int? = null
-        val width: Int? = null
-        var size: Long? = null
-        val length: Int? = null
+    data class Payload(
+        val content: String? = null,
+        var url: String? = null,
+        var cover: String? = null,
+        val height: Int? = null,
+        val width: Int? = null,
+        var size: Long? = null,
+        val length: Int? = null,
         @SerializedName("user_name")
-        val userName: String? = null
+        val userName: String? = null,
         @SerializedName("full_name")
-        val fullName: String? = null
-        val id: String? = null
-        val portrait: String? = null
-        val desc: String? = null
-        val title: String? = null
-        val status: Int? = null
+        val fullName: String? = null,
+        val id: String? = null,
+        val portrait: String? = null,
+        val desc: String? = null,
+        val title: String? = null,
+        val status: Int? = null,
         @SerializedName("message_uuid")
-        val uuid: String? = null
+        val uuid: String? = null,
         @SerializedName("target_uuid")
-        val targetUUID: String? = null
+        val targetUUID: String? = null,
         @SerializedName("content_me")
-        val contentMe: String? = null
+        val contentMe: String? = null,
         @SerializedName("sender_portrait")
-        val senderPortrait: String? = null
+        val senderPortrait: String? = null,
         @SerializedName("sender_name")
-        val senderName: String? = null
+        val senderName: String? = null,
         @SerializedName("thumbnail_url")
-        val thumbnail: String? = null
-        val amount: Int? = null
-        val deeplink: String? = null
-        val state: Int? = null
+        val thumbnail: String? = null,
+        val amount: Int? = null,
+        val deeplink: String? = null,
+        val state: Int? = null,
         @SerializedName("share_user_id")
-        val shareUserId: String? = null
+        val shareUserId: String? = null,
         @SerializedName("user_id")
-        val userId: String? = null
+        val userId: String? = null,
         @SerializedName("target_msg")
-        var targetMessage: TargetMessage? = null
+        var targetMessage: TargetMessage? = null,
         @SerializedName("live_id")
-        val liveId: String? = null
+        val liveId: String? = null,
         @SerializedName("show_type")
-        val showType: Int = 0
+        val showType: Int = 0,
         @SerializedName("render_type")
-        val renderType: Int? = 1
-        val level: Int = -1
+        val renderType: Int? = 1,
+        val level: Int = -1,
         @SerializedName("gift_img")
-        val giftImg: String? = null
+        val giftImg: String? = null,
         @SerializedName("gift_name")
-        val giftName: String? = null
+        val giftName: String? = null,
         @SerializedName("gift_id")
-        val giftId: String? = null
+        val giftId: String? = null,
         @SerializedName("user_info")
-        val userInfo: GroupMember? = null
-        val highlight: Int = 0
+        val userInfo: GroupMember? = null,
+        val highlight: Int = 0,
         @SerializedName("target_timetoken")
-        var targetTimetoken: Long? = null
+        var targetTimetoken: Long? = null,
+    ) {
 
         companion object {
             fun fromJson(json: String): Payload? {

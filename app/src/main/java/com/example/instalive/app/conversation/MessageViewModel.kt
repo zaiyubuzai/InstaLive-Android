@@ -5,11 +5,15 @@ import com.example.baselibrary.api.ErrorType
 import com.example.baselibrary.api.RemoteEventEmitter
 import com.example.baselibrary.api.StatusEvent
 import com.example.instalive.InstaLiveApp
+import com.example.instalive.InstaLiveApp.Companion.appInstance
 import com.example.instalive.api.ConversationDataRepository
 import com.example.instalive.app.SessionPreferences
 import com.example.instalive.db.MessageComposer
+import com.jeremyliao.liveeventbus.LiveEventBus
+import com.venus.dm.app.ChatConstants
 import com.venus.dm.db.entity.ConversationsEntity
 import com.venus.dm.db.entity.MessageEntity
+import com.venus.dm.model.event.MessageEvent
 import com.venus.framework.util.isNeitherNullNorEmpty
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -91,7 +95,7 @@ class MessageViewModel : MessageBaseViewModel() {
     }
 
     suspend fun getMessagesByConIdDesc(conId: String, timestamp: Long, result:  (suspend (List<MessageEntity>) -> Unit)?){
-        val messageEntityList = dao.getMessagesByConIdDesc(conId, SessionPreferences.id, timestamp)
+        val messageEntityList = dao.getMessagesByConIdDesc(conId, SessionPreferences.id, timestamp * 10000L)
         if (messageEntityList.isNeitherNullNorEmpty()){
             result?.invoke(messageEntityList)
         }
@@ -120,5 +124,39 @@ class MessageViewModel : MessageBaseViewModel() {
             }
         }
     }
+
+    fun sendMessage(
+        conversationId: String,
+        msg: String,
+        targetMessage: MessageEntity.TargetMessage,
+        level: Int
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val message = MessageComposer.composeTargetMessage(
+                msg,
+                conversationId,
+                1,
+                targetMessage,
+                level = level
+            )
+            dao.insertOwnerMessageAndShow(message)
+
+            val message2 = dao.getMessagedByUuid(message.uuid, SessionPreferences.id)
+            if (message2 != null) {
+                ConversationDataRepository.sendDm(message2, object : RemoteEventEmitter {
+                    override fun onError(code: Int, msg: String, errorType: ErrorType) {
+                        buildPromptMessage(conversationId, msg, 1, "-1", message.sendTime + 1)
+                    }
+
+                    override fun onEvent(event: StatusEvent) {
+                        this@MessageViewModel.onEvent(event)
+                    }
+                })
+            }
+        }
+    }
+
+
+
 
 }

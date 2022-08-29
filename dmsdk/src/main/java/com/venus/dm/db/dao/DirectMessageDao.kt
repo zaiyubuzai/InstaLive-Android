@@ -1,6 +1,8 @@
 package com.venus.dm.db.dao
 
 import androidx.room.*
+import com.jeremyliao.liveeventbus.LiveEventBus
+import com.venus.dm.app.ChatConstants
 import com.venus.dm.db.entity.*
 import com.venus.dm.model.event.MessageEvent
 import kotlinx.coroutines.flow.Flow
@@ -173,6 +175,7 @@ interface DirectMessageDao {
         isFinalStep: Boolean = false,
     ) {
         updateMessage(messageEntity)
+        LiveEventBus.get(ChatConstants.EVENT_BUS_KEY_MESSAGE_EVENT).post(MessageEvent(4, messageEntity, null, System.currentTimeMillis()))
         if (isFinalStep) {
             updateMessageSendStatus(messageEntity.uuid, messageEntity.sendStatus)
         }
@@ -183,6 +186,7 @@ interface DirectMessageDao {
         messageEntity: T
     ): MessageEvent {
         insertMessage(messageEntity)
+        LiveEventBus.get(ChatConstants.EVENT_BUS_KEY_MESSAGE_EVENT).post(MessageEvent(1, messageEntity, null, System.currentTimeMillis()))
         return MessageEvent(
             1,
             messageEntity,

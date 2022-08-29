@@ -70,4 +70,18 @@ interface IRemoteRequest {
         result:((UserData)->Unit)?,
         remoteEventEmitter: RemoteEventEmitter
     )
+
+    suspend fun uploadDMVideo(
+        path: String,
+        conId: String,
+        remoteEventEmitter: RemoteEventEmitter,
+        onSuccess: (String) -> Unit
+    )
+
+    suspend fun uploadDMImage(
+        path: String,
+        conId: String,
+        remoteEventEmitter: RemoteEventEmitter,
+        onSuccess: (String) -> Unit
+    )
 }

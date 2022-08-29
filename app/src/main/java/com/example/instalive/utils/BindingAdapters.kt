@@ -2,6 +2,7 @@ package com.example.instalive.utils
 
 import android.annotation.SuppressLint
 import android.graphics.Color
+import android.net.Uri
 import android.text.format.DateFormat
 import android.view.View
 import android.view.ViewGroup
@@ -17,8 +18,11 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.imageview.ShapeableImageView
+import com.venus.dm.db.entity.MessageEntity
 import splitties.dimensions.dp
 import timber.log.Timber
+import java.io.File
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
@@ -312,6 +316,56 @@ object VenusNumberFormatter {
 fun formatThousand(view: TextView, diamonds:Long?){
     if (diamonds != null) {
         view.text = VenusNumberFormatter.formatThousand(diamonds)
+    }
+}
+
+@BindingAdapter("messageVideoCover")
+fun setMessageVideoCover(view: ShapeableImageView, messageEntity: MessageEntity?) {
+    if (messageEntity != null) {
+        val localThumbnail = messageEntity.localThumbnail
+        if (localThumbnail != null) {
+//            view.setImageURI(Uri.fromFile(File(localThumbnail)))
+            Glide.with(view.context)
+                .load(localThumbnail)
+                .skipMemoryCache(false)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(view)
+        } else {
+            val payload = MessageEntity.Payload.fromJson(messageEntity.payload) ?: return
+            if (payload.thumbnail == null && payload.cover == null) {
+                return
+            }
+            Glide.with(view.context)
+                .load(payload.thumbnail ?: payload.cover)
+                .skipMemoryCache(false)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(view)
+        }
+    }
+}
+
+@BindingAdapter("messageImageCover")
+fun setMessageImageCover(view: ShapeableImageView, messageEntity: MessageEntity?) {
+    if (messageEntity != null) {
+        val localThumbnail = messageEntity.localResPath
+        if (localThumbnail != null) {
+//            view.setImageURI(Uri.fromFile(File(localThumbnail)))
+            Glide.with(view.context)
+                .load(localThumbnail)
+                .skipMemoryCache(false)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(view)
+        } else {
+            val payload = MessageEntity.Payload.fromJson(messageEntity.payload) ?: return
+            if (payload.thumbnail == null && payload.url == null) {
+                return
+            }
+            Glide.with(view.context)
+                .load(payload.thumbnail ?: payload.url)
+                .skipMemoryCache(false)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(view)
+        }
     }
 }
 

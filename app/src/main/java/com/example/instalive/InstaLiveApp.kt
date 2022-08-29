@@ -74,7 +74,7 @@ class InstaLiveApp: Application(), ViewModelStoreOwner {
         initLifecycle()
         UrlSignature.initAsync(this)
         if (BuildConfig.DEBUG) {
-//            FlipperInitializer.initFlipper(this)
+            FlipperInitializer.initFlipper(this)
         }
 
         InstaLiveDBProvider.db.directMessagingDao()

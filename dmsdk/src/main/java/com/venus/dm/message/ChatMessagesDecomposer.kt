@@ -28,8 +28,9 @@ abstract class ChatMessagesDecomposer {
 
     private val messageUserEntityList = mutableListOf<MessageUserEntity>()
     private val messageEntityList = mutableListOf<MessageEntity>()
+    protected val conIdMap = ConcurrentSkipListSet<String>()
 
-    private var circleCount = 0L
+    protected var circleCount = 0L
 
     //正在解压未读消息
     private var isDecomposerUnreadMessage = false
@@ -41,6 +42,7 @@ abstract class ChatMessagesDecomposer {
             messageJob = CoroutineScope(Dispatchers.IO).launch {
                 messageSyncList.clear()
                 idTimeTokenMap.clear()
+                conIdMap.clear()
                 circleCount = System.currentTimeMillis()
                 while (this.isActive) {
                     if (messageSyncList.isNotEmpty()) {
@@ -109,6 +111,7 @@ abstract class ChatMessagesDecomposer {
                                 if (conversationsEntity == null){
                                     fetchConversation(message.conId)
                                 }
+                                if (message.type != 8) conIdMap.add(message.conId)
                                 handleEveryMessage(it)
                             } catch (e: Exception) {
                             }
@@ -174,11 +177,11 @@ abstract class ChatMessagesDecomposer {
     protected abstract fun <T: MessageEntity>toMessageEntity(message: VenusDirectMessage):T
     protected abstract fun <T: MessageUserEntity>getMessageUserEntity(userId: String):T?
     //处理消息一些自定义操作
-    protected abstract fun handleEveryMessage(message: VenusDirectMessage)
+    protected abstract suspend fun handleEveryMessage(message: VenusDirectMessage)
     //本地没有改群需要去缓存
     protected abstract fun fetchConversation(conId: String)
     //处理消息包的一些自定义操作
-    protected abstract fun handleMessageWrapper(messageWrapper: VenusDirectMessageWrapper)
+    protected abstract suspend fun handleMessageWrapper(messageWrapper: VenusDirectMessageWrapper)
     //一个消息包处理完之后的操作，如更新会话最新消息的时间戳
-    protected abstract fun handleMessageWrapperAfter()
+    protected abstract suspend fun handleMessageWrapperAfter()
 }

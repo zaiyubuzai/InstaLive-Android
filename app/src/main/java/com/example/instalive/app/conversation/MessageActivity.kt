@@ -1,12 +1,13 @@
 package com.example.instalive.app.conversation
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.ClipData
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.baselibrary.utils.Utils
 import com.example.baselibrary.utils.hideKeyboard
 import com.example.baselibrary.views.DataBindingConfig
 import com.example.instalive.R
@@ -15,11 +16,9 @@ import com.example.instalive.app.base.InstaBaseActivity
 import com.example.instalive.databinding.ActivityMessageBinding
 import com.venus.dm.db.entity.ConversationsEntity
 import com.venus.dm.db.entity.MessageEntity
-import com.venus.framework.util.isNeitherNullNorEmpty
 import kotlinx.android.synthetic.main.activity_message.*
 import timber.log.Timber
 import java.util.*
-import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.os.Handler
 import android.os.Message
@@ -28,6 +27,9 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.example.baselibrary.utils.debounceClick
 import com.example.baselibrary.utils.onLinearMarsLoadMore
+import com.example.instalive.InstaLiveApp
+import com.example.instalive.app.SessionPreferences
+import com.example.instalive.app.base.SharedViewModel
 import com.example.instalive.app.base.TextPopupWindow
 import com.example.instalive.utils.GlideEngine
 import com.example.instalive.utils.aAnimatorSet
@@ -40,16 +42,23 @@ import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.language.LanguageConfig
 import com.luck.picture.lib.listener.OnResultCallbackListener
 import com.lxj.xpopup.XPopup
+import com.lxj.xpopup.enums.PopupPosition
+import com.lxj.xpopup.interfaces.XPopupCallback
 import com.venus.dm.app.ChatConstants
+import com.venus.dm.db.entity.MessageEntity.Companion.SEND_STATUS_FAILED
+import com.venus.dm.db.entity.MessageEntity.Companion.SEND_STATUS_SENDING
+import com.venus.dm.db.entity.MessageEntity.Companion.SEND_STATUS_SUCCESS
 import com.venus.dm.model.event.MessageEvent
+import kotlinx.android.synthetic.main.message_bottom_layout.*
 import kotlinx.coroutines.*
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
-import splitties.alertdialog.appcompat.negativeButton
-import splitties.alertdialog.appcompat.positiveButton
+import splitties.alertdialog.appcompat.*
 import splitties.dimensions.dp
-import splitties.mainhandler.mainHandler
+import splitties.permissions.hasPermission
+import splitties.systemservices.clipboardManager
 import splitties.systemservices.inputMethodManager
 import splitties.views.onClick
+import java.io.File
 import java.util.concurrent.ConcurrentLinkedQueue
 
 
@@ -63,7 +72,7 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
     private lateinit var layoutManager: LinearLayoutManager
 
     private var messageEventTimestamp = 0L
-
+    private var targetMessage: MessageEntity.TargetMessage? = null
 
     private val messageEventSyncList = ConcurrentLinkedQueue<MessageEvent>()//消息的队列
     private var messageEventJob: Job? = null//处理消息队列的线程
@@ -94,6 +103,10 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
         }
     }
 
+    private val sharedViewModel by lazy {
+        InstaLiveApp.appInstance.getAppViewModelProvider().get(SharedViewModel::class.java)
+    }
+
     override fun initData(savedInstanceState: Bundle?) {
         conversationsEntity =
             intent.getSerializableExtra(Constants.EXTRA_CONVERSATION_ENTITY) as ConversationsEntity
@@ -117,6 +130,21 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
                 }
             }
         }
+
+        LiveEventBus.get(Constants.EVENT_BUS_REPLY).observe(this, {
+            if (it is MessageEntity) {
+                reply.text =
+                    "${getString(R.string.fb_message_reply_at)}${targetMessage?.senderName ?: ""}: "
+                constraintLayout.isVisible = true
+                btnSend.isVisible = true
+                ll_btn.isVisible = false
+                edtChatInput.requestFocus()
+                inputMethodManager.toggleSoftInput(
+                    InputMethodManager.SHOW_FORCED,
+                    InputMethodManager.HIDE_NOT_ALWAYS
+                )
+            }
+        })
     }
 
     private fun initListener() {
@@ -134,24 +162,24 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
 //                }
 //                logFirebaseEvent("send_message")
                 if (message != null) {
-//                    if (targetMessage == null) {
+                    if (targetMessage == null) {
                     viewModel.sendMessage(
-                        conversationsEntity.conversationId,
+                        conId,
                         message,
                     )
-//                    } else {
-//                        viewModel.sendMessage(
-//                            RecentConversation.conversationsEntity.type,
-//                            message,
-//                            targetMessage!!,
-//                            RecentConversation.conversationsEntity.level
-//                        )
-//                    }
+                    } else {
+                        viewModel.sendMessage(
+                            conId,
+                            message,
+                            targetMessage!!,
+                            -1
+                        )
+                    }
 
-//                    reply.text = ""
-//                    constraintLayout.isVisible = false
-//
-//                    targetMessage = null
+                    reply.text = ""
+                    constraintLayout.isVisible = false
+
+                    targetMessage = null
                 }
             }
 
@@ -196,7 +224,7 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
                     }
 
                     override fun onResendClicked(messageEntity: MessageEntity) {
-//                        resendMessage(messageEntity)
+                        resendMessage(messageEntity)
                     }
 
                     override fun onPlayVideo(messageEntity: MessageEntity) {
@@ -246,7 +274,17 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
                         position: Int,
                     ) {
                         inputContainer.hideKeyboard()
-
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            delay(100)
+                            withContext(Dispatchers.Main) {
+                                messageLongClicked(
+                                    view,
+                                    messageEntity,
+                                    name,
+                                    position
+                                )
+                            }
+                        }
                     }
 
                     override fun onTextMessageClick(name: String, msg: String) {
@@ -254,6 +292,7 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
                             TextPopupWindow(this@MessageActivity, msg)
                         with(tokenPopupWindow) {
                             isClippingEnabled = false
+                            animationStyle = R.style.anim_style
                             show()
                         }
 
@@ -471,11 +510,11 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
     private val messageAdapterDataObserver = object : RecyclerView.AdapterDataObserver() {
         override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
             super.onItemRangeInserted(positionStart, itemCount)
-            if (!messageSwipedAway) {
-                val topSmoothScroller = TopSmoothScroller(this@MessageActivity)
-                topSmoothScroller.targetPosition = 0
-                layoutManager.startSmoothScroll(topSmoothScroller)
-            }
+//            if (!messageSwipedAway) {
+//                val topSmoothScroller = TopSmoothScroller(this@MessageActivity)
+//                topSmoothScroller.targetPosition = 0
+//                layoutManager.startSmoothScroll(topSmoothScroller)
+//            }
             insertMessage(positionStart)
         }
     }
@@ -548,7 +587,7 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
         if (messageAdapter.itemCount > 0) {
             Timber.d("scrollToBottom")
             chatList?.scrollToPosition(0)
-            chatList?.smoothScrollBy(0, 0)
+//            chatList?.smoothScrollBy(0, 0)
         }
     }
 
@@ -623,31 +662,29 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
                         when ((result[0].mimeType).lowercase(Locale.getDefault())) {
                             "video/mp4", "video/quicktime" -> {
                                 scrollToBottom()
-//                                sharedViewModel.sendVideoMessage(
-//                                    result[0].realPath,
-//                                    RecentConversation.conversationsEntity.conversationId,
-//                                    RecentConversation.conversationsEntity.type,
-//                                    result[0].width,
-//                                    result[0].height,
-//                                    result[0].duration,
-//                                    result[0].size,
-//                                    1,
-//                                    "-1",
-//                                    RecentConversation.conversationsEntity.level
-//                                )
+                                sharedViewModel.sendVideoMessage(
+                                    result[0].realPath,
+                                    conId,
+                                    result[0].width,
+                                    result[0].height,
+                                    result[0].duration,
+                                    result[0].size,
+                                    1,
+                                    "-1",
+                                    -1
+                                )
                             }
                             "image/jpeg", "image/jpg", "image/png" -> {
                                 scrollToBottom()
-//                                sharedViewModel.sendImageMessage(
-//                                    RecentConversation.conversationsEntity.type,
-//                                    "-1",
-//                                    1,
-//                                    result[0].realPath,
-//                                    SessionPreferences.recentConversationID,
-//                                    result[0].width,
-//                                    result[0].height,
-//                                    RecentConversation.conversationsEntity.level
-//                                )
+                                sharedViewModel.sendImageMessage(
+                                    "-1",
+                                    1,
+                                    result[0].realPath,
+                                    conId,
+                                    result[0].width,
+                                    result[0].height,
+                                    -1
+                                )
                             }
                             else -> {
                             }
@@ -688,6 +725,223 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
                 }
             }
         }
+    }
+
+    private fun messageLongClicked(
+        view: View,
+        messageEntity: MessageEntity,
+        name: String,
+        position: Int,
+    ) {
+
+//        longClickingMessageUUID = messageEntity.uuid
+        if (messageEntity.sendStatus == SEND_STATUS_SENDING) return
+        val saveAction = {
+            if (hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+//                if (messageEntity.type == 4) {
+//                    XPopup.Builder(this)
+//                        .dismissOnBackPressed(true)
+//                        .dismissOnTouchOutside(false)
+//                        .asCustom(progressDialog)
+//                        .show()
+//                }
+
+//                viewModel.saveCheck(
+//                    messageEntity.conId,
+//                    messageEntity.type,
+//                    onSuccess = {
+//                        viewModel.saveMessageContent(messageEntity)
+//                    })
+
+            } else {
+//                requestStoragePermission({}, {})
+            }
+        }
+        val strings = when (messageEntity.type) {
+            1, 32, 21 -> {//text
+                    if (messageEntity.senderId == SessionPreferences.id) {
+                        arrayOf(
+                            getString(R.string.fb_message_bubbles_copy),
+                            getString(R.string.fb_message_bubbles_reply),
+                            getString(R.string.delete)
+                        )
+                    } else {
+                        arrayOf(
+                            getString(R.string.fb_message_bubbles_copy),
+                            getString(R.string.fb_message_bubbles_reply)
+                        )
+                    }
+            }
+            3 -> {//image
+                if (messageEntity.senderId == SessionPreferences.id) {
+                    arrayOf(
+                        getString(R.string.fb_save),
+                        getString(R.string.fb_message_bubbles_reply),
+                        getString(R.string.delete)
+                    )
+                } else {
+                    arrayOf(
+                        getString(R.string.fb_save),
+                        getString(R.string.fb_message_bubbles_reply)
+                    )
+                }
+            }
+            4 -> {//video
+                if (messageEntity.senderId == SessionPreferences.id) {
+                    arrayOf(
+                        getString(R.string.fb_save),
+                        getString(R.string.fb_message_bubbles_reply),
+                        getString(R.string.delete)
+                    )
+                } else {
+                    arrayOf(
+                        getString(R.string.fb_save),
+                        getString(R.string.fb_message_bubbles_reply)
+                    )
+                }
+            }
+            else -> {
+                null
+            }
+        }
+        if (strings != null) {
+
+            Timber.d("view top:${view.top} bottom:${view.bottom} x:${view.x} y:${view.y}")
+
+            XPopup.Builder(this)
+                .atView(view)
+                .popupPosition(PopupPosition.Right)
+                .autoDismiss(true)
+                .hasShadowBg(false)
+                .asAttachList(
+                    strings, null
+                ) { _, text ->
+                    when (text) {
+                        getString(R.string.fb_message_bubbles_copy) -> {
+                            val clip = ClipData.newPlainText(
+                                getString(R.string.app_name),
+                                messageEntity.content
+                            )
+                            clipboardManager.setPrimaryClip(clip)
+                            marsToast(R.string.fb_coppied)
+                        }
+
+                        getString(R.string.fb_message_bubbles_reply) -> {
+                            val payload =
+                                MessageEntity.Payload.fromJson(messageEntity.payload)
+                                    ?: return@asAttachList
+                            payload.targetMessage = null
+                            targetMessage = MessageEntity.TargetMessage(
+                                messageEntity.uuid,
+                                payload,
+                                name,
+                                messageEntity.type
+                            )
+                            LiveEventBus.get(Constants.EVENT_BUS_REPLY)
+                                .postDelay(messageEntity, 300)
+                        }
+                        getString(R.string.delete) -> {
+                            if (messageEntity.sendStatus == SEND_STATUS_FAILED) {
+                                viewModel.deleteMessage(messageEntity)
+                            } else {
+                                deleteMessageDialog(messageEntity)
+                            }
+                        }
+                        getString(R.string.fb_save) -> {
+                            saveAction.invoke()
+                        }
+//                        getString(R.string.fb_mention) -> {
+//                            lifecycleScope.launch(Dispatchers.IO) {
+//                                val userData =
+//                                    viewModel.getUserDataFromDB(messageEntity.senderId)
+//                                if (userData == null) {
+//                                    viewModel.getPersonalData(userId = messageEntity.senderId) {}
+//                                    viewModel.personalLiveData.observe(this@MessageFragment) {
+//                                        val message = "@${it.userName} "
+//                                        insertAtFocusedPosition(edtChatInput, message)
+//                                    }
+//                                } else {
+//                                    withContext(Dispatchers.Main) {
+//                                        val message = "@${userData.username} "
+//                                        insertAtFocusedPosition(edtChatInput, message)
+//                                    }
+//                                }
+//                            }
+//                        }
+                    }
+                }.show()
+        }
+    }
+
+    private fun resendMessage(messageEntity: MessageEntity) {
+        alertDialog {
+            messageResource = R.string.fb_resend_this_message
+            positiveButton(R.string.fb_resend) {
+                when (messageEntity.type) {
+                    1 -> {
+                        scrollToBottom()
+                        viewModel.resendTextMessage(
+                            messageEntity,
+                        )
+                    }
+                    3 -> {
+                        //重发图片
+                        val path = messageEntity.localResPath
+                        val payload =
+                            MessageEntity.Payload.fromJson(messageEntity.payload)
+                        if (path != null) {
+                            val file = File(path)
+                            if (file.exists()) {
+                                scrollToBottom()
+                                sharedViewModel.sendImageMessage(
+                                    payload?.liveId ?: "-1",
+                                    1,
+                                    path,
+                                    messageEntity.conId,
+                                    payload?.width ?: 0,
+                                    payload?.height ?: 0,
+                                    -1
+                                )
+                                messageAdapter.removeItem(messageEntity.uuid)
+                                viewModel.deleteMessage(messageEntity)
+                            }
+                        }
+                    }
+                    4 -> {
+                        //重发视频
+                        val path = messageEntity.localResPath
+                        if (path != null) {
+                            val file = File(path)
+                            if (file.exists()) {
+                                val payload =
+                                    MessageEntity.Payload.fromJson(messageEntity.payload)
+                                scrollToBottom()
+                                sharedViewModel.sendVideoMessage(
+                                    path,
+                                    messageEntity.conId,
+                                    payload?.width ?: 100,
+                                    payload?.height ?: 100,
+                                    (payload?.length ?: 100).toLong(),
+                                    (payload?.size ?: 100).toLong(),
+                                    1,
+                                    payload?.liveId ?: "-1",
+                                    -1
+                                )
+                                messageAdapter.removeItem(messageEntity.uuid)
+                                viewModel.deleteMessage(messageEntity)
+                            }
+                        }
+                    }
+                    32 -> {
+                        scrollToBottom()
+                        viewModel.resendTextMessage(
+                            messageEntity,
+                        )
+                    }
+                }
+            }
+            cancelButton()
+        }.show()
     }
 
     private fun isFullScreen(recyclerView: RecyclerView?): Boolean {

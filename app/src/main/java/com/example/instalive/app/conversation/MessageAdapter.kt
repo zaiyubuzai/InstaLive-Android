@@ -285,11 +285,11 @@ class MessageAdapter(
                 holder.binding.messageEntity = item
                 holder.binding.executePendingBindings()
 
-                Utils.changeImageViewWH(
-                    holder.binding.videoCover,
-                    payload?.width ?: 100,
-                    payload?.height ?: 100
-                )
+//                Utils.changeImageViewWH(
+//                    holder.binding.videoCover,
+//                    payload?.width ?: 100,
+//                    payload?.height ?: 100
+//                )
 
                 holder.binding.avatar.onClick {
                     onMessageActionsListener.onPortraitClicked(
@@ -610,22 +610,23 @@ class MessageAdapter(
         when (messageEvent.type) {
             1 -> {//自己发送新增
                 val it = messageEvent.messageEntity ?: return
-                if (it.conId == conId) {
-                    messageUUIDList.add(it.uuid)
-                    val insertMessage = checkInsertMessage(
-                        it,
-                        if (messages.isEmpty()) null else messages.first()
-                    )
-                    if (insertMessage != null) {
-                        messageUUIDList.add(insertMessage.uuid)
-                        messages.add(0, insertMessage)
+                withContext(Dispatchers.Main){
+
+                        messageUUIDList.add(it.uuid)
+                        val insertMessage = checkInsertMessage(
+                            it,
+                            if (messages.isEmpty()) null else messages.first()
+                        )
+                        if (insertMessage != null) {
+                            messageUUIDList.add(insertMessage.uuid)
+                            messages.add(0, insertMessage)
+                            notifyItemInserted(0)
+                            scrollToBottom.invoke(true)
+                        }
+
+                        messages.add(0, it)
                         notifyItemInserted(0)
                         scrollToBottom.invoke(true)
-                    }
-
-                    messages.add(0, it)
-                    notifyItemInserted(0)
-                    scrollToBottom.invoke(true)
                 }
             }
             2 -> {//socket新增
@@ -827,23 +828,25 @@ class MessageAdapter(
             }
             6 -> {
                 viewModel.getMessagesByConIdDesc(conId, messageEvent.timestampStart){ messageList ->
-                    val temporaryList = messages.toMutableList()
-                    messageList.toList().forEachIndexed {index, it ->
-                        if (!messageUUIDList.contains(it.uuid)) {
-                            messageUUIDList.add(it.uuid)
-                            val insertMessage = checkInsertMessage(
-                                if (index == messageList.size -1) {
-                                    if (messages.isEmpty()) null else messages.first()
-                                } else messageList[index - 1], it
-                            )
-                            if (insertMessage != null) {
-                                temporaryList.add(insertMessage)
+                    try {
+                        val temporaryList = messages.toMutableList()
+                        messageList.toList().forEachIndexed { index, it ->
+                            if (!messageUUIDList.contains(it.uuid)) {
+                                messageUUIDList.add(it.uuid)
+                                val insertMessage = checkInsertMessage(
+                                    it,
+                                    if (index == messageList.size - 1) {
+                                        if (messages.isEmpty()) null else messages.first()
+                                    } else messageList[index + 1]
+                                )
+                                if (insertMessage != null) {
+                                    temporaryList.add(insertMessage)
+                                }
+                                temporaryList.add(it)
                             }
-                            temporaryList.add(it)
                         }
-                    }
 
-                    Collections.sort(temporaryList, comparator)
+                        Collections.sort(temporaryList, comparator)
 //                    var index = -1
 //                    val unreadDividerMessage =
 //                        checkAddUnreadMessage(temporaryList.toMutableList(), viewModel, true) {
@@ -860,20 +863,23 @@ class MessageAdapter(
 //                        temporaryList.add(index + 1, unreadDividerMessage)
 //                    }
 
-                    withContext(Dispatchers.Main) {
-                        val noMessage = messages.isEmpty()
-                        val result = DiffUtil.calculateDiff(
-                            MessageListComparator(
-                                temporaryList,
-                                messages.toList(),
-                            ), false
-                        )
-                        messages = temporaryList
-                        Timber.d("message size 6: ${messages.size}, ${originalMessages.size}")
-                        result.dispatchUpdatesTo(this@MessageAdapter)
-                        if (noMessage) {
-                            scrollToBottom.invoke(true)
+                        withContext(Dispatchers.Main) {
+                            val noMessage = messages.isEmpty()
+                            val result = DiffUtil.calculateDiff(
+                                MessageListComparator(
+                                    temporaryList,
+                                    messages.toList(),
+                                ), false
+                            )
+                            messages = temporaryList
+                            Timber.d("message size 6: ${messages.size}, ${originalMessages.size}")
+                            result.dispatchUpdatesTo(this@MessageAdapter)
+                            if (noMessage) {
+                                scrollToBottom.invoke(true)
+                            }
                         }
+                    }catch (e: Exception){
+                        e.printStackTrace()
                     }
                 }
             }

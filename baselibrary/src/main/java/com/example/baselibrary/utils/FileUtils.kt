@@ -215,8 +215,8 @@ object FileUtils {
     /**
      * 保存图片到sdcard中
      */
-    fun writeBitmapToFile(context: Context, pBitmap: Bitmap?, strName: String?): String {
-        val file = File(getRecordVoicePath(context), strName)
+    fun writeBitmapToFile(context: Context, pBitmap: Bitmap?, strName: String): String {
+        val file = File(MediaPathUtil.getCustomImageOutputPath(context, strName))
         if (pBitmap == null) {
             return ""
         }

@@ -92,4 +92,6 @@ dependencies {
 
     //svga
     implementation 'com.github.svga:SVGAPlayer-Android:2.6.1'
+    //视频压缩
+    implementation 'com.github.yellowcath:VideoProcessor:2.4.2'
 }

@@ -1,9 +1,8 @@
 package com.example.baselibrary.utils
 
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.InputStream
+import android.graphics.Bitmap
+import android.media.ExifInterface
+import java.io.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
@@ -53,6 +52,29 @@ object ZipUtils {
             }
         }
         inZip.close()
+    }
+
+    fun pictureDegree(path: String): Int {
+        try {
+            val exifInterface = ExifInterface(path)
+            val orientation = exifInterface.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_NORMAL
+            )
+            return when (orientation) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> {
+                    90
+                }
+                ExifInterface.ORIENTATION_ROTATE_270 -> {
+                    270
+                }
+                else -> {
+                    0
+                }
+            }
+        } catch (e: Exception) {
+            return 0
+        }
     }
 
     @Throws(Exception::class)
@@ -242,4 +264,30 @@ object ZipUtils {
         inZip.close()
         return fileList
     }
+
+    /**
+     * 质量压缩
+     * 设置bitmap options属性，降低图片的质量，像素不会减少
+     * 第一个参数为需要压缩的bitmap图片对象，第二个参数为压缩后图片保存的位置
+     * 设置options 属性0-100，来实现压缩（因为png是无损压缩，所以该属性对png是无效的）
+     *
+     * @param bmp
+     * @param file
+     */
+    fun qualityCompress(bmp: Bitmap, file: File?) {
+        // 0-100 100为不压缩
+        val quality = 40
+        val baos = ByteArrayOutputStream()
+        // 把压缩后的数据存放到baos中
+        bmp.compress(Bitmap.CompressFormat.JPEG, quality, baos)
+        try {
+            val fos = FileOutputStream(file)
+            fos.write(baos.toByteArray())
+            fos.flush()
+            fos.close()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
 }

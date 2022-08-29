@@ -22,4 +22,27 @@ interface IConversationRequest {
         messageEntity: MessageEntity,
         remoteEventEmitter: RemoteEventEmitter
     )
+
+    suspend fun pullUnread(
+        timeToken: Long,
+        pullUUID: String,
+        remoteEventEmitter: RemoteEventEmitter?
+    )
+
+    suspend fun reportConversationHaveRead(
+        conversationId: String,
+        timeToken: Long,
+        remoteEventEmitter: RemoteEventEmitter?
+    )
+
+    suspend fun messageReportACK(
+        uuids: String,
+        remoteEventEmitter: RemoteEventEmitter?,
+    )
+
+    suspend fun fetchConversation(
+        conversationId: String,
+        remoteEventEmitter: RemoteEventEmitter?,
+        pendingNotificationMessages: List<MessageEntity>?
+    )
 }

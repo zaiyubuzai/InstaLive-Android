@@ -1,8 +1,11 @@
 package com.example.instalive.utils
 
+import android.app.people.ConversationStatus
+import com.example.instalive.api.ConversationDataRepository
 import com.example.instalive.app.SessionPreferences
 import com.google.gson.Gson
 import com.venus.dm.model.VenusDirectMessageWrapper
+import com.venus.framework.util.isNeitherNullNorEmpty
 import io.socket.client.IO
 import io.socket.client.Socket
 import kotlinx.coroutines.CoroutineScope
@@ -10,9 +13,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.*
 
 
+@ExperimentalStdlibApi
 object DMSocketIO : BaseInstaSocket() {
+    var pullUUID = ""
     private var lastTimeStampReported: Boolean = false
     private val opts = IO.Options()
     private val socket: Socket =
@@ -102,6 +108,7 @@ object DMSocketIO : BaseInstaSocket() {
             }
         }.on(Socket.EVENT_CONNECT) {
             Timber.d("LOADING: EVENT_CONNECT")
+            pullUnread()
         }.on(Socket.EVENT_DISCONNECT) {
             Timber.d("LOADING: EVENT_DISCONNECT")
         }.on(Socket.EVENT_CONNECT_ERROR) {
@@ -132,7 +139,10 @@ object DMSocketIO : BaseInstaSocket() {
 
     @OptIn(ExperimentalStdlibApi::class)
     fun initSocket() {
-        if (socket.connected()) return
+        if (socket.connected()){
+            pullUnread()
+            return
+        }
 
         releaseSocket()
         startMessageJob()
@@ -153,6 +163,30 @@ object DMSocketIO : BaseInstaSocket() {
         Timber.d("Alert: release dm socket...")
         socket.disconnect()
         stopMessageJob()
+    }
+
+    fun pullUnread() {
+        if (SessionPreferences.id.isEmpty()) {
+            return
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            val lastReceivedTimeToken = if (lastTimeStampReported && lastTimeStamp > 0L) {
+                dao.getLatestRecievedTimetoken(SessionPreferences.id) ?: 0L
+            } else {
+                lastTimeStampReported = true
+                lastTimeStamp
+            }
+            pullUUID = UUID.randomUUID().toString()
+            ConversationDataRepository.pullUnread(
+                lastReceivedTimeToken,
+                pullUUID,
+                null
+            )
+        }
+    }
+
+    fun sendMessage(event: String, msg: String) {
+        socket.emit(event, msg)
     }
 
 }

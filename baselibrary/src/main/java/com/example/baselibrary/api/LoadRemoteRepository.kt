@@ -1,9 +1,6 @@
 package com.example.baselibrary.api;
 
 import com.example.baselibrary.model.PresignData
-import com.example.baselibrary.network.BaseProvider
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType
@@ -20,9 +17,9 @@ import java.io.IOException
 
 object LoadRemoteRepository : BaseRemoteRepository() {
 
-    suspend fun uploadDMVideo(
+    suspend fun uploadMedia(
         path: String,
-        fileRequestBody: String,
+        fileRequestBodyStr: String,
         remoteEventEmitter: RemoteEventEmitter,
         onSuccess: (String) -> Unit,
         presignFunction: suspend () -> BaseResponse<PresignData>,
@@ -57,7 +54,7 @@ object LoadRemoteRepository : BaseRemoteRepository() {
             val token =
                 RequestBody.create(MediaType.parse("multipart/form-data"), data.fields.token)
             val fileRequestBody =
-                RequestBody.create(MediaType.parse(fileRequestBody), File(path))
+                RequestBody.create(MediaType.parse(fileRequestBodyStr), File(path))
             val filePartBody = MultipartBody.Part.createFormData("file", fileName, fileRequestBody)
 
             withContext(Dispatchers.IO) {

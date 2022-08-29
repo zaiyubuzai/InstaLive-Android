@@ -119,6 +119,15 @@
     <string name="fb_send_a_gift">Send a %1$s</string>
     <string name="fb_send">Send</string>
 
+    <string name="fb_resend_this_message">Resend this message?</string>
+    <string name="fb_resend">Resend</string>
+    <string name="delete">Delete</string>
+    <string name="fb_save">Save</string>
+    <string name="fb_message_bubbles_reply">Reply</string>
+    <string name="fb_message_bubbles_copy">Copy</string>
+    <string name="fb_coppied">Coppied</string>
+    <string name="fb_message_reply_at">"Reply at "</string>
+
     <string-array name="Months">
         <item>January</item>
         <item>February</item>

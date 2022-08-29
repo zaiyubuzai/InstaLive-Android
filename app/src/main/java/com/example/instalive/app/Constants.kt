@@ -12,4 +12,5 @@ object Constants {
 
     //event themselves
     const val EVENT_BUS_LOGIN_SUCCESS = "login_success"
+    const val EVENT_BUS_REPLY: String = "reply"
 }
