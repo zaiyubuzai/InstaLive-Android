@@ -2,6 +2,7 @@ package com.example.instalive.app
 
 import com.example.instalive.api.RetrofitProvider
 import com.example.instalive.model.LoginData
+import com.venus.dm.model.UserData
 import splitties.preferences.Preferences
 import splitties.preferences.edit
 
@@ -29,6 +30,32 @@ object SESSION {
         }
         //刷新ua
         RetrofitProvider.generateUA()
+    }
+
+    fun retrieveMeInfo(): UserData? {
+        return if (SessionPreferences.id.isNotEmpty()) {
+            SessionPreferences.let {
+                UserData(
+                    id = SessionPreferences.id,
+                    nickname = SessionPreferences.nickName ?: "",
+                    username = SessionPreferences.userName ?: "",
+                    portrait = SessionPreferences.portrait ?: "",
+                    email = SessionPreferences.email ?: "",
+                    bio = SessionPreferences.bio ?: "",
+                    mobile = SessionPreferences.phone,
+                    location = null,
+                    stat = null,
+                    relationship = -1,
+                    portraitIc = null,
+                    muteTimestamp = SessionPreferences.muteTimestamp,
+                    gender = SessionPreferences.gender,
+                    chatState = SessionPreferences.state,
+                    identity = SessionPreferences.identity
+                )
+            }
+        } else {
+            null
+        }
     }
 }
 

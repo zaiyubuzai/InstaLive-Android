@@ -23,6 +23,8 @@ import com.example.instalive.api.DataRepository
 import com.example.instalive.app.SessionPreferences
 import com.example.instalive.db.InstaLiveDBProvider
 import com.example.instalive.db.MessageComposer
+import com.example.instalive.model.JoinLiveError
+import com.example.instalive.model.LiveStateInfo
 import com.google.gson.Gson
 import com.hw.videoprocessor.VideoProcessor
 import com.venus.dm.db.entity.ConversationsEntity
@@ -497,5 +499,12 @@ class SharedViewModel: BaseViewModel() {
             }
         }
     }
+
+    //region 群直播间
+    var liveStateInfoLiveData = MutableLiveData<Pair<LiveStateInfo?, JoinLiveError?>>()
+    var liveJoinData = MutableLiveData<Pair<LiveStateInfo?, JoinLiveError?>>()
+    var liveUsersSizeData = MutableLiveData<Int>()
+    var liveOnlineCount = MutableLiveData<String>()
+    //endregion
 
 }

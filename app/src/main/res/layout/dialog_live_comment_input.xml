@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/contentContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.example.instalive.view.MaxLimitRecyclerView
+        android:id="@+id/mentionListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/inputWrapper"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:limit_maxHeight="248dp"
+        tools:itemCount="4"
+        tools:listitem="@layout/item_mention_search"
+        tools:visibility="visible" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/loadingMention"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dimen_40dp"
+        android:layout_gravity="center"
+        android:padding="@dimen/dimen_0dp"
+        android:scaleX="1.7"
+        android:scaleY="1.7"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/mentionListView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_fileName="lotLoading.json"
+        app:lottie_loop="true" />
+
+    <LinearLayout
+        android:id="@+id/inputWrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/dimen_16dp"
+        android:background="@drawable/bg_374055_12c"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_marginBottom="@dimen/dimen_16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="16dp">
+
+        <com.example.instalive.view.CutCopyPasteEditText
+            android:id="@+id/edtAddComment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dimen_16dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:ellipsize="end"
+            android:hint="@string/fb_start_a_message"
+            android:imeOptions="actionSend"
+            android:inputType="textMultiLine"
+            android:maxLines="3"
+            android:textColor="@color/white"
+            android:textColorHint="@color/black_gray"
+            android:textSize="15sp"/>
+
+        <ImageView
+            android:id="@+id/btnSend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/dimen_4dp"
+            android:layout_marginEnd="12dp"
+            android:layerType="software"
+            android:src="@mipmap/ic_send_message_no2" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

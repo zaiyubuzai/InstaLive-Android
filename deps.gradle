@@ -27,6 +27,8 @@ ext {
     V_FRESCO = '1.12.1'
     V_ANDROID_KTX = '1.0.2'
 
+    V_AGORA = '3.2.1'//声网版本
+
     V_LEAKCANARY = '1.5.4'
     V_JUNIT = '4.12'
     V_MOCKITO = '2.7.22'

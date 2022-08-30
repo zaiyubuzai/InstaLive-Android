@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/memberAvatar"
+            android:layout_width="@dimen/dimen_50dp"
+            android:layout_height="@dimen/dimen_50dp"
+            android:layout_centerVertical="true"
+            android:layout_marginVertical="@dimen/dimen_8dp"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/bg_374055_12c"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="@dimen/dimen_16dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/fb_at_everyone"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toTopOf="@+id/username"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toEndOf="@+id/memberAvatar"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_goneMarginStart="@dimen/dimen_16dp" />
+
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="@dimen/dimen_16dp"
+            android:includeFontPadding="false"
+            android:textColor="#dddde8"
+            android:textSize="12sp"
+            android:text="@string/fb_notify_everyone_in_this_group"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/memberAvatar"
+            app:layout_constraintTop_toBottomOf="@+id/name"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_goneMarginStart="@dimen/dimen_16dp"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

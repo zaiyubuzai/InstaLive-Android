@@ -14,4 +14,14 @@
         <attr name="limit_maxHeight" format="reference|dimension" />
         <attr name="limit_maxWidth" format="reference|dimension" />
     </declare-styleable>
+
+    <declare-styleable name="CountDownProgressBar">
+        <attr name="countDown_circleWidth" format="dimension" />
+        <attr name="countDown_centerTextSize" format="dimension" />
+        <attr name="countDown_betaAngle" format="integer" />
+        <attr name="countDown_firstColor" format="color" />
+        <attr name="countDown_secondColor" format="color" />
+        <attr name="countDown_centerTextColor" format="color" />
+        <attr name="countDown_isShowGradient" format="boolean" />
+    </declare-styleable>
 </resources>

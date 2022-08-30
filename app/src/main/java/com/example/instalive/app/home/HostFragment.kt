@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import com.example.baselibrary.views.BaseFragment
 import com.example.baselibrary.views.DataBindingConfig
 import com.example.instalive.R
+import com.example.instalive.app.SessionPreferences
 import com.example.instalive.databinding.FragmentHostBinding
 import kotlinx.android.synthetic.main.fragment_host.*
 import splitties.fragments.start
@@ -26,6 +27,8 @@ class HostFragment : BaseFragment<HomeViewModel, FragmentHostBinding>() {
     }
 
     override fun initData(savedInstanceState: Bundle?) {
+        nickname.text = SessionPreferences.nickName
+        username.text = SessionPreferences.userName
         btnDashboard.onClick{
 
         }

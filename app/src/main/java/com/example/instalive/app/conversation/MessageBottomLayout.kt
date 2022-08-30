@@ -55,7 +55,7 @@ class MessageBottomLayout @JvmOverloads constructor(
                 btnSend.setImageResource(R.mipmap.ic_send_message_no2)
                 mentionListView?.isVisible = false
                 loadingMention?.isVisible = false
-                if (!constraintLayout.isVisible) {
+                if (!replyContainer.isVisible) {
                     btnSend.isVisible = false
                     ll_btn.isVisible = true
                 }

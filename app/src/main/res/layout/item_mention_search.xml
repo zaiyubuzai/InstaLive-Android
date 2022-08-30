@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="groupMember"
+            type="com.venus.dm.model.GroupMember" />
+
+        <variable
+            name="level"
+            type="Integer" />
+
+        <variable
+            name="isNewGifter"
+            type="Boolean" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:alpha="@{groupMember.online? 1.0f : 0.4f}">
+
+        <ImageView
+            android:id="@+id/memberAvatar"
+            android:layout_width="@dimen/dimen_50dp"
+            android:layout_height="@dimen/dimen_50dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginVertical="@dimen/dimen_8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/roleIcon"
+            android:layout_width="21dp"
+            android:layout_height="21dp"
+            android:layout_marginStart="@dimen/dimen_32dp"
+            android:layout_marginTop="@dimen/dimen_32dp"
+            app:layout_constraintStart_toStartOf="@+id/memberAvatar"
+            app:layout_constraintTop_toTopOf="@+id/memberAvatar" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/levelIconContainer"
+            isVisible="@{level>-1}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_16dp"
+            android:background="@drawable/radius_bg_shape_gray"
+            android:minWidth="35dp"
+            android:paddingHorizontal="@dimen/dimen_2dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@id/name"
+            app:layout_constraintTop_toTopOf="@id/name"
+            app:layout_constraintStart_toEndOf="@+id/memberAvatar"
+            app:layout_constraintVertical_chainStyle="packed">
+
+            <ImageView
+                android:id="@+id/levelIconView"
+                android:layout_width="@dimen/dimen_17dp"
+                android:layout_height="13dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/levelTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:lineSpacingExtra="0sp"
+                android:text="@{level.toString()}"
+                android:textColor="#ffffff"
+                android:textSize="13sp"
+                android:textStyle="normal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/levelIconView"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="44" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="@dimen/dimen_16dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@{groupMember.nickname}"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toTopOf="@+id/username"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toEndOf="@+id/levelIconContainer"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_goneMarginStart="@dimen/dimen_16dp"
+            tools:text="aasdfasdfasdfaskasdfaxjcv;" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/onlineIcon"
+            android:layout_width="@dimen/dimen_10dp"
+            android:layout_height="@dimen/dimen_10dp"
+            android:src="@drawable/bg_text_white_10c"
+            isVisible="@{groupMember.online}"
+            android:layout_marginTop="@dimen/dimen_1dp"
+            android:layout_marginStart="@dimen/dimen_16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/username"
+            app:layout_constraintStart_toEndOf="@+id/memberAvatar"
+            app:layout_constraintTop_toTopOf="@+id/username"/>
+
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:includeFontPadding="false"
+            android:layout_marginEnd="@dimen/dimen_16dp"
+            android:textColor="#dddde8"
+            android:textSize="12sp"
+            android:text="@{groupMember.username}"
+            app:layout_goneMarginStart="@dimen/dimen_16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/onlineIcon"
+            app:layout_constraintTop_toBottomOf="@+id/name"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="\@asdfasdf" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

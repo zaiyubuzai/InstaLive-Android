@@ -37,6 +37,12 @@
         android:theme="@style/Theme.InstaLive"
         tools:replace="android:allowBackup">
         <activity
+            android:name=".app.live.LiveHostActivity"
+            android:exported="true" />
+        <activity
+            android:name=".app.live.LiveActivity"
+            android:exported="true" />
+        <activity
             android:name=".app.conversation.MessageActivity"
             android:exported="true" />
         <activity

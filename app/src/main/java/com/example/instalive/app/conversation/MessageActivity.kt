@@ -12,7 +12,6 @@ import com.example.baselibrary.utils.hideKeyboard
 import com.example.baselibrary.views.DataBindingConfig
 import com.example.instalive.R
 import com.example.instalive.app.Constants
-import com.example.instalive.app.base.InstaBaseActivity
 import com.example.instalive.databinding.ActivityMessageBinding
 import com.venus.dm.db.entity.ConversationsEntity
 import com.venus.dm.db.entity.MessageEntity
@@ -20,6 +19,7 @@ import kotlinx.android.synthetic.main.activity_message.*
 import timber.log.Timber
 import java.util.*
 import android.content.pm.ActivityInfo
+import android.graphics.Bitmap
 import android.os.Handler
 import android.os.Message
 import android.view.inputmethod.InputMethodManager
@@ -43,11 +43,9 @@ import com.luck.picture.lib.language.LanguageConfig
 import com.luck.picture.lib.listener.OnResultCallbackListener
 import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.enums.PopupPosition
-import com.lxj.xpopup.interfaces.XPopupCallback
 import com.venus.dm.app.ChatConstants
 import com.venus.dm.db.entity.MessageEntity.Companion.SEND_STATUS_FAILED
 import com.venus.dm.db.entity.MessageEntity.Companion.SEND_STATUS_SENDING
-import com.venus.dm.db.entity.MessageEntity.Companion.SEND_STATUS_SUCCESS
 import com.venus.dm.model.event.MessageEvent
 import kotlinx.android.synthetic.main.message_bottom_layout.*
 import kotlinx.coroutines.*
@@ -63,7 +61,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 
 
 @ExperimentalStdlibApi
-class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBinding>() {
+class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
 
     private lateinit var conversationsEntity: ConversationsEntity
     private lateinit var screenName: String
@@ -85,8 +83,8 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
     private var isShowNewMessage = false//unread message气泡正在显示
     private var isShowATMessage = false//@气泡正在显示
     private var isScrollToNew = false//点击unread message气泡后，消息列表正在滚动向
-    private var isScrollToAt = false
     private var isFirstResume = true
+    private var isScrollToAt = false
     private var isPinDoing = false
 
     private var newMessageUUID: String? = null//unread message分割线下第一个消息的uuid
@@ -135,7 +133,7 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
             if (it is MessageEntity) {
                 reply.text =
                     "${getString(R.string.fb_message_reply_at)}${targetMessage?.senderName ?: ""}: "
-                constraintLayout.isVisible = true
+                replyContainer.isVisible = true
                 btnSend.isVisible = true
                 ll_btn.isVisible = false
                 edtChatInput.requestFocus()
@@ -177,7 +175,7 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
                     }
 
                     reply.text = ""
-                    constraintLayout.isVisible = false
+                    replyContainer.isVisible = false
 
                     targetMessage = null
                 }
@@ -205,6 +203,16 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
             }
 
         })
+
+        deleteReply.onClick{
+            targetMessage = null
+            reply.text = ""
+            replyContainer.isVisible = false
+            if (edtChatInput.text.toString().isEmpty()) {
+                btnSend.isVisible = false
+                ll_btn.isVisible = true
+            }
+        }
     }
 
     private fun initList() {
@@ -967,6 +975,10 @@ class MessageActivity : InstaBaseActivity<MessageViewModel, ActivityMessageBindi
         super.onDestroy()
         messageEventJob?.cancel()
         messageEventJob = null
+    }
+
+    override fun showLikeFavor(resource: Bitmap) {
+        messageLikesAnimView?.addFavor(resource)
     }
 
 }

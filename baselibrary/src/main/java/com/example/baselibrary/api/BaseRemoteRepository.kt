@@ -104,7 +104,7 @@ abstract class BaseRemoteRepository {
 
     open fun repositoryIOException() {}
 
-    protected fun <T> processListData(
+    open fun <T> processListData(
         response: BaseResponse<List<T>>,
         meta: MutableLiveData<Meta>,
         liveData: MutableLiveData<List<T>>,
@@ -126,7 +126,7 @@ abstract class BaseRemoteRepository {
         }
     }
 
-    protected fun <T, E> processListData(
+    open fun <T, E> processListData(
         response: BaseResponseWithExt<List<T>, E>,
         meta: MutableLiveData<Meta>,
         liveData: MutableLiveData<List<T>>,

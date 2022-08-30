@@ -57,6 +57,7 @@ dependencies {
     implementation project(":baselibrary")
     implementation project(":picture_library")
     implementation project(":dmsdk")
+    implementation project(":live-sdk")
 
     //live event bus
     implementation 'com.jeremyliao:live-event-bus-x:1.7.3'

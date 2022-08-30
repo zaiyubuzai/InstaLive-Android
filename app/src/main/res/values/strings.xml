@@ -126,7 +126,26 @@
     <string name="fb_message_bubbles_reply">Reply</string>
     <string name="fb_message_bubbles_copy">Copy</string>
     <string name="fb_coppied">Coppied</string>
-    <string name="fb_message_reply_at">"Reply at "</string>
+    <string name="fb_message_reply_at">"Reply @ "</string>
+
+    <string name="live_duration">Live duration</string>
+    <string name="viewers">Viewers</string>
+    <string name="likes1">Likes</string>
+    <string name="pause">Pause</string>
+    <string name="fb_done">Done</string>
+    <string name="poor_connection_please_check_network">Poor network, please switch to a better network.</string>
+    <string name="poor_network_you_may_try_later">Poor network. You may try later.</string>
+    <string name="something_goes_wrong_error_code">Something goes wrong. You may try later.(%1$s)</string>
+    <string name="ending_live_video">Ending Live Video</string>
+    <string name="live_online_count">%1$s</string>
+    <string name="fb_online">Online</string>
+    <string name="your_live_video_has_ended">Your live video has end</string>
+    <string name="fb_send_gift">Send Gift</string>
+    <string name="fb_notify_everyone_in_this_group">Notify everyone in this group</string>
+    <string name="fb_at_moderators">\@moderators</string>
+    <string name="fb_notify_moderators_in_this_group">Notify moderators in this group</string>
+    <string name="fb_moderators_">moderators</string>
+    <string name="fb_everyone_">everyone</string>
 
     <string-array name="Months">
         <item>January</item>

@@ -66,7 +66,7 @@
                 messageImageCover="@{messageEntity}"
                 android:layout_width="140dp"
                 android:layout_height="140dp"
-                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize12dp"/>
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize12dp" />
 
             <ProgressBar
                 android:id="@+id/sendingProgress"

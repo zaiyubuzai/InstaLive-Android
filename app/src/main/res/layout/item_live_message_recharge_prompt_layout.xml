@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="messageEntity"
+            type="com.venus.dm.db.entity.MessageEntity" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/dimen_8dp">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iconSystem"
+            android:layout_width="@dimen/dimen_36dp"
+            android:layout_height="@dimen/dimen_36dp"
+            android:src="@drawable/bg_reply"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/contentView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="6sp"
+            android:shadowColor="#80000000"
+            android:shadowDx="0"
+            android:shadowDy="2"
+            android:shadowRadius="2"
+            android:textColor="#ffffff"
+            android:text="@{messageEntity.content}"
+            android:textSize="15sp"
+            android:textStyle="normal"
+            android:layout_marginHorizontal="@dimen/dimen_16dp"
+            app:layout_constraintStart_toEndOf="@+id/iconSystem"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="The other has only 1min left, remind them to recharge ASAP." />
+
+        <TextView
+            android:id="@+id/rechargeBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_6dp"
+            android:background="@drawable/bg_text_white_10c"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#ffcc33"
+            android:textSize="13sp"
+            android:padding="5dp"
+            android:text="@string/fb_recharge"
+            android:textStyle="normal"
+            app:layout_constraintStart_toStartOf="@+id/contentView"
+            app:layout_constraintTop_toBottomOf="@+id/contentView"
+            tools:text="Recharge" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

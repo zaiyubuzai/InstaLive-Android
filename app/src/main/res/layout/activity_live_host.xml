@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@mipmap/bg_live"
+        android:clipChildren="false"
+        android:keepScreenOn="true"
+        tools:context=".app.live.LiveHostActivity">
+
+        <FrameLayout
+            android:id="@+id/fragment_container"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <FrameLayout
+            android:id="@+id/fragmentHostInteractionContainer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/pager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/giftContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <FrameLayout
+                android:id="@+id/giftFirstContainer"
+                android:layout_width="214dp"
+                android:layout_height="52dp"
+                android:layout_marginBottom="@dimen/dimen_16dp"
+                app:layout_constraintBottom_toTopOf="@+id/giftSecondContainer"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <FrameLayout
+                android:id="@+id/giftSecondContainer"
+                android:layout_width="214dp"
+                android:layout_height="52dp"
+                android:layout_marginBottom="308dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <com.example.instalive.view.KsgLikeView
+                android:id="@+id/liveLikesAnimView"
+                android:layout_width="@dimen/dimen_96dp"
+                android:layout_height="300dp"
+                android:layout_marginBottom="76dp"
+                app:ksg_curve_duration="2000"
+                app:ksg_enter_duration="500"
+                app:ksg_image_width="@dimen/dimen_32dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <com.opensource.svgaplayer.SVGAImageView
+                android:id="@+id/giftAnim"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                app:loopCount="1"
+                tools:visibility="gone"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <Button
+            android:id="@+id/btnCover"
+            android:layout_width="270dp"
+            android:layout_height="32dp"
+            android:background="@color/transparent"
+            android:textColor="@color/white"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!--设置直播结束后展示时长和观看人数ui-->
+        <RelativeLayout
+            android:id="@+id/closeLiveContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/cover"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop" />
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true">
+
+                <TextView
+                    android:id="@+id/desc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+
+                <View
+                    android:id="@+id/deliver"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/dimen_1dp"
+                    android:layout_below="@id/desc"
+                    android:layout_alignStart="@id/desc"
+                    android:layout_alignEnd="@id/desc"
+                    android:layout_marginTop="@dimen/dimen_8dp"
+                    android:background="@color/black_gray" />
+
+                <TextView
+                    android:id="@+id/liveDurationDesc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/deliver"
+                    android:layout_alignStart="@id/desc"
+                    android:layout_marginTop="@dimen/dimen_8dp"
+                    android:text="@string/live_duration"
+                    android:textColor="@color/white"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/liveDuration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/deliver"
+                    android:layout_alignEnd="@id/desc"
+                    android:layout_marginTop="@dimen/dimen_8dp"
+                    android:textColor="@color/white"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/viewersDesc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/liveDurationDesc"
+                    android:layout_alignStart="@id/liveDurationDesc"
+                    android:layout_marginTop="@dimen/dimen_8dp"
+                    android:text="@string/viewers"
+                    android:textColor="@color/white"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/viewers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/liveDurationDesc"
+                    android:layout_alignEnd="@id/desc"
+                    android:layout_marginTop="@dimen/dimen_8dp"
+                    android:textColor="@color/white"
+                    android:textSize="17sp" />
+
+
+                <TextView
+                    android:id="@+id/likesDesc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/viewers"
+                    android:layout_alignStart="@id/desc"
+                    android:layout_marginTop="@dimen/dimen_8dp"
+                    android:text="@string/likes1"
+                    android:textColor="@color/white"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/likes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/viewers"
+                    android:layout_alignEnd="@id/desc"
+                    android:layout_marginTop="@dimen/dimen_8dp"
+                    android:textColor="@color/white"
+                    android:textSize="17sp" />
+
+            </RelativeLayout>
+
+
+            <TextView
+                android:id="@+id/done"
+                style="@style/tw_bg_style"
+                android:layout_width="115dp"
+                android:layout_height="@dimen/dimen_40dp"
+                android:layout_alignBottom="@id/cover"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="@dimen/dimen_30dp"
+                android:text="@string/fb_done"
+                android:textColor="@color/white" />
+
+        </RelativeLayout>
+
+        <!-- 主播端错误提示 -->
+        <RelativeLayout
+            android:id="@+id/errorPrompt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/activityCover"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#a6000000" />
+
+            <TextView
+                android:id="@+id/activityDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="@dimen/dimen_16dp"
+                android:layout_marginEnd="@dimen/dimen_16dp"
+                android:gravity="center"
+                android:text="@string/your_live_video_has_ended"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/activityDone"
+                style="@style/tw_bg_style"
+                android:layout_width="115dp"
+                android:layout_height="@dimen/dimen_40dp"
+                android:layout_alignBottom="@id/activityCover"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="@dimen/dimen_30dp"
+                android:textColor="@color/white"
+                android:text="@string/fb_done" />
+
+        </RelativeLayout>
+
+        <FrameLayout
+            android:id="@+id/touchFl"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

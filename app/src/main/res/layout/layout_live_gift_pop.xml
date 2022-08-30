@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="214dp"
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/dimen_16dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/giftContainer"
+        android:layout_width="198dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_live_interaction_gift_container">
+
+        <ImageView
+            android:id="@+id/giftAvatar"
+            android:layout_width="@dimen/dimen_36dp"
+            android:layout_height="@dimen/dimen_36dp"
+            android:layout_margin="@dimen/dimen_8dp"
+            android:scaleType="fitXY"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:id="@+id/giftUsername"
+            android:layout_width="@dimen/dimen_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_8dp"
+            android:layout_marginTop="@dimen/dimen_8dp"
+            android:layout_marginEnd="@dimen/dimen_12dp"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="start"
+            android:maxLines="1"
+            android:textColor="#ffffff"
+            android:textSize="13sp"
+            app:layout_constraintEnd_toStartOf="@+id/giftGift"
+            app:layout_constraintStart_toEndOf="@+id/giftAvatar"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="asdfaasdfasdfadsfsdfasdf" />
+
+        <TextView
+            android:id="@+id/content"
+            android:layout_width="@dimen/dimen_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_8dp"
+            android:layout_marginTop="@dimen/dimen_4dp"
+            android:layout_marginEnd="@dimen/dimen_12dp"
+            android:layout_marginBottom="@dimen/dimen_8dp"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:maxLines="1"
+            android:text="@string/fb_send_gift"
+            android:textColor="#ffffff"
+            android:textSize="11sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/giftGift"
+            app:layout_constraintStart_toEndOf="@+id/giftAvatar"
+            tools:ignore="SmallSp" />
+
+        <ImageView
+            android:id="@+id/giftGift"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginEnd="@dimen/dimen_4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:src="@drawable/bg_message_gift_prompt_highlight"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

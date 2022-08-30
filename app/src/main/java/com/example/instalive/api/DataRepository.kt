@@ -1,10 +1,7 @@
 package com.example.instalive.api
 
 import androidx.lifecycle.MutableLiveData
-import com.example.baselibrary.api.BaseRemoteRepository
-import com.example.baselibrary.api.BaseRepositoryError
-import com.example.baselibrary.api.LoadRemoteRepository
-import com.example.baselibrary.api.RemoteEventEmitter
+import com.example.baselibrary.api.*
 import com.example.baselibrary.model.CountryCodeData
 import com.example.baselibrary.model.CountryCodeListData
 import com.example.instalive.app.InstaLivePreferences
@@ -13,6 +10,7 @@ import com.example.instalive.http.InstaApi
 import com.example.instalive.model.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.venus.dm.model.GroupMember
 import com.venus.dm.model.UserData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -310,6 +308,32 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
                 result?.invoke(response.data)
             }
         }
+    }
+
+    override suspend fun mentionSearch(
+        conId: String,
+        keyword: String,
+        isRefresh: Boolean,
+        meta: MutableLiveData<Meta>,
+        liveData: MutableLiveData<List<GroupMember>>,
+        remoteEventEmitter: RemoteEventEmitter,
+    ) {
+        var offset = 0
+        val metaData = if (isRefresh) Meta() else meta.value
+        if (metaData != null) {
+            offset = metaData.nextOffset
+        }
+        if (metaData?.hasNext == false) {
+            remoteEventEmitter.onEvent(StatusEvent.SUCCESS)
+            return
+        }
+//        val response = safeApiCall(remoteEventEmitter) {
+//            baseApi.mentionSearch(conId, keyword, offset)
+//        }
+//        if (response != null) {
+//            processListData<GroupMember>(response, meta, liveData, isRefresh)
+//        }
+
     }
 
     override fun responseError(mError: BaseRepositoryError) {

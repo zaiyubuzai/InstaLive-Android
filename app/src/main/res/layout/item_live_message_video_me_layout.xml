@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="isGroupChat"
+            type="Boolean" />
+
+        <variable
+            name="messageEntity"
+            type="com.venus.dm.db.entity.MessageEntity" />
+
+        <variable
+            name="level"
+            type="Integer" />
+
+        <variable
+            name="isPerformer"
+            type="Boolean" />
+
+        <variable
+            name="isNewGifter"
+            type="Boolean" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/dimen_8dp"
+        android:paddingBottom="@dimen/dimen_8dp">
+
+        <ImageView
+            android:id="@+id/avatar"
+            imageViewAvatar="@{messageEntity.senderPortrait}"
+            android:layout_width="@dimen/dimen_36dp"
+            android:layout_height="@dimen/dimen_36dp"
+            app:failureImageScaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/roleIcon"
+            isNewGifter="@{isNewGifter}"
+            isPerformer="@{isPerformer}"
+            userRoleIcon="@{messageEntity.userRole}"
+            android:layout_width="@dimen/dimen_18dp"
+            android:layout_height="@dimen/dimen_18dp"
+            android:layout_marginStart="@dimen/dimen_22dp"
+            android:layout_marginTop="@dimen/dimen_22dp"
+            app:layout_constraintStart_toStartOf="@+id/avatar"
+            app:layout_constraintTop_toTopOf="@+id/avatar" />
+
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--            android:id="@+id/levelIconContainer"-->
+<!--            isVisible="@{level>-1&amp;&amp; isGroupChat &amp;&amp; messageEntity.userRole != 1}"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="@dimen/dimen_16dp"-->
+<!--            android:background="@drawable/bg_level_icon"-->
+<!--            android:minWidth="35dp"-->
+<!--            android:paddingHorizontal="@dimen/dimen_2dp"-->
+<!--            android:visibility="visible"-->
+<!--            app:layout_constraintBottom_toBottomOf="@+id/nickname"-->
+<!--            app:layout_constraintStart_toEndOf="@+id/avatar"-->
+<!--            app:layout_constraintTop_toTopOf="parent">-->
+
+<!--            <ImageView-->
+<!--                android:id="@+id/levelIconView"-->
+<!--                setLevelIcon="@{level}"-->
+<!--                android:layout_width="@dimen/dimen_17dp"-->
+<!--                android:layout_height="13dp"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/levelTextView"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:includeFontPadding="false"-->
+<!--                android:lineSpacingExtra="0sp"-->
+<!--                android:text="@{level.toString()}"-->
+<!--                android:textColor="#ffffff"-->
+<!--                android:textSize="13sp"-->
+<!--                android:textStyle="normal"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toEndOf="@+id/levelIconView"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                tools:text="44" />-->
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+        <TextView
+            android:id="@+id/nickname"
+            style="@style/btn_shadow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_16dp"
+            android:ellipsize="end"
+            android:maxEms="10"
+            android:maxLines="1"
+            android:text="@{messageEntity.senderName}"
+            android:textColor="@color/white"
+            android:textSize="13sp"
+            app:layout_constraintStart_toEndOf="@+id/avatar"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_goneMarginStart="@dimen/dimen_12dp"
+            tools:text="asdfasasdfasdfaasdfasdfasdfasfdsdfasdfdf" />
+
+        <FrameLayout
+            android:id="@+id/messageContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_16dp"
+            android:layout_marginTop="@dimen/dimen_4dp"
+            android:gravity="start"
+            app:layout_constraintStart_toEndOf="@+id/avatar"
+            app:layout_constraintTop_toBottomOf="@+id/nickname">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/videoCover"
+                frescoMessageVideoCover="@{messageEntity}"
+                android:layout_width="140dp"
+                android:layout_height="@dimen/dimen_140dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize12dp" />
+
+            <TextView
+                messageVideoLength="100000"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:layout_margin="4dp"
+                android:shadowColor="#7F000000"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="2"
+                android:textColor="#ffffff"
+                android:textSize="12sp"
+                tools:text="abasdf" />
+
+        </FrameLayout>
+
+        <ProgressBar
+            android:id="@+id/sendingProgress"
+            isVisible="@{messageEntity.sendStatus == 0}"
+            android:layout_width="@dimen/dimen_16dp"
+            android:layout_height="@dimen/dimen_16dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/dimen_12dp"
+            android:indeterminateTint="#bdbdbd"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/messageContainer"
+            app:layout_constraintStart_toEndOf="@+id/messageContainer"
+            app:layout_constraintTop_toTopOf="@+id/messageContainer"
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/icSentError"
+            isVisible="@{messageEntity.sendStatus == 2}"
+            android:layout_width="@dimen/dimen_16dp"
+            android:layout_height="@dimen/dimen_16dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/dimen_12dp"
+            android:layerType="software"
+            android:src="@drawable/bg_red_dot"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/messageContainer"
+            app:layout_constraintStart_toEndOf="@+id/messageContainer"
+            app:layout_constraintTop_toTopOf="@+id/messageContainer"
+            tools:visibility="visible" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
