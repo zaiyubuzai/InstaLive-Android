@@ -37,15 +37,11 @@
             imageViewAvatar="@{messageEntity.senderPortrait}"
             android:layout_width="@dimen/dimen_36dp"
             android:layout_height="@dimen/dimen_36dp"
-            app:failureImageScaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/roleIcon"
-            isNewGifter="@{isNewGifter}"
-            isPerformer="@{isPerformer}"
-            userRoleIcon="@{messageEntity.userRole}"
             android:layout_width="@dimen/dimen_18dp"
             android:layout_height="@dimen/dimen_18dp"
             android:layout_marginStart="@dimen/dimen_22dp"
@@ -122,7 +118,7 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/videoCover"
-                frescoMessageVideoCover="@{messageEntity}"
+                messageVideoCover="@{messageEntity}"
                 android:layout_width="140dp"
                 android:layout_height="@dimen/dimen_140dp"
                 app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize12dp" />

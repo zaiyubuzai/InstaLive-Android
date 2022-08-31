@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -38,15 +37,11 @@
             imageViewAvatar="@{messageEntity.senderPortrait}"
             android:layout_width="@dimen/dimen_36dp"
             android:layout_height="@dimen/dimen_36dp"
-            app:failureImageScaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/roleIcon"
-            isNewGifter="@{isNewGifter}"
-            isPerformer="@{isPerformer}"
-            userRoleIcon="@{messageEntity.userRole}"
             android:layout_width="@dimen/dimen_18dp"
             android:layout_height="@dimen/dimen_18dp"
             android:layout_marginStart="@dimen/dimen_22dp"
@@ -128,10 +123,7 @@
                 android:layout_height="140dp"
                 android:layout_below="@+id/nicknameLL"
                 android:layout_gravity="end"
-                android:layout_marginTop="@dimen/dimen_4dp"
-                fresco:actualImageScaleType="centerCrop"
-                fresco:placeholderImage="@color/record_placeholder_color"
-                fresco:roundedCornerRadius="@dimen/dimen_12dp" />
+                android:layout_marginTop="@dimen/dimen_4dp"/>
 
             <ProgressBar
                 android:id="@+id/sendingProgress"

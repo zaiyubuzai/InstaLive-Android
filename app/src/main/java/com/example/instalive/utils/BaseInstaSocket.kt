@@ -3,6 +3,7 @@ package com.example.instalive.utils
 import com.example.instalive.InstaLiveApp.Companion.appInstance
 import com.example.instalive.api.ConversationDataRepository
 import com.example.instalive.app.SessionPreferences
+import com.example.instalive.app.conversation.RecentConversation
 import com.example.instalive.db.InstaLiveDBProvider
 import com.venus.dm.db.dao.DirectMessageDao
 import com.venus.dm.db.entity.MessageEntity
@@ -12,6 +13,7 @@ import com.venus.dm.model.VenusDirectMessage
 import com.venus.dm.model.VenusDirectMessageWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
@@ -96,6 +98,22 @@ abstract class BaseInstaSocket : ChatMessagesDecomposer() {
         }
     }
 
+    fun removeConversationTimeToken() {
+        RecentConversation.conversationsEntity?.let {
+            GlobalScope.launch(Dispatchers.IO) {
+                dao.updateConversationLeaveTimeToken(it.conversationId, SessionPreferences.id)
+                val conversationsEntity =
+                    dao.getConversationByConId(it.conversationId, SessionPreferences.id)
+                if (conversationsEntity?.conversationId == it.conversationId) {
+                    it.lastMsgTimetoken =
+                        conversationsEntity.lastMsgTimetoken
+                    it.lastLeaveTimetoken =
+                        conversationsEntity.lastLeaveTimetoken
+                }
+            }
+        }
+    }
+
     @ExperimentalStdlibApi
     private fun reportMessageReceived(messageWrapper: VenusDirectMessageWrapper) {
         if (SessionPreferences.id.isEmpty() || messageWrapper.messages.isEmpty()) {
@@ -120,7 +138,7 @@ abstract class BaseInstaSocket : ChatMessagesDecomposer() {
                 2 -> {
                     val jsonObject = JSONObject()
                     jsonObject.put("user_id", SessionPreferences.id)
-                    jsonObject.put("device_id",appInstance.getDeviceId())
+                    jsonObject.put("device_id", appInstance.getDeviceId())
                     jsonObject.put("uuids", jsonArray)
                     DMSocketIO.sendMessage("report_ack", jsonObject.toString())
                 }

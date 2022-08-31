@@ -143,6 +143,19 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
         }
     }
 
+    override suspend fun logout(
+        liveData: MutableLiveData<Any>,
+        remoteEventEmitter: RemoteEventEmitter
+    ) {
+        val response = safeApiCall(remoteEventEmitter) {
+            baseApi.logout()
+        }
+
+        if (response?.resultOk() == true) {
+            liveData.postValue(response.data)
+        }
+    }
+
     override suspend fun uploadPortraitInRegister(
         path: String,
         resultData: MutableLiveData<String>,
@@ -310,7 +323,7 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
         }
     }
 
-    override suspend fun mentionSearch(
+    suspend fun mentionSearch(
         conId: String,
         keyword: String,
         isRefresh: Boolean,

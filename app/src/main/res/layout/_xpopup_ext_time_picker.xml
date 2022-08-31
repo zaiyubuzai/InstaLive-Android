@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#181d28">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:background="#374055"
+        android:layout_height="@dimen/dimen_44dp">
+
+        <TextView
+            android:id="@+id/btnCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingLeft="15dp"
+            android:paddingRight="10dp"
+            android:text="@string/xpopup_cancel"
+            android:textAllCaps="false"
+            android:textColor="@color/_xpopup_dark_color"
+            android:textSize="16sp"
+            android:visibility="gone"/>
+
+        <Space
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"/>
+
+        <TextView
+            android:id="@+id/btnConfirm"
+            android:gravity="center"
+            android:paddingLeft="10dp"
+            android:paddingRight="15dp"
+            android:textColor="#007aff"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/fb_done"
+            android:textAllCaps="false"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/timepicker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:minHeight="180dp"
+        android:orientation="horizontal">
+
+        <com.contrarywind.view.WheelView
+            android:id="@+id/month"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <com.contrarywind.view.WheelView
+            android:id="@+id/day"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <com.contrarywind.view.WheelView
+            android:id="@+id/year"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <com.contrarywind.view.WheelView
+            android:id="@+id/hour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <com.contrarywind.view.WheelView
+            android:id="@+id/min"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <com.contrarywind.view.WheelView
+            android:id="@+id/second"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+
+</LinearLayout>

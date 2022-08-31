@@ -7,10 +7,8 @@ import com.example.baselibrary.api.StatusEvent
 import com.example.baselibrary.views.BaseViewModel
 import com.example.instalive.InstaLiveApp
 import com.example.instalive.api.ConversationDataRepository
-import com.example.instalive.app.SessionPreferences
 import com.example.instalive.db.InstaLiveDBProvider
 import com.example.instalive.db.MessageComposer
-import com.jeremyliao.liveeventbus.LiveEventBus
 import com.venus.dm.db.entity.MessageEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

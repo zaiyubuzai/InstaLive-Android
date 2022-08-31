@@ -38,16 +38,12 @@
             imageViewAvatar="@{messageEntity.senderPortrait}"
             android:layout_width="@dimen/dimen_36dp"
             android:layout_height="@dimen/dimen_36dp"
-            app:failureImageScaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:visibility="invisible" />
 
         <ImageView
             android:id="@+id/roleIcon"
-            isNewGifter="@{isNewGifter}"
-            isPerformer="@{isPerformer}"
-            userRoleIcon="@{messageEntity.userRole}"
             android:layout_width="@dimen/dimen_18dp"
             android:layout_height="@dimen/dimen_18dp"
             android:layout_marginStart="@dimen/dimen_22dp"
@@ -132,7 +128,7 @@
                 android:layout_height="35dp"
                 android:layout_below="@id/usernameLL"
                 android:layout_marginTop="@dimen/dimen_4dp"
-                android:background="@{highlight == 0 ? @drawable/bg_live_message_gift_prompt : @drawable/bg_live_message_gift_prompt_highlight}">
+                android:background="@{highlight == 0 ? @drawable/bg_message_gift_prompt : @drawable/bg_message_gift_prompt_highlight}">
 
                 <TextView
                     android:id="@+id/content"

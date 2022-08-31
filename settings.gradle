@@ -16,4 +16,5 @@ include ':dmsdk'
 include ':framework-core'
 include ':framework-rest'
 include ':live-sdk'
+include ':wheelview'
 

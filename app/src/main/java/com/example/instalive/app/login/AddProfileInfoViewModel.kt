@@ -7,6 +7,7 @@ import com.example.baselibrary.api.RemoteEventEmitter
 import com.example.baselibrary.api.StatusEvent
 import com.example.baselibrary.views.BaseViewModel
 import com.example.instalive.api.DataRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class AddProfileInfoViewModel : BaseViewModel() {
@@ -16,7 +17,7 @@ class AddProfileInfoViewModel : BaseViewModel() {
         if (loadingStatsLiveData.value == StatusEvent.LOADING) {
             return
         }
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             DataRepository.uploadPortraitInRegister(path,
                 resultData,
                 object : RemoteEventEmitter {
@@ -26,7 +27,9 @@ class AddProfileInfoViewModel : BaseViewModel() {
                     }
 
                     override fun onEvent(event: StatusEvent) {
-                        this@AddProfileInfoViewModel.onEvent(event)
+                        if (event != StatusEvent.LOADING) {
+                            this@AddProfileInfoViewModel.onEvent(event)
+                        }
                         if (event == StatusEvent.SUCCESS) {
                             onFinish(true)
                         } else if (event == StatusEvent.LOADING) {

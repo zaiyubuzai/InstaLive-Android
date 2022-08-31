@@ -33,22 +33,15 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
         android:theme="@style/Theme.InstaLive"
         tools:replace="android:allowBackup">
-        <activity
-            android:name=".app.live.LiveHostActivity"
-            android:exported="true" />
-        <activity
-            android:name=".app.live.LiveActivity"
-            android:exported="true" />
-        <activity
-            android:name=".app.conversation.MessageActivity"
-            android:exported="true" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:screenOrientation="fullSensor">
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -104,24 +97,40 @@
             android:name=".app.login.LoginActivity"
             android:exported="false"
             android:launchMode="singleTask"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".app.home.HomeActivity"
             android:exported="true"
             android:launchMode="singleTask"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".app.home.CreateEventActivity"
             android:exported="true"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".app.web.InstaWebActivity"
             android:exported="true"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".app.conversation.ConversationListActivity"
             android:exported="true"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".app.home.SettingsActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".app.live.LiveHostActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".app.live.LiveActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".app.conversation.MessageActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

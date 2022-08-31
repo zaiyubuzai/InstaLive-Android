@@ -33,6 +33,21 @@
         </com.google.android.material.appbar.AppBarLayout>
 
         <TextView
+            android:id="@+id/errText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginEnd="@dimen/dimen_60dp"
+            android:layout_marginStart="@dimen/dimen_60dp"
+            android:textColor="@color/white"
+            android:textSize="13sp"
+            android:textStyle="normal"
+            app:layout_constraintEnd_toEndOf="@+id/appBar"
+            app:layout_constraintStart_toStartOf="@+id/appBar"
+            app:layout_constraintTop_toTopOf="@+id/appBar"
+            app:layout_constraintBottom_toBottomOf="@+id/appBar"/>
+
+        <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -94,7 +109,7 @@
             android:layout_height="@dimen/dimen_50dp"
             android:layout_marginStart="@dimen/dimen_28dp"
             android:layout_marginEnd="@dimen/dimen_28dp"
-            android:layout_marginTop="250dp"
+            android:layout_marginTop="280dp"
             android:background="@drawable/bg_primary_color_8c"
             android:gravity="center_vertical"
             android:hint="@string/fb_login_name_placeholder"

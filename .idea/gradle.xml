@@ -19,6 +19,7 @@
             <option value="$PROJECT_DIR$/live-sdk" />
             <option value="$PROJECT_DIR$/picture_library" />
             <option value="$PROJECT_DIR$/ucrop" />
+            <option value="$PROJECT_DIR$/wheelview" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

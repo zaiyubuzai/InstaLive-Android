@@ -39,7 +39,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
-class SharedViewModel: BaseViewModel() {
+class SharedViewModel : BaseViewModel() {
 
     val dao = InstaLiveDBProvider.db.directMessagingDao()
 
@@ -55,6 +55,16 @@ class SharedViewModel: BaseViewModel() {
 
     val cloudinaryUploadJob = mutableMapOf<String, Job>()
 
+    fun updateConversationLastLeaveTimeToken(conId: String) {
+        GlobalScope.launch(Dispatchers.IO) {
+            val con = dao.getConversationByConId(conId, SessionPreferences.id)
+            con?.let {
+                it.lastLeaveTimetoken = it.lastMsgTimetoken
+                dao.updateConversation(it)
+            }
+        }
+    }
+
     fun startGlobalVerifyCodePhoneTicking(timestamp: Long) {
         verifyCodePhoneJob?.cancel()
         verifyCodePhoneJob = CoroutineScope(Dispatchers.IO).launch {
@@ -66,7 +76,8 @@ class SharedViewModel: BaseViewModel() {
                         delay(1000)
                     }
                 }
-            } catch (e: Exception) { }
+            } catch (e: Exception) {
+            }
         }
     }
 
@@ -99,7 +110,10 @@ class SharedViewModel: BaseViewModel() {
                     val sdf = SimpleDateFormat("yyyyMMdd_HHmmss")
                     val time = sdf.format(Date(java.lang.Long.valueOf(current + "000")))
                     val saveFileName = String.format("fambase_image_%s.jpg", time)
-                    outputImagePath = MediaPathUtil.getCustomImageOutputPath(context = InstaLiveApp.appInstance, saveFileName)
+                    outputImagePath = MediaPathUtil.getCustomImageOutputPath(
+                        context = InstaLiveApp.appInstance,
+                        saveFileName
+                    )
                     ZipUtils.qualityCompress(bmp, File(outputImagePath))
                     delay(100)
                 }
@@ -135,7 +149,7 @@ class SharedViewModel: BaseViewModel() {
         val timeoutJob = GlobalScope.launch {
             delay(30000)
             val message = dao.getMessagedByUuid(messageEntity.uuid, SessionPreferences.id)
-            if (message!=null) {
+            if (message != null) {
                 message.sendStatus = SEND_STATUS_FAILED
                 dao.updateMessageAndUpdateConversation(message, true)
                 cloudinaryUploadJob.remove(messageEntity.uuid)
@@ -151,7 +165,7 @@ class SharedViewModel: BaseViewModel() {
                             val message =
                                 dao.getMessagedByUuid(messageEntity.uuid, SessionPreferences.id)
                             cloudinaryUploadJob[messageEntity.uuid]?.cancel()
-                            if (message!=null) {
+                            if (message != null) {
                                 message.sendStatus = SEND_STATUS_FAILED
                                 dao.updateMessageAndUpdateConversation(message)
                             }
@@ -164,7 +178,7 @@ class SharedViewModel: BaseViewModel() {
                 viewModelScope.launch(Dispatchers.IO) {
                     val message = dao.getMessagedByUuid(messageEntity.uuid, SessionPreferences.id)
                     cloudinaryUploadJob[messageEntity.uuid]?.cancel()
-                    if (message!=null) {
+                    if (message != null) {
                         val payload = Gson().fromJson(
                             messageEntity.payload,
                             MessageEntity.Payload::class.java
@@ -242,10 +256,10 @@ class SharedViewModel: BaseViewModel() {
                 level = level
             )
 
-                dao.insertOwnerMessageAndShow(messageEntity)
-                videoMessageQueue.add(messageEntity)
-                videoMessageLiveIdQueue.add(liveId)
-                videoMessageStart(appInstance)
+            dao.insertOwnerMessageAndShow(messageEntity)
+            videoMessageQueue.add(messageEntity)
+            videoMessageLiveIdQueue.add(liveId)
+            videoMessageStart(appInstance)
         }
     }
 
@@ -269,36 +283,47 @@ class SharedViewModel: BaseViewModel() {
                     //以下参数全部为可选
                     .outWidth(payload.width ?: 100)
                     .outHeight(payload.height ?: 100)
-                    .progressListener{
-                        viewModelScope.launch(Dispatchers.IO) {
+                    .progressListener {
+                        Timber.d("VideoProcessor progress: $it")
+                        if (it >= 1.0f) {
+                            viewModelScope.launch(Dispatchers.IO) {
 //                            val cover = coverPath(
 //                                outputPath,
 //                                context
 //                            )
 
-                            if ((payload.width ?: 100) * (payload.height ?: 100) > 1000 * 1000) {
-                                val bmp = BitmapFactory.decodeFile(pollMessage.localThumbnail)
+                                if ((payload.width ?: 100) * (payload.height
+                                        ?: 100) > 1000 * 1000
+                                ) {
+                                    val bmp = BitmapFactory.decodeFile(pollMessage.localThumbnail)
 
-                                if (bmp != null) {
-                                    val current = (System.currentTimeMillis() / 1000).toString()
-                                    val sdf = SimpleDateFormat("yyyyMMdd_HHmmss")
-                                    val time = sdf.format(Date(java.lang.Long.valueOf(current + "000")))
-                                    val saveFileName = String.format("fambase_image_%s.jpg", time)
-                                    val outputImagePath = MediaPathUtil.getCustomImageOutputPath(context = InstaLiveApp.appInstance, saveFileName)
-                                    ZipUtils.qualityCompress(bmp, File(outputImagePath))
-                                    pollMessage.localThumbnail = outputImagePath
+                                    if (bmp != null) {
+                                        val current = (System.currentTimeMillis() / 1000).toString()
+                                        val sdf = SimpleDateFormat("yyyyMMdd_HHmmss")
+                                        val time =
+                                            sdf.format(Date(java.lang.Long.valueOf(current + "000")))
+                                        val saveFileName =
+                                            String.format("fambase_image_%s.jpg", time)
+                                        val outputImagePath =
+                                            MediaPathUtil.getCustomImageOutputPath(
+                                                context = InstaLiveApp.appInstance,
+                                                saveFileName
+                                            )
+                                        ZipUtils.qualityCompress(bmp, File(outputImagePath))
+                                        pollMessage.localThumbnail = outputImagePath
+                                    }
                                 }
-                            }
-                            val videoFile = File(outputPath)
-                            pollMessage?.let { m ->
-                                dao.updateMessageAndUpdateConversation(m)
-                                initiateVideoCoverS3Upload(
-                                    m,
-                                    outputPath,
-                                    m.localThumbnail?:"",
-                                    liveId,
-                                    if (videoFile.exists()) videoFile.length() else 10
-                                )
+                                val videoFile = File(outputPath)
+                                pollMessage?.let { m ->
+                                    dao.updateMessageAndUpdateConversation(m)
+                                    initiateVideoCoverS3Upload(
+                                        m,
+                                        outputPath,
+                                        m.localThumbnail ?: "",
+                                        liveId,
+                                        if (videoFile.exists()) videoFile.length() else 10
+                                    )
+                                }
                             }
                         }
                     }
@@ -317,7 +342,7 @@ class SharedViewModel: BaseViewModel() {
         val timeoutJob = GlobalScope.launch {
             delay(30000)
             val message = dao.getMessagedByUuid(messageEntity.uuid, SessionPreferences.id)
-            if (message!=null) {
+            if (message != null) {
                 val coverFile = File(compressVideoCoverPath)
                 if (coverFile.exists()) coverFile.delete()
 
@@ -349,7 +374,7 @@ class SharedViewModel: BaseViewModel() {
 
                             val message =
                                 dao.getMessagedByUuid(messageEntity.uuid, SessionPreferences.id)
-                            if (message!=null) {
+                            if (message != null) {
                                 message.sendStatus = SEND_STATUS_FAILED
                                 dao.updateMessageAndUpdateConversation(message)
                             }
@@ -365,10 +390,10 @@ class SharedViewModel: BaseViewModel() {
                     val message = dao.getMessagedByUuid(messageEntity.uuid, SessionPreferences.id)
                     cloudinaryUploadJob[messageEntity.uuid]?.cancel()
                     cloudinaryUploadJob.remove(messageEntity.uuid)
-                    if (message!=null) {
+                    if (message != null) {
                         Timber.d("1 send video cover ：$message")
-                        val coverFile = File(compressVideoCoverPath)
-                        if (coverFile.exists()) coverFile.delete()
+//                        val coverFile = File(compressVideoCoverPath)
+//                        if (coverFile.exists()) coverFile.delete()
                         initiateVideoS3Upload(
                             messageEntity,
                             compressVideoPath,
@@ -392,7 +417,7 @@ class SharedViewModel: BaseViewModel() {
         val timeoutJob = GlobalScope.launch {
             delay(30000)
             val message = dao.getMessagedByUuid(messageEntity.uuid, SessionPreferences.id)
-            if (message!=null) {
+            if (message != null) {
                 val videoFile = File(compressVideoPath)
                 if (videoFile.exists()) videoFile.delete()
                 message.sendStatus = SEND_STATUS_FAILED
@@ -415,7 +440,7 @@ class SharedViewModel: BaseViewModel() {
                                 dao.getMessagedByUuid(messageEntity.uuid, SessionPreferences.id)
                             cloudinaryUploadJob[messageEntity.uuid]?.cancel()
                             cloudinaryUploadJob.remove(messageEntity.uuid)
-                            if (message!=null) {
+                            if (message != null) {
                                 val videoFile = File(compressVideoPath)
                                 if (videoFile.exists()) videoFile.delete()
                                 message.sendStatus = SEND_STATUS_FAILED
@@ -433,7 +458,7 @@ class SharedViewModel: BaseViewModel() {
                     val message = dao.getMessagedByUuid(messageEntity.uuid, SessionPreferences.id)
                     cloudinaryUploadJob[messageEntity.uuid]?.cancel()
                     cloudinaryUploadJob.remove(messageEntity.uuid)
-                    if (message!=null) {
+                    if (message != null) {
                         val videoFile = File(compressVideoPath)
                         if (videoFile.exists()) videoFile.delete()
                         Timber.d("2 send video ：$message")

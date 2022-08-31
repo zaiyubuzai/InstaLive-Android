@@ -48,8 +48,9 @@ class ConversationListActivity : BaseActivity<ConversationListViewModel, Activit
                     conversationsEntity: ConversationsEntity,
                     position: Int
                 ) {
+                    RecentConversation.conversationsEntity = conversationsEntity
                     start<MessageActivity> {
-                        this.putExtra(Constants.EXTRA_CONVERSATION_ENTITY, conversationsEntity)
+//                        this.putExtra(Constants.EXTRA_CONVERSATION_ENTITY, conversationsEntity)
                     }
                 }
 

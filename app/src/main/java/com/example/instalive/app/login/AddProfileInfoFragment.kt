@@ -2,19 +2,27 @@ package com.example.instalive.app.login
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.content.pm.ActivityInfo
+import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.text.InputFilter
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StyleSpan
+import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.example.baselibrary.api.StatusEvent
 import com.example.baselibrary.utils.*
 import com.example.baselibrary.views.BaseFragment
@@ -23,6 +31,8 @@ import com.example.instalive.BuildConfig
 import com.example.instalive.R
 import com.example.instalive.app.SessionPreferences
 import com.example.instalive.databinding.FragmentAddProfileInfoBinding
+import com.example.instalive.mypicker.listener.TimePickerListener
+import com.example.instalive.mypicker.popup.TimePickerPopup
 import com.example.instalive.utils.GlideEngine
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.PermissionToken
@@ -35,13 +45,16 @@ import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.listener.OnResultCallbackListener
+import com.lxj.xpopup.XPopup
 import kotlinx.android.synthetic.main.fragment_add_profile_info.*
+import kotlinx.coroutines.launch
 import splitties.alertdialog.appcompat.*
 import splitties.fragmentargs.arg
 import splitties.fragmentargs.argOrNull
 import splitties.mainhandler.mainHandler
 import splitties.systemservices.inputMethodManager
 import splitties.views.onClick
+import splitties.views.textResource
 import java.util.*
 
 @ExperimentalStdlibApi
@@ -52,11 +65,16 @@ class AddProfileInfoFragment :
     var source: String by arg()
     var title: String by arg()
 
-    val birthDay = "2000-01-01"
-    val gender = 1
+    private var gender = 1
+
+    private var currentDate: Calendar? = null
 
     private var isShowToUser = true
     private var permissionDialog: AlertDialog? = null
+
+    private val months: Array<String>  by lazy {
+        resources.getStringArray(R.array.AbbrMonths)
+    }
     override fun initViewModel(): AddProfileInfoViewModel {
         return getActivityViewModel(AddProfileInfoViewModel::class.java)
     }
@@ -70,18 +88,37 @@ class AddProfileInfoFragment :
         fullNameInput.requestFocus()
         fullNameInput.showKeyboard()
         toolbar.setNavigationOnClickListener {
-            activity.onBackPressed()
+            if (SessionPreferences.birthdayError) {
+                activity.finish()
+            } else {
+                hideBirthdayError()
+                activity.onBackPressed()
+            }
         }
 
+        if (SessionPreferences.birthdayError) {
+            showBirthdayError()
+        }
+
+        if (SessionPreferences.birthday.isNotEmpty()){
+            birthdayText.text = SessionPreferences.birthday
+        }
+        genderText.textResource = R.string.fb_man
         next.onClick {
-            if (fullNameInput.text.toString().endsWith(" ")) {
-                marsToast(getString(R.string.fb_fullname_not_end_with_space))
-            } else if (fullNameInput.text.toString().startsWith(" ")) {
-                marsToast(getString(R.string.fb_fullname_not_start_with_space))
-            } else {
-                fullNameInput.hideKeyboard()
-                viewModel.checkUsernameAvailability(fullNameInput.text.toString())
-                next.isEnabled = false
+            currentDate?.let { calendar ->
+                if (TimeUtils.checkAdult(calendar.time)) {
+                    SessionPreferences.birthdayError = false
+                    SessionPreferences.birthday = birthdayText.text.toString()
+                    if (fullNameInput.text.toString().endsWith(" ")) {
+                        marsToast(getString(R.string.fb_fullname_not_end_with_space))
+                    } else if (fullNameInput.text.toString().startsWith(" ")) {
+                        marsToast(getString(R.string.fb_fullname_not_start_with_space))
+                    } else {
+                        fullNameInput.hideKeyboard()
+                        viewModel.checkUsernameAvailability(fullNameInput.text.toString())
+                        next.isEnabled = false
+                    }
+                }
             }
         }
 
@@ -92,13 +129,13 @@ class AddProfileInfoFragment :
             selectImageDialog()
         }
         genderText.onClick{
-
+            showList()
         }
         birthdayText.onClick{
             if (!SessionPreferences.birthdayError) showBirthdayDialog()
         }
 
-        viewModel.loadingStatsLiveData.observe(this, Observer {
+        viewModel.loadingStatsLiveData.observe(this, {
             progress.isVisible = it == StatusEvent.LOADING
         })
 
@@ -133,8 +170,27 @@ class AddProfileInfoFragment :
     private fun initObserver(){
         viewModel.checkUsernameData.observe(this, {
             (activity as LoginActivity).redirectSelectOwnRole(
-                phone, passcode, "", fullNameInput.text.toString(), birthDay, gender
+                phone, passcode, fullNameInput.text.toString(), SessionPreferences.birthday, gender
             )
+        })
+
+        viewModel.resultData.observe(this, {
+            (activity as LoginActivity).portrait = it
+            if (portrait == null) return@observe
+            val options = RequestOptions.bitmapTransform(RoundedCorners(activity.dip(20)))
+            Glide.with(activity).load(it)
+                .apply(options)
+                .into(portrait)
+            marsToast("Upload Success")
+        })
+
+        viewModel.errorCodeLiveData.observe(this, {
+            if (it == 1161) {
+                //Sorry, looks like you are Noy eligible for Fambase.
+//                marsToast("Sorry, looks like you are Noy eligible for Fambase.")
+                SessionPreferences.birthday = birthdayText.text.toString()
+                showBirthdayError()
+            }
         })
     }
 
@@ -212,46 +268,67 @@ class AddProfileInfoFragment :
     }
 
     private fun showBirthdayDialog() {
+        if (!isAdded) return
+        val c = context ?: return
         val date = Calendar.getInstance()
         val mdate = Calendar.getInstance()
         mdate[2000, 0] = 1
         val date2 = Calendar.getInstance()
         date2[1900, 1] = 1
-//        val popup =
-//            TimePickerPopup(activity)
-//                .setDefaultDate(if (currentDate == null) mdate else currentDate)  //设置默认选中日期
-//                .setItemDividerWidth(activity.dip(1))
-//                .setYearRange(1900, date[Calendar.YEAR]) //设置年份范围
-//                .setDateRange(date2, date) //设置日期范围
-//                .setTimePickerListener(object : TimePickerListener {
-//                    override fun onTimeChanged(date: Date?) {
-//                        //时间改变
-//                    }
-//
-//                    override fun onTimeConfirm(date: Date, view: View?) {
-//                        if (checkAdult(date)) hideBirthdayError()
-//                        val calendar = Calendar.getInstance()
-//                        calendar.time = date
-//                        currentDate = calendar
-//
-//                        val mYear = calendar.get(Calendar.YEAR)
-//                        val mMonth = calendar.get(Calendar.MONTH)
-//                        val mDay = calendar.get(Calendar.DAY_OF_MONTH)
-//
-//                        val mDate =
-//                            "${Constants.mouthE[mMonth]}/${if (mDay < 10) "0$mDay" else mDay}/${mYear}"
-//                        // 将选择的日期赋值给TextView
-//                        birthdayText?.text = mDate
-//                        next?.isEnabled = true
-//                    }
-//                })
-//        popup.dividerColor = 0xFF788093.toInt()
+        val popup =
+            TimePickerPopup(c)
+                .setDefaultDate(if (currentDate == null) mdate else currentDate)  //设置默认选中日期
+                .setItemDividerWidth(activity.dip(1))
+                .setYearRange(1900, date[Calendar.YEAR]) //设置年份范围
+                .setDateRange(date2, date) //设置日期范围
+                .setTimePickerListener(object : TimePickerListener {
+                    override fun onTimeChanged(date: Date?) {
+                        //时间改变
+                    }
 
-//        XPopup.Builder(activity)
-//            .isDarkTheme(true)
-//            .asCustom(popup)
-//            .show()
+                    override fun onTimeConfirm(date: Date, view: View?) {
+                        if (TimeUtils.checkAdult(date)) hideBirthdayError()
+                        val calendar = Calendar.getInstance()
+                        calendar.time = date
+                        currentDate = calendar
 
+                        val mYear = calendar.get(Calendar.YEAR)
+                        val mMonth = calendar.get(Calendar.MONTH)
+                        val mDay = calendar.get(Calendar.DAY_OF_MONTH)
+
+                        val mDate =
+                            "${months[mMonth]}/${if (mDay < 10) "0$mDay" else mDay}/${mYear}"
+                        // 将选择的日期赋值给TextView
+                        birthdayText?.text = mDate
+                        next?.isEnabled = true
+                    }
+                })
+        popup.dividerColor = 0xFF788093.toInt()
+
+        XPopup.Builder(c)
+            .isDarkTheme(true)
+            .asCustom(popup)
+            .show()
+
+    }
+
+    private fun showBirthdayError() {
+        if (!isAdded) return
+        BarUtils.setStatusBarColor(activity, Color.RED)
+        appBar?.setBackgroundColor(Color.RED)
+        errText?.text = getString(R.string.fb_login_birthday_error)
+        Toast.makeText(activity, R.string.fb_login_birthday_error, Toast.LENGTH_SHORT).show()
+        next?.isEnabled = false
+        SessionPreferences.birthdayError = true
+    }
+
+    private fun hideBirthdayError() {
+        if (!isAdded) return
+        BarUtils.setStatusBarColor(activity, Color.TRANSPARENT)
+        appBar?.setBackgroundColor(Color.TRANSPARENT)
+        errText?.text = ""
+        next?.isEnabled = true
+        SessionPreferences.birthdayError = false
     }
 
     private fun selectImageDialog() {
@@ -334,7 +411,43 @@ class AddProfileInfoFragment :
     }
 
     private fun doUpload(path: String) {
+        viewModel.uploadAvatar(path, {
+            lifecycleScope.launch {
+                showCommonProgress()
+            }
+        }, {
+            lifecycleScope.launch {
+                hideCommonProgress()
+            }
+        })
+    }
 
+    private fun showList() {
+        val c = context ?: return
+        val items = arrayOf(
+                c.getString(R.string.fb_man),
+                c.getString(R.string.fb_woman),
+                c.getString(R.string.fb_cancel)
+            )
+
+        AlertDialog.Builder(c)
+            .setTitle(c.getString(R.string.fb_login_gender_placeholder))
+            .setItems(items) { dialogInterface: DialogInterface?, i: Int ->
+                when (i) {
+                    0 -> {
+                        gender = 1
+                        genderText.textResource = R.string.fb_man
+                    }
+                    1 -> {
+                        gender = 2
+                        genderText.textResource = R.string.fb_woman
+                    }
+                    else -> {
+
+                    }
+                }
+                dialogInterface?.dismiss()
+            }.create().show()
     }
 
     override fun onResume() {

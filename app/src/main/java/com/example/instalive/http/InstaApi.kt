@@ -45,6 +45,10 @@ interface InstaApi : BaseApi {
     ): BaseResponse<LoginData>
 
     @FormUrlEncoded
+    @POST("api/core/appauth/logout/")
+    suspend fun logout(@Field("id") id: String? = null): BaseResponse<Any>
+
+    @FormUrlEncoded
     @POST("api/core/appuser/check_username/")
     suspend fun checkUsernameAvailability(@Field("username") username: String): BaseResponse<Any>
 
@@ -94,19 +98,20 @@ interface InstaApi : BaseApi {
     @POST("api/core/appuser/delete_my_account/")
     suspend fun deleteAccount(@FieldMap fields: Map<String, String>): BaseResponse<DeleteAccountData>
 
-    @POST("api/core/media/presign/portrait/")
     @FormUrlEncoded
+    @POST("api/core/media/presign/portrait/")
     suspend fun preSignPortrait(
+        @Field("id") userId: String? = null,
     ): BaseResponse<PresignData>
 
-    @POST("api/core/media/presign/dm_img/")
     @FormUrlEncoded
+    @POST("api/core/media/presign/dm_img/")
     suspend fun preSignDMImage(
         @Field("conversation_id") conId: String,
     ): BaseResponse<PresignData>
 
-    @POST("api/core/media/presign/dm_video/")
     @FormUrlEncoded
+    @POST("api/core/media/presign/dm_video/")
     suspend fun preSignDMVideo(
         @Field("conversation_id") conId: String,
     ): BaseResponse<PresignData>

@@ -133,7 +133,7 @@ object MessageComposer {
             messageFailed = 0,
             extraInfo = "",
             localResPath = localPath,
-            localThumbnail = null,
+            localThumbnail = localPath,
             msgDisappearTT = (System.currentTimeMillis() - InstaLiveApp.appInstance.timeDiscrepancy) / 1000 + 24 * 60 * 60,
             read = 1,
             userRole = 0,

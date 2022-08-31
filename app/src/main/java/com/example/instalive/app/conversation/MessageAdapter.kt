@@ -25,6 +25,8 @@ import com.example.instalive.utils.DeeplinkHelper
 import com.example.instalive.utils.SysUtils
 import com.venus.dm.db.entity.ConversationsEntity
 import com.venus.dm.db.entity.MessageEntity
+import com.venus.dm.db.entity.MessageEntity.Companion.SEND_STATUS_FAILED
+import com.venus.dm.db.entity.MessageEntity.Companion.SEND_STATUS_SENDING
 import com.venus.dm.model.event.MessageEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,7 +46,6 @@ class MessageAdapter(
     var messages: MutableList<MessageEntity>,
     var originalMessages: MutableList<MessageEntity>,
     var messageUUIDList: MutableList<String>,
-    val conversationsEntity: ConversationsEntity,
     val onMessageActionsListener: OnMessageActionsListener,
     val unreadDividerMessageUUID: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -52,6 +53,8 @@ class MessageAdapter(
     var unreadMessageUUID: String? = null
 
     var isFirstUnreadDivider: Boolean = true
+
+    var timeMessageUUIDMap = mapOf<String, String>()//time message uuid, time after message uuid
 
     var comparator: java.util.Comparator<MessageEntity> =
         Comparator { details1, details2 -> //排序规则，按照价格由大到小顺序排列("<"),按照价格由小到大顺序排列(">"),
@@ -285,11 +288,11 @@ class MessageAdapter(
                 holder.binding.messageEntity = item
                 holder.binding.executePendingBindings()
 
-//                Utils.changeImageViewWH(
-//                    holder.binding.videoCover,
-//                    payload?.width ?: 100,
-//                    payload?.height ?: 100
-//                )
+                Utils.changeImageViewWH(
+                    holder.binding.videoCover,
+                    payload?.width ?: 100,
+                    payload?.height ?: 100
+                )
 
                 holder.binding.avatar.onClick {
                     onMessageActionsListener.onPortraitClicked(
@@ -623,7 +626,6 @@ class MessageAdapter(
                             notifyItemInserted(0)
                             scrollToBottom.invoke(true)
                         }
-
                         messages.add(0, it)
                         notifyItemInserted(0)
                         scrollToBottom.invoke(true)
@@ -658,7 +660,7 @@ class MessageAdapter(
                                     val old = messages.toList()
                                     val new = messages.toMutableList()
                                     new.addAll(0, mutableList.reversed())
-                                    Collections.sort(new, comparator)
+//                                    Collections.sort(new, comparator)
 
                                     withContext(Dispatchers.Main) {
                                         val result = DiffUtil.calculateDiff(
@@ -677,20 +679,6 @@ class MessageAdapter(
                                     val old = messages.toList()
                                     val new = messages.toMutableList()
                                     new.addAll(0, originalMessages.reversed())
-                                    Collections.sort(new, comparator)
-//                                    var index = -1
-//                                    val unreadDividerMessage =
-//                                        checkAddUnreadMessage(new, viewModel, true) {
-//                                            index = it
-//                                        }
-//                                    if (unreadDividerMessage != null) {
-//                                        if (messageUUIDList.contains(unreadDividerMessageUUID)) {
-//                                            new.removeAll { it.uuid == unreadDividerMessageUUID }
-//                                        } else {
-//                                            messageUUIDList.add(unreadDividerMessageUUID)
-//                                        }
-//                                        new.add(index + 1, unreadDividerMessage)
-//                                    }
                                     withContext(Dispatchers.Main) {
                                         val result = DiffUtil.calculateDiff(
                                             MessageListComparator(
@@ -716,20 +704,6 @@ class MessageAdapter(
                                         0,
                                         originalMessages.reversed()
                                     )
-                                    Collections.sort(new, comparator)
-//                                    var index = -1
-//                                    val unreadDividerMessage =
-//                                        checkAddUnreadMessage(new, viewModel, true) {
-//                                            index = it
-//                                        }
-//                                    if (unreadDividerMessage != null) {
-//                                        if (messageUUIDList.contains(unreadDividerMessageUUID)) {
-//                                            new.removeAll { it.uuid == unreadDividerMessageUUID }
-//                                        } else {
-//                                            messageUUIDList.add(unreadDividerMessageUUID)
-//                                        }
-//                                        new.add(index + 1, unreadDividerMessage)
-//                                    }
                                     val result = DiffUtil.calculateDiff(
                                         MessageListComparator(
                                             new,
@@ -757,19 +731,7 @@ class MessageAdapter(
                         0,
                         originalMessages.reversed()
                     )
-                    Collections.sort(new, comparator)
-//                    var index = -1
-//                    val unreadDividerMessage = checkAddUnreadMessage(new, viewModel, true) {
-//                        index = it
-//                    }
-//                    if (unreadDividerMessage != null) {
-//                        if (messageUUIDList.contains(unreadDividerMessageUUID)) {
-//                            new.removeAll { it.uuid == unreadDividerMessageUUID }
-//                        } else {
-//                            messageUUIDList.add(unreadDividerMessageUUID)
-//                        }
-//                        new.add(index + 1, unreadDividerMessage)
-//                    }
+//                    Collections.sort(new, comparator)
                     withContext(Dispatchers.Main) {
                         val result = DiffUtil.calculateDiff(
                             MessageListComparator(
@@ -842,26 +804,12 @@ class MessageAdapter(
                                 if (insertMessage != null) {
                                     temporaryList.add(insertMessage)
                                 }
+                                if (it.sendStatus == SEND_STATUS_SENDING){
+                                    it.sendStatus = SEND_STATUS_FAILED
+                                }
                                 temporaryList.add(it)
                             }
                         }
-
-                        Collections.sort(temporaryList, comparator)
-//                    var index = -1
-//                    val unreadDividerMessage =
-//                        checkAddUnreadMessage(temporaryList.toMutableList(), viewModel, true) {
-//                            index = it
-//                        }
-//                val maxMessageTimeToken = messages1.firstOrNull()?.timeToken?:0
-//                    if (unreadDividerMessage != null) {
-//                        if (messageUUIDList.contains(unreadDividerMessageUUID)) {
-//                            originalMessages.removeAll { it.uuid == unreadDividerMessageUUID }
-//                            temporaryList.removeAll { it.uuid == unreadDividerMessageUUID }
-//                        } else {
-//                            messageUUIDList.add(unreadDividerMessageUUID)
-//                        }
-//                        temporaryList.add(index + 1, unreadDividerMessage)
-//                    }
 
                         withContext(Dispatchers.Main) {
                             val noMessage = messages.isEmpty()

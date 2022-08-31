@@ -26,6 +26,9 @@
         <entry key="app/src/main/res/drawable/btn_text_black_65779e_color_selector.xml" value="0.4" />
         <entry key="app/src/main/res/drawable/btn_text_yellow_65779e_color_selector.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.4197916666666667" />
+        <entry key="app/src/main/res/layout/_xpopup_ext_city_picker.xml" value="0.3311965811965812" />
+        <entry key="app/src/main/res/layout/_xpopup_ext_common_picker.xml" value="0.3311965811965812" />
+        <entry key="app/src/main/res/layout/_xpopup_ext_time_picker.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/activity_conversation_list.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/activity_create_event.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/activity_home.xml" value="0.33" />
@@ -34,6 +37,7 @@
         <entry key="app/src/main/res/layout/activity_live_host.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/activity_message.xml" value="0.31965811965811963" />
+        <entry key="app/src/main/res/layout/activity_settings.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/dialog_live_comment_input.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/dialog_live_event.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/dialog_other_profile.xml" value="0.3311965811965812" />
@@ -88,6 +92,7 @@
         <entry key="picture_library/src/main/res/drawable/picture_btn_music_shape.xml" value="0.34444444444444444" />
         <entry key="picture_library/src/main/res/drawable/picture_image_placeholder.xml" value="0.24635416666666668" />
         <entry key="picture_library/src/main/res/drawable/radius_bg_shape_gray.xml" value="0.34444444444444444" />
+        <entry key="wheelview/src/main/res/layout/_xpopup_ext_time_picker.xml" value="0.3311965811965812" />
       </map>
     </option>
   </component>

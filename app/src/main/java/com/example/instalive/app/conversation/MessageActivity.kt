@@ -25,8 +25,10 @@ import android.os.Message
 import android.view.inputmethod.InputMethodManager
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import com.example.baselibrary.utils.Utils
 import com.example.baselibrary.utils.debounceClick
 import com.example.baselibrary.utils.onLinearMarsLoadMore
+import com.example.instalive.BuildConfig
 import com.example.instalive.InstaLiveApp
 import com.example.instalive.app.SessionPreferences
 import com.example.instalive.app.base.SharedViewModel
@@ -34,6 +36,7 @@ import com.example.instalive.app.base.TextPopupWindow
 import com.example.instalive.utils.GlideEngine
 import com.example.instalive.utils.aAnimatorSet
 import com.example.instalive.utils.marsToast
+import com.example.instalive.utils.requestStoragePermission
 import com.jeremyliao.liveeventbus.LiveEventBus
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
@@ -63,7 +66,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 @ExperimentalStdlibApi
 class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
 
-    private lateinit var conversationsEntity: ConversationsEntity
+//    private lateinit var conversationsEntity: ConversationsEntity
     private lateinit var screenName: String
 
     private lateinit var messageAdapter: MessageAdapter
@@ -106,9 +109,11 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
     }
 
     override fun initData(savedInstanceState: Bundle?) {
-        conversationsEntity =
-            intent.getSerializableExtra(Constants.EXTRA_CONVERSATION_ENTITY) as ConversationsEntity
-        conId = conversationsEntity.conversationId
+        super.initData(savedInstanceState)
+//        conversationsEntity =
+//            intent.getSerializableExtra(Constants.EXTRA_CONVERSATION_ENTITY) as ConversationsEntity
+        RecentConversation.conversationsEntity?:finish()
+        conId = RecentConversation.conversationsEntity?.conversationId.toString()
         screenName = "message_view"
         viewModel.disappearMessage()
         initView()
@@ -184,7 +189,11 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
             //选择图片或者视频的路径
             override fun pickMediaList() {
                 scrollToBottom()
-                openImageAndVideo()
+                requestStoragePermission({
+                    openImageAndVideo()
+                },{
+
+                })
             }
 
             override fun onClickGift(conversationsEntity: ConversationsEntity) {
@@ -199,7 +208,7 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
 
             override fun onClickLike(conversationsEntity: ConversationsEntity) {
                 scrollToBottom()
-//                doLikeFavor()
+                doLikeFavor()
             }
 
         })
@@ -222,7 +231,6 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
                 mutableListOf(),
                 mutableListOf(),
                 mutableListOf(),
-                conversationsEntity,
                 object :
                     MessageAdapter.OnMessageActionsListener {
 
@@ -321,7 +329,9 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
         chatList?.itemAnimator = null
         chatList.onLinearMarsLoadMore {
             if (messageAdapter.messages.isNotEmpty()) {
-                val time = messageAdapter.messages.lastOrNull()?.sendTime ?: 0L
+                val list = messageAdapter.messages.toList()
+                Collections.sort(list, messageAdapter.comparator)
+                val time = list.lastOrNull()?.sendTime ?: 0L
                 Timber.d("time test 下拉刷新: time = $time")
                 if (time == 0L) return@onLinearMarsLoadMore
                 LiveEventBus.get(ChatConstants.EVENT_BUS_KEY_MESSAGE_EVENT)
@@ -433,9 +443,9 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
     }
 
     private fun initView() {
-        conversationName.text = conversationsEntity.recipientName
-        inputContainer.isVisible = conversationsEntity.chatState == 1
-        inputContainer.conversationsEntity = conversationsEntity
+        conversationName.text = RecentConversation.conversationsEntity?.recipientName
+        inputContainer.isVisible = RecentConversation.conversationsEntity?.chatState == 1
+        inputContainer.conversationsEntity = RecentConversation.conversationsEntity
     }
 
     private fun showToFirstMessage() {
@@ -454,7 +464,7 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
     }
 
     private fun checkNewMessage() {
-        val lastLeaveTimetoken = conversationsEntity.lastLeaveTimetoken
+        val lastLeaveTimetoken = RecentConversation.conversationsEntity?.lastLeaveTimetoken?:0L
         val lastPosition = layoutManager.findLastVisibleItemPosition()
         Timber.d("checkNewMessage lastPosition:$lastPosition")
 
@@ -539,9 +549,13 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
                 }
             }
             val timeToken2 =
-                if (messageAdapter.messages.isEmpty()) 0 else messageAdapter.messages.first().sendTime
-            Timber.d("checkNewMessage time token2:${timeToken2 - conversationsEntity.lastRead}")
-            if (timeToken2 - conversationsEntity.lastRead > 0) {
+                if (messageAdapter.messages.isEmpty()) 0 else {
+                    val list = messageAdapter.messages.toList()
+                    Collections.sort(list, messageAdapter.comparator)
+                    list.first().sendTime
+                }
+            Timber.d("checkNewMessage time token2:${timeToken2 - (RecentConversation.conversationsEntity?.lastRead?:0L)}")
+            if (timeToken2 - (RecentConversation.conversationsEntity?.lastRead?:0L) > 0) {
                 haveRead(2)
             }
         }
@@ -973,6 +987,7 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
 
     override fun onDestroy() {
         super.onDestroy()
+        sharedViewModel.updateConversationLastLeaveTimeToken(conId)
         messageEventJob?.cancel()
         messageEventJob = null
     }

@@ -38,7 +38,7 @@ class LoginActivity : AppCompatActivity() {
         OriginalPhoneFragment()
     }
 
-    private val fullNameFragment by lazy {
+    private val addProfileInfoFragment by lazy {
         AddProfileInfoFragment().apply {
             source = intent.getStringExtra(EXTRA_LOGIN_SOURCE) ?: ""
         }
@@ -142,13 +142,13 @@ class LoginActivity : AppCompatActivity() {
 
     fun redirectFullName(phone: String, passcode: String) {
         phonePasscodeFragment?.let {
-            if (fullNameFragment.isAdded || null != supportFragmentManager.findFragmentByTag(
-                    "fullNameFragment"
+            if (addProfileInfoFragment.isAdded || null != supportFragmentManager.findFragmentByTag(
+                    "addProfileInfoFragment"
                 )
             ) {
                 supportFragmentManager.beginTransaction()
                     .hide(it)
-                    .show(fullNameFragment.apply {
+                    .show(addProfileInfoFragment.apply {
                         this.phone = phone
                         this.passcode = passcode
                         this.source = intent.getStringExtra(EXTRA_LOGIN_SOURCE) ?: ""
@@ -157,13 +157,13 @@ class LoginActivity : AppCompatActivity() {
             } else {
                 supportFragmentManager.beginTransaction()
                     .hide(it)
-                    .add(R.id.fragmentContainer, fullNameFragment.apply {
+                    .add(R.id.fragmentContainer, addProfileInfoFragment.apply {
                         this.phone = phone
                         this.passcode = passcode
                         this.source = intent.getStringExtra(EXTRA_LOGIN_SOURCE) ?: ""
                         this.title = this@LoginActivity.getString(R.string.fb_login)
-                    }, "fullNameFragment")
-                    .addToBackStack("fullNameFragment")
+                    }, "addProfileInfoFragment")
+                    .addToBackStack("addProfileInfoFragment")
                     .commit()
             }
             executePT()
@@ -208,19 +208,18 @@ class LoginActivity : AppCompatActivity() {
     fun redirectSelectOwnRole(
         phone: String?,
         passcode: String?,
-        portrait: String,
         username: String,
         birthDay: String,
         gender: Int
     ) {
         val transaction = supportFragmentManager.beginTransaction()
-        transaction.hide(fullNameFragment)
+        transaction.hide(addProfileInfoFragment)
         if (selectOwnRoleFragment.isAdded
             || null != supportFragmentManager.findFragmentByTag("selectOwnRoleFragment")){
             transaction.show(selectOwnRoleFragment.apply {
                 this.phone = phone
                 this.passcode = passcode
-                this.portrait = portrait
+                this.portrait = this@LoginActivity.portrait?:""
                 this.username = username
                 this.birthDay = birthDay
                 this.gender = gender.toString()
@@ -229,7 +228,7 @@ class LoginActivity : AppCompatActivity() {
             transaction.add(R.id.fragmentContainer, selectOwnRoleFragment.apply {
                 this.phone = phone
                 this.passcode = passcode
-                this.portrait = portrait
+                this.portrait = this@LoginActivity.portrait?:""
                 this.username = username
                 this.birthDay = birthDay
                 this.gender = gender.toString()

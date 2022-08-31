@@ -323,7 +323,7 @@ fun formatThousand(view: TextView, diamonds:Long?){
 fun setMessageVideoCover(view: ShapeableImageView, messageEntity: MessageEntity?) {
     if (messageEntity != null) {
         val localThumbnail = messageEntity.localThumbnail
-        if (localThumbnail != null) {
+        if (localThumbnail != null && File(localThumbnail).exists()) {
 //            view.setImageURI(Uri.fromFile(File(localThumbnail)))
             Glide.with(view.context)
                 .load(localThumbnail)
@@ -348,7 +348,7 @@ fun setMessageVideoCover(view: ShapeableImageView, messageEntity: MessageEntity?
 fun setMessageImageCover(view: ShapeableImageView, messageEntity: MessageEntity?) {
     if (messageEntity != null) {
         val localThumbnail = messageEntity.localResPath
-        if (localThumbnail != null) {
+        if (localThumbnail != null && File(localThumbnail).exists()) {
 //            view.setImageURI(Uri.fromFile(File(localThumbnail)))
             Glide.with(view.context)
                 .load(localThumbnail)

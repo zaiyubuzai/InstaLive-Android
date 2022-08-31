@@ -57,6 +57,34 @@ object SESSION {
             null
         }
     }
+
+    fun resetLoginInfo(): LoginData {
+        val emptyLoginInfo = LoginData.emptyLoginInfo()
+        SessionPreferences.edit(true) {
+            id  = ""
+            userName = null
+            nickName = null
+            firstName = null
+            lastName = null
+            bio = null
+            phone = null
+            email = null
+            portrait = null
+            isVerified = false
+            initDataJson = null
+            portraitIc = null
+            pushToken = null
+            balance = 0f
+            state = 0
+            birthday = ""
+            gender = 0
+            identity = 0
+            muteTimestamp = 0L
+            divideIncomeState = false
+            isFirstRecharging = false
+        }
+        return emptyLoginInfo
+    }
 }
 
 object SessionPreferences : Preferences("instaLiveUserState") {

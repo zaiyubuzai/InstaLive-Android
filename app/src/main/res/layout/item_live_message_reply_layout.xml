@@ -37,19 +37,13 @@
         <ImageView
             android:id="@+id/avatar"
             imageViewAvatar="@{messageEntity.senderPortrait}"
-            isInvisible="@{messageEntity.samePersonSaidAgain &amp;&amp; isGroupChat}"
             android:layout_width="@dimen/dimen_36dp"
             android:layout_height="@dimen/dimen_36dp"
-            app:failureImageScaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
         <ImageView
             android:id="@+id/roleIcon"
-            isInvisible="@{messageEntity.samePersonSaidAgain}"
-            userRoleIcon="@{messageEntity.userRole}"
-            isPerformer="@{isPerformer}"
-            isNewGifter="@{isNewGifter}"
             android:layout_width="@dimen/dimen_18dp"
             android:layout_height="@dimen/dimen_18dp"
             android:layout_marginStart="@dimen/dimen_22dp"
@@ -59,7 +53,6 @@
 
         <LinearLayout
             android:id="@+id/name"
-            isInvisible="@{messageEntity.samePersonSaidAgain}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dimen_16dp"

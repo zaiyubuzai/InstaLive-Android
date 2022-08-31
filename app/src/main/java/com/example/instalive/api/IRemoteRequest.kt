@@ -46,6 +46,11 @@ interface IRemoteRequest {
         remoteEventEmitter: RemoteEventEmitter
     )
 
+    suspend fun logout(
+        liveData: MutableLiveData<Any>,
+        remoteEventEmitter: RemoteEventEmitter
+    )
+
     suspend fun uploadPortraitInRegister(
         path: String,
         resultData: MutableLiveData<String>,
@@ -67,7 +72,7 @@ interface IRemoteRequest {
     suspend fun getUserDetail(
         userId: String?,
         userName: String?,
-        result:((UserData)->Unit)?,
+        result: ((UserData) -> Unit)?,
         remoteEventEmitter: RemoteEventEmitter
     )
 

@@ -21,12 +21,16 @@ import android.text.InputFilter.LengthFilter
 
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.example.instalive.app.SessionPreferences
 import com.example.instalive.app.conversation.ConversationListActivity
 import com.example.instalive.app.ui.OtherProfileDialog
 import com.lxj.xpopup.XPopup
 import com.venus.dm.model.UserData
 import splitties.activities.start
+import splitties.dimensions.dp
 
 @ExperimentalStdlibApi
 class HomeActivity : InstaBaseActivity<HomeViewModel, ActivityHomeBinding>() {
@@ -56,6 +60,7 @@ class HomeActivity : InstaBaseActivity<HomeViewModel, ActivityHomeBinding>() {
 
     override fun initData(savedInstanceState: Bundle?) {
         role = SessionPreferences.identity
+
         if (role == 1) {//host
             btnCoins.isVisible = false
             switchFragment(hostFragment)
@@ -76,14 +81,14 @@ class HomeActivity : InstaBaseActivity<HomeViewModel, ActivityHomeBinding>() {
         }
         btnCoins.onClick {}
         btnShare.onClick {
-            if (role == 1) {
-                ShareUtility.shareCopy("instalive://profile?id=${SessionPreferences.id}")
-            } else {
-                gangUpInvite()
-            }
+            ShareUtility.shareCopy("instalive://profile?id=${SessionPreferences.id}")
         }
-        btnSet.onClick {
+        btnLink.onClick{
+            gangUpInvite()
+        }
 
+        btnSet.onClick {
+            start<SettingsActivity> {  }
         }
         btnDM.onClick {
             start<ConversationListActivity> { }

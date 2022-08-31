@@ -146,6 +146,14 @@
     <string name="fb_notify_moderators_in_this_group">Notify moderators in this group</string>
     <string name="fb_moderators_">moderators</string>
     <string name="fb_everyone_">everyone</string>
+    <string name="fb_log_out">Logout</string>
+    <string name="fb_Link">Link</string>
+    <string name="fb_woman">Woman</string>
+    <string name="fb_man">Man</string>
+
+    <string name="fb_profile_followers">Followers</string>
+    <string name="fb_profile_following">Following</string>
+    <string name="fb_profile_Income">Income</string>
 
     <string-array name="Months">
         <item>January</item>
@@ -176,4 +184,9 @@
         <item>Nov</item>
         <item>Dec</item>
     </string-array>
+
+    <string name="photo_permission_dialog_title">\"Fambase\" Would Like to Access the Photo</string>
+    <string name="photo_permission_dialog_message">By allowing access to your photos, you\'ll be able to send photos and videos to friends, or set your profile photo.</string>
+    <string name="fb_yap_to_edit_your_profile">Tap to edit your profile</string>
+
 </resources>

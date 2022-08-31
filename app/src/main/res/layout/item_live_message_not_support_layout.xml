@@ -35,7 +35,6 @@
             imageViewAvatar="@{messageEntity.senderPortrait}"
             android:layout_width="@dimen/dimen_36dp"
             android:layout_height="@dimen/dimen_36dp"
-            app:failureImageScaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 

@@ -87,7 +87,8 @@
             <ImageView
                 android:layout_width="@dimen/dimen_36dp"
                 android:layout_height="@dimen/dimen_36dp"
-                android:layout_gravity="center" />
+                android:layout_gravity="center"
+                android:src="@mipmap/ic_message_play_button"/>
 
         </FrameLayout>
 

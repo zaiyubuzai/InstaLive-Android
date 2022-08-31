@@ -14,6 +14,7 @@ object AppBackgroundObserver: BaseBackgroundObserver() {
     }
 
     override fun listenerOnStop() {
+        DMSocketIO.removeConversationTimeToken()
         DMSocketIO.releaseSocket()
     }
 }

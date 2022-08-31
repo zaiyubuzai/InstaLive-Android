@@ -1,7 +1,9 @@
 package com.example.instalive.app.conversation
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
+import android.os.Bundle
 import android.widget.FrameLayout
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.lifecycleScope
@@ -11,6 +13,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.example.instalive.app.Constants
 import com.example.instalive.app.SessionPreferences
 import com.example.instalive.app.base.InstaBaseActivity
 import com.example.instalive.model.LikeEvent
@@ -31,6 +34,14 @@ abstract class MessageBaseActivity<VDB : ViewDataBinding> : InstaBaseActivity<Me
     private val likedUuid = mutableSetOf<String>()
 
     private val emojiList = mutableListOf<Bitmap>()
+
+    override fun initData(savedInstanceState: Bundle?) {
+        Constants.DEFAULT_EMOJI_LIST.forEach {
+            val bitmap =
+                BitmapFactory.decodeResource(resources, it, BitmapFactory.Options())
+            emojiList.add(bitmap)
+        }
+    }
 
     private fun popGift() {
 //        if (giftList.isEmpty()) {
