@@ -69,6 +69,10 @@ abstract class BaseActivity<VMD : ViewModel, VDB : ViewDataBinding> : AppCompatA
         return activityProvider[viewModelClass]
     }
 
+    fun <T : ViewModel> getViewModel(viewModelClass: Class<T>): T {
+        return activityProvider[viewModelClass]
+    }
+
     //---------------------------------------
     protected open fun showDialogFragment(dialogFragment: DialogFragment) {
         val tag =

@@ -4,15 +4,20 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/drawable-v24/bg_edit.xml" value="0.34444444444444444" />
+        <entry key="app/src/main/res/drawable/bg_15_tra_white_6c.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_26white_12c.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_282f3f_8c.xml" value="0.34444444444444444" />
+        <entry key="app/src/main/res/drawable/bg_2f65ff_12c1101.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_374055_12c.xml" value="0.34444444444444444" />
+        <entry key="app/src/main/res/drawable/bg_66000_12c0011.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_88_black_transparent_gradient.xml" value="0.34444444444444444" />
+        <entry key="app/src/main/res/drawable/bg_99000000_12c.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_bottom_282f3f_36c1.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_btn_disable_3a_12.xml" value="0.4" />
         <entry key="app/src/main/res/drawable/bg_btn_white_12.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_btn_yellow_12c.xml" value="0.4" />
         <entry key="app/src/main/res/drawable/bg_btn_yellow_gray_12c_selector.xml" value="0.4" />
+        <entry key="app/src/main/res/drawable/bg_level_icon.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_live_interaction_gift_container.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_live_interaction_gift_highlighted_container.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_message_gift_prompt.xml" value="0.34444444444444444" />
@@ -20,12 +25,20 @@
         <entry key="app/src/main/res/drawable/bg_primary_color_8c.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/bg_red_dot.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_reply.xml" value="0.34444444444444444" />
+        <entry key="app/src/main/res/drawable/bg_round_15white_24d.xml" value="0.34444444444444444" />
+        <entry key="app/src/main/res/drawable/bg_start_live.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_text_white_10c.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_verify_code.xml" value="0.4046875" />
         <entry key="app/src/main/res/drawable/bg_white_24c1100.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/btn_text_black_65779e_color_selector.xml" value="0.4" />
         <entry key="app/src/main/res/drawable/btn_text_yellow_65779e_color_selector.xml" value="0.34444444444444444" />
+        <entry key="app/src/main/res/drawable/ic_diamond.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.4197916666666667" />
+        <entry key="app/src/main/res/drawable/ic_user_feed_check_box_true.xml" value="0.34444444444444444" />
+        <entry key="app/src/main/res/drawable/icon_network_quality_green.xml" value="0.34444444444444444" />
+        <entry key="app/src/main/res/drawable/insta_checkbox_style.xml" value="0.34444444444444444" />
+        <entry key="app/src/main/res/drawable/switch_custom_thumb_off.xml" value="0.34444444444444444" />
+        <entry key="app/src/main/res/drawable/switch_custom_track_off.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/layout/_xpopup_ext_city_picker.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/_xpopup_ext_common_picker.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/_xpopup_ext_time_picker.xml" value="0.3311965811965812" />
@@ -38,6 +51,7 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/activity_message.xml" value="0.31965811965811963" />
         <entry key="app/src/main/res/layout/activity_settings.xml" value="0.3311965811965812" />
+        <entry key="app/src/main/res/layout/dialog_go_live_with.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/dialog_live_comment_input.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/dialog_live_event.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/dialog_other_profile.xml" value="0.3311965811965812" />
@@ -47,6 +61,8 @@
         <entry key="app/src/main/res/layout/fragment_email_login.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/fragment_full_name.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/fragment_host.xml" value="0.31965811965811963" />
+        <entry key="app/src/main/res/layout/fragment_live_empty.xml" value="0.3311965811965812" />
+        <entry key="app/src/main/res/layout/fragment_live_host.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/fragment_live_interaction_host.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/fragment_not_login.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_original_phone.xml" value="0.4036458333333333" />
@@ -58,6 +74,7 @@
         <entry key="app/src/main/res/layout/fragment_viewer.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/item_conversation.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/item_country_code_layout.xml" value="0.4036458333333333" />
+        <entry key="app/src/main/res/layout/item_go_live_with_feed.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/item_interested_member_layout.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/item_live_message_gif_layout.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/item_live_message_gift_prompt_layout.xml" value="0.3311965811965812" />
@@ -85,13 +102,16 @@
         <entry key="app/src/main/res/layout/item_message_reply_layout.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/item_message_time_layout.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/item_message_video_me_layout.xml" value="0.3311965811965812" />
+        <entry key="app/src/main/res/layout/layout_discover_load_state.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/layout_live_gift_pop.xml" value="0.3311965811965812" />
+        <entry key="app/src/main/res/layout/layout_live_video.xml" value="0.33" />
         <entry key="app/src/main/res/layout/login_activity.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/message_bottom_layout.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/popup_simple_text_viewer.xml" value="0.3311965811965812" />
         <entry key="picture_library/src/main/res/drawable/picture_btn_music_shape.xml" value="0.34444444444444444" />
         <entry key="picture_library/src/main/res/drawable/picture_image_placeholder.xml" value="0.24635416666666668" />
         <entry key="picture_library/src/main/res/drawable/radius_bg_shape_gray.xml" value="0.34444444444444444" />
+        <entry key="ucrop/src/main/res/drawable/ic_close_light.xml" value="0.34444444444444444" />
         <entry key="wheelview/src/main/res/layout/_xpopup_ext_time_picker.xml" value="0.3311965811965812" />
       </map>
     </option>

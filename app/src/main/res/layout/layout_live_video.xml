@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/transparent"
+    app:cardBackgroundColor="#1a284b"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="0dp">
+
+    <RelativeLayout
+        android:id="@+id/liveVideoFL"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#1a284b"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/MAPortrait"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@color/colorPrimary"
+            app:tint="#a6000000"
+            app:tintMode="src_over"
+            android:visibility="gone"/>
+        <!--host icon-->
+        <TextView
+            android:id="@+id/hostText"
+            android:layout_width="55dp"
+            android:layout_height="@dimen/dimen_24dp"
+            android:background="@drawable/bg_2f65ff_12c1101"
+            android:gravity="center"
+            android:text="@string/fb_host"
+            android:textColor="#ffffff"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!--name ui-->
+        <FrameLayout
+            android:id="@+id/nameContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dimen_22dp"
+            android:layout_marginEnd="@dimen/dimen_36dp"
+            app:layout_constrainedWidth="true"
+            android:background="@drawable/bg_26white_12c"
+            android:paddingEnd="@dimen/dimen_6dp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/portraitView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="@+id/portraitView"
+            app:layout_constraintTop_toTopOf="@+id/portraitView"
+            tools:ignore="RtlSymmetry">
+
+            <TextView
+                android:layout_gravity="center"
+                android:id="@+id/nameTV"
+                android:paddingStart="@dimen/dimen_30dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:lineSpacingExtra="4sp"
+                android:maxLines="1"
+                android:textColor="#ffffff"
+                android:textSize="11sp"
+                android:textStyle="normal"
+                tools:text="slkdjf"/>
+        </FrameLayout>
+
+        <!--raise hand ui-->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/raiseHandContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dimen_22dp"
+            android:layout_margin="@dimen/dimen_6dp"
+            android:background="@drawable/bg_26white_12c"
+            android:paddingHorizontal="@dimen/dimen_6dp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="RtlSymmetry">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/raiseHand"
+                android:layout_width="@dimen/dimen_12dp"
+                android:layout_height="@dimen/dimen_16dp"
+                android:src="@mipmap/live_raise_hand_little_upping"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/raiseHandTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen_6dp"
+                android:includeFontPadding="false"
+                android:text="@string/fb_live_risehand_guide_raisehand"
+                android:textColor="#ffffff"
+                android:textSize="11sp"
+                android:textStyle="normal"
+                fresco:layout_constraintBottom_toBottomOf="parent"
+                fresco:layout_constraintStart_toEndOf="@+id/raiseHand"
+                fresco:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!--profile-->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/portraitView"
+            android:layout_width="@dimen/dimen_24dp"
+            android:layout_height="@dimen/dimen_24dp"
+            android:layout_marginStart="@dimen/dimen_6dp"
+            android:layout_marginTop="@dimen/dimen_6dp"
+            android:visibility="gone"
+            android:background="#ffffff"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize6dp"
+            app:strokeColor="@color/white"
+            app:strokeWidth="0.5dp"
+            tools:visibility="visible"/>
+
+        <ImageView
+            android:id="@+id/myHangUp"
+            android:layout_width="@dimen/dimen_30dp"
+            android:layout_height="@dimen/dimen_30dp"
+            android:layout_marginStart="@dimen/dimen_6dp"
+            android:layout_marginBottom="@dimen/dimen_6dp"
+            android:src="@mipmap/ic_live_with_hang_up"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageView
+            android:id="@+id/callAudioAvatar"
+            android:layout_width="@dimen/dimen_60dp"
+            android:layout_height="@dimen/dimen_60dp"
+            android:src="@mipmap/ic_default_avatar"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible"/>
+
+        <!--voice animation-->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/voiceAnimCL"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="6dp"
+            android:background="@drawable/bg_round_15white_24d"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/loadingAnim"
+                android:layout_width="@dimen/dimen_24dp"
+                android:layout_height="@dimen/dimen_24dp"
+                android:scaleType="fitXY"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="lot_voice.json"
+                app:lottie_loop="true" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ImageView
+            android:id="@+id/liveMuteClose"
+            android:layout_width="@dimen/dimen_24dp"
+            android:layout_height="@dimen/dimen_24dp"
+            android:layout_margin="6dp"
+            android:src="@mipmap/live_mute_close"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible"/>
+
+        <!--连麦的cover-->
+        <RelativeLayout
+            android:id="@+id/pauseMAContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/pauseIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layerType="software"
+                    android:src="@mipmap/icon_live_pause_36" />
+
+                <TextView
+                    android:id="@+id/pauseDesc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimen_16dp"
+                    android:lineSpacingExtra="7sp"
+                    android:gravity="center"
+                    android:text="@string/host_will_be_back_in_a_minute2"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
+                    android:textStyle="normal"
+                    android:visibility="visible" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/loadingUserUI"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lottie_autoPlay="true"
+            app:lottie_fileName="lotLoading.json"
+            app:lottie_loop="true" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

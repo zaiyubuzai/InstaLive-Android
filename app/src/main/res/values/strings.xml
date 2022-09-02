@@ -155,6 +155,15 @@
     <string name="fb_profile_following">Following</string>
     <string name="fb_profile_Income">Income</string>
 
+    <string name="fb_go_live_with">Go Live With</string>
+    <string name="fb_go_live_with_desc">You could always go to viewers’ profiles and invite them to go live with you.</string>
+    <string name="fb_go_live_with_empty">No one raise hand.</string>
+
+    <string name="il_new_messages_counts">%1$s new messages</string>
+
+    <string name="host_will_be_back_in_a_minute2">Host will be back in a minute.</string>
+    <string name="host_will_be_back_in_a_minute3">%1$s will be back in a minute.</string>
+
     <string-array name="Months">
         <item>January</item>
         <item>February</item>
@@ -185,8 +194,70 @@
         <item>Dec</item>
     </string-array>
 
+    <string name="fb_yap_to_edit_your_profile">Tap to edit your profile</string>
+    <string name="fb_no_more">- No more -</string>
+    <string name="il_name_image">%1$s: [Image]</string>
+    <string name="il_name_video">%1$s: [Video]</string>
+
+    <string name="fb_host_cant_leave">You are the host, can\'t leave the Live.</string>
+    <string name="fb_microphone_user_cant_leave">Close current Live first.</string>
+    <string name="fb_host">Host</string>
+    <string name="fb_live_risehand_guide_raisehand">Raise Hand</string>
+
+    <string name="fb_live_charge_gift_title">Charge Gift for Unlock Live/ Paid Live</string>
+    <string name="fb_live_charge_gift_desc">After turn on, you will charge everyone a gift to join your live. Mod can join for free.</string>
+    <string name="fb_unlock_live_i_on_live_now">I’m on Live now.</string>
+    <string name="fb_unlock_live_send_gift_desc">Send me a gift to unlock my Live.</string>
+    <string name="fb_dialog_gift_select_gift">Select a Gift</string>
+    <string name="fb_unlock_now">Unlock Now</string>
+    <string name="fb_is_live_now">&#160;is Live now</string>
+    <string name="fb_unlock_live">Unlock Live</string>
+    <string name="fb_live_unlock_income">Unlock Live Diamonds</string>
+    <string name="fb_co_host_got">Co-host Got</string>
+    <string name="fb_data">Data</string>
+    <string name="fb_host_gift_live_tip1">You charge </string>
+    <string name="fb_host_gift_live_tip2"> coins) to unlock this live.</string>
+    <string name="other_profile_bio_placeholder">He said nothing\n...</string>
+    <string name="fb_personal_qrcode_desc">Scan my QR code, add me as friend on Fambase.</string>
+    <string name="fb_owner_delete_other_owner_prompt">You deleted a message from</string>
+    <string name="fb_owner_delete_other_other_prompt">Owner deleted a message from</string>
+    <string name="fb_delete_self_self_prompt">You deleted a message</string>
+    <string name="fb_delete_self_other_prompt">deleted a message</string>
+    <string name="fb_selected">Selected</string>
+    <string name="fb_this_live_has_ended">This Live Has Ended</string>
+    <string name="fb_live_you_got">You Got:</string>
+    <string name="fb_total_diamonds">Total Diamonds</string>
+    <string name="fb_more">More</string>
+    <string name="fb_resume">Resume</string>
+
+    <string name="fb_live_stream_resume_desc">Live streaming quit unexpectedly, resume?</string>
+    <string name="fb_live_cannot_live_title">You Can\'t Start Live Now</string>
+
+    <string name="lbl_live_with_user_declined">%1$s Declined</string>
+    <string name="un_know_time">--:--:--</string>
+    <string name="un_know_likes">-</string>
+    <string name="un_know_views">-</string>
+    <string name="lbl_live_gift_coin_cost">%1$s Coins</string>
+    <string name="you_are_Live_now_can_go_to_another_live_or_radio">You are Live now, can\'t go to another Live.</string>
+
+    <string name="camera_permission_dialog_title">\“Fambase\” Would Like to Access the Camera</string>
+    <string name="camera_permission_dialog_message">By allowing access to your camera, you\'ll be able to capture photo, scan QR code or start Live.</string>
+    <string name="microphone_permission_dialog_title">\“Fambase\” Would Like to Access the Microphone</string>
+    <string name="microphone_permission_dialog_message">By allowing access to your microphone, you\'ll be able to start Live.</string>
     <string name="photo_permission_dialog_title">\"Fambase\" Would Like to Access the Photo</string>
     <string name="photo_permission_dialog_message">By allowing access to your photos, you\'ll be able to send photos and videos to friends, or set your profile photo.</string>
-    <string name="fb_yap_to_edit_your_profile">Tap to edit your profile</string>
+    <string name="go_to_settings">Go to Settings</string>
+    <string name="not_now">Not Now</string>
 
+    <string name="fb_live_end_detail_failed_title">Your Live Income Will be Added to Wallet Within 24 hrs</string>
+    <string name="fb_live_end_detail_failed_message">Keep the notification enable, you will get a push when your income is added.</string>
+    <string name="fb_live_end_detail_failed_right">Contact Fambase</string>
+    <string name="fb_live_end_detail_failed_left">Get It</string>
+
+    <string name="please_hang_up_your_live_video">Please hang up your live video.</string>
+    <string name="fb_hang_up_your_live_video">Hang up your Live?</string>
+    <string name="fb_profile_hang_up">Hang up</string>
+    <string name="hang_up_live_video">Hang up %1$s \'s live video</string>
+    <string name="please_hang_up_your_invited_user_live_video">Please hang up your invited user\'s live video</string>
+    <string name="hung_up_by_the_host">Hung up by the host.</string>
 </resources>

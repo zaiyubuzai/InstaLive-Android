@@ -44,6 +44,27 @@ object MediaPathUtil {
         return outputDir + File.separator + filename
     }
 
+    fun getCustomGiftOutputPath(context: Context, fileNamePrefix: String? = null, isCache: Boolean = false): String {
+        val currentTime = System.currentTimeMillis()
+        val sdf = SimpleDateFormat("yyyyMMdd_HHmmssSSS")
+        val time = sdf.format(Date(currentTime))
+
+        val sdcardDir = getSDCardDir(context)
+
+//        val sdcardDir = appInstance.getExternalFilesDir(null) ?: Environment.getExternalStorageState()
+        val outputDir = sdcardDir.toString() + File.separator + if (isCache) CACHE_DIR_NAME else OUTPUT_DIR_NAME
+        val outputFolder = File(outputDir)
+        if (!outputFolder.exists()) {
+            outputFolder.mkdir()
+        }
+        val tempOutputPath = if (TextUtils.isEmpty(fileNamePrefix)) {
+            outputDir + File.separator + "Insta_gift_" + time + ".svga"
+        } else {
+            outputDir + File.separator + "Insta_gift_" + fileNamePrefix + "_" + time + ".svga"
+        }
+        return tempOutputPath
+    }
+
     fun getCustomVideoOutputPath(context: Context, fileNamePrefix: String? = null, isVideo: Boolean = true, isCache: Boolean = false): String {
         val currentTime = System.currentTimeMillis()
         val sdf = SimpleDateFormat("yyyyMMdd_HHmmssSSS")

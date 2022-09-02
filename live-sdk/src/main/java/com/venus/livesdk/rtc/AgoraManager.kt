@@ -48,19 +48,31 @@ class AgoraManager : ILiveManager {
 
     fun getVideoUI(
         context: Context,
+        isLocalVideo: Boolean,
         uid: Int,
         renderMode: Int = VideoCanvas.RENDER_MODE_HIDDEN,
         mirrorMode: Int = Constants.VIDEO_MIRROR_MODE_AUTO
     ): SurfaceView {
         val surfaceView = RtcEngine.CreateRendererView(context)
-        mRtcEngine?.setupLocalVideo(
-            VideoCanvas(
-                surfaceView,
-                renderMode,
-                uid,
-                mirrorMode
+        if (isLocalVideo) {
+            mRtcEngine?.setupLocalVideo(
+                VideoCanvas(
+                    surfaceView,
+                    renderMode,
+                    uid,
+                    mirrorMode
+                )
             )
-        )
+        } else {
+            mRtcEngine?.setupRemoteVideo(
+                VideoCanvas(
+                    surfaceView,
+                    renderMode,
+                    uid,
+                    mirrorMode
+                )
+            )
+        }
         return surfaceView
     }
 

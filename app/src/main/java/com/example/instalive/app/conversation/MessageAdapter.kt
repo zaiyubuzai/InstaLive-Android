@@ -795,6 +795,10 @@ class MessageAdapter(
                         messageList.toList().forEachIndexed { index, it ->
                             if (!messageUUIDList.contains(it.uuid)) {
                                 messageUUIDList.add(it.uuid)
+                                if (it.sendStatus == SEND_STATUS_SENDING){
+                                    it.sendStatus = SEND_STATUS_FAILED
+                                }
+                                temporaryList.add(it)
                                 val insertMessage = checkInsertMessage(
                                     it,
                                     if (index == messageList.size - 1) {
@@ -804,10 +808,6 @@ class MessageAdapter(
                                 if (insertMessage != null) {
                                     temporaryList.add(insertMessage)
                                 }
-                                if (it.sendStatus == SEND_STATUS_SENDING){
-                                    it.sendStatus = SEND_STATUS_FAILED
-                                }
-                                temporaryList.add(it)
                             }
                         }
 
@@ -838,6 +838,15 @@ class MessageAdapter(
         message: MessageEntity?,
         beforeMessage: MessageEntity?
     ): MessageEntity? {
+        if (beforeMessage == null && message != null){
+            return message.copy(
+                uuid = UUID.randomUUID().toString(),
+                type = 8,
+                sendTime = message.sendTime - 1,
+                content = TimeUtils.formatMessageTime(message.sendTime),
+                renderType = 1
+            )
+        }
         if (beforeMessage != null && message != null && message.sendTime - beforeMessage.sendTime > 10 * 60 * 1000 * 10000L) { //10 min
             return message.copy(
                 uuid = UUID.randomUUID().toString(),

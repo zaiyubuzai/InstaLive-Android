@@ -2,6 +2,8 @@ package com.example.instalive.app
 
 import com.example.instalive.api.RetrofitProvider
 import com.example.instalive.model.LoginData
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.venus.dm.model.UserData
 import splitties.preferences.Preferences
 import splitties.preferences.edit
@@ -149,4 +151,23 @@ object InstaLivePreferences : Preferences("instaLiveState") {
 
     var everydayFirstInitTime by LongPref("everyday_first_init_time", 0L)
     var firstInitEver by BoolPref("first_init_ever", false)
+
+    var liveGiftList by StringOrNullPref("live_gifts", null)
+    var liveGiftVersion by IntPref("live_gifts_version", 0)
+    var liveSendGiftClicked by BoolPref("live_send_gift_clicked", false)
+    var liveGiftCache by StringPref("live_gift_cache", "[]")
+
+    fun findGiftCache(imgUrl:String):String?{
+        var netPath = imgUrl
+        val netPathList = netPath.split("/")
+        if (netPathList.size < 2) return null
+        netPath = netPathList.last()
+        netPath = netPath.replace(".svga", "")+"_"
+
+        val list = Gson().fromJson<List<String>>(
+            liveGiftCache,
+            object : TypeToken<List<String>>() {}.type
+        ).toMutableList()
+        return list.firstOrNull { it.contains(netPath) }
+    }
 }

@@ -7,10 +7,12 @@ import com.example.baselibrary.api.RemoteEventEmitter
 import com.example.baselibrary.api.StatusEvent
 import com.example.instalive.api.ConversationDataRepository
 import com.example.instalive.api.DataRepository
+import com.example.instalive.app.InstaLivePreferences
 import com.example.instalive.app.SessionPreferences
 import com.example.instalive.app.conversation.MessageBaseViewModel
 import com.example.instalive.db.MessageComposer
 import com.example.instalive.model.GiftData
+import com.example.instalive.model.GiftListData
 import com.example.instalive.model.LiveWithInviteEvent
 import com.google.gson.Gson
 import com.venus.dm.db.entity.MessageEntity
@@ -26,7 +28,7 @@ class LiveInteractionViewModel : MessageBaseViewModel() {
     val hangUpLiveWithData = MutableLiveData<Any>()
     var inviteData = MutableLiveData<LiveWithInviteEvent>()
     val personalLiveData = MutableLiveData<UserData?>()
-    val giftListData = MutableLiveData<GiftData>()
+    val giftListLiveData = MutableLiveData<GiftListData>()
     val raiseHandData = MutableLiveData<Any>()
     val handsDownData = MutableLiveData<Any>()
     val muteLiveData = MutableLiveData<Any>()
@@ -75,7 +77,6 @@ class LiveInteractionViewModel : MessageBaseViewModel() {
     fun getMessageList(
         isRefresh: Boolean,
         liveId: String,
-        conId: String,
         timeToken: Long,
         result: (List<MessageEntity>, isRefresh: Boolean) -> Unit
     ) {
@@ -317,17 +318,17 @@ class LiveInteractionViewModel : MessageBaseViewModel() {
 //        }
 //    }
 //
-//    fun getGiftList() {
-//        if (FambasePreferences.liveGiftList != null) {
-//            val giftList =
-//                Gson().fromJson(FambasePreferences.liveGiftList, LiveGiftData::class.java)
-//            liveGiftListData.postValue(giftList)
-//            return
-//        }
+    fun getGiftList() {
+        if (InstaLivePreferences.liveGiftList != null) {
+            val giftList =
+                Gson().fromJson(InstaLivePreferences.liveGiftList, GiftListData::class.java)
+            giftListLiveData.postValue(giftList)
+            return
+        }
 //        viewModelScope.launch {
 //            DataRepository.liveGiftList(liveGiftListData, this@LiveInteractionViewModel)
 //        }
-//    }
+    }
 //
 //    fun raiseHand(onError: (String) -> Unit, onStatus: (StatusEvent) -> Unit) {
 //        viewModelScope.launch {

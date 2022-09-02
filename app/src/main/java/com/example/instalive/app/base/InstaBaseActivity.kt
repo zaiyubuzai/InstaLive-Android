@@ -13,6 +13,9 @@ import com.jeremyliao.liveeventbus.core.Observable
 
 @ExperimentalStdlibApi
 abstract class InstaBaseActivity<VMD : ViewModel, VDB : ViewDataBinding>: BaseActivity<VMD, VDB>() {
+
+    protected var screenName: String? = null
+
     protected val defaultEventBus: Observable<Any> by lazy {
         LiveEventBus.get(Constants.EVENT_BUS_KEY_DEFAULT)
     }

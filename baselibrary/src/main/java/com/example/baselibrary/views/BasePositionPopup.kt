@@ -8,36 +8,19 @@ import androidx.lifecycle.ViewModel
 import com.lxj.xpopup.core.PositionPopupView
 
 abstract class BasePositionPopup<VMD : ViewModel>(context: Context) :
-    PositionPopupView(context), LifecycleOwner {
+    PositionPopupView(context){
 
     protected lateinit var viewModel: VMD
-    private lateinit var lifecycleRegistry: LifecycleRegistry
     protected var screenName: String? = null
 
     override fun onCreate() {
         super.onCreate()
-        lifecycleRegistry = LifecycleRegistry(this)
-        lifecycleRegistry.currentState = Lifecycle.State.CREATED
         viewModel = initViewModel()
         initData()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
-    }
-
-
-    override fun onDismiss() {
-        super.onDismiss()
-        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
     }
 
     protected abstract fun initData()
 
     protected abstract fun initViewModel(): VMD
 
-    override fun getLifecycle(): Lifecycle {
-        return lifecycleRegistry
-    }
 }

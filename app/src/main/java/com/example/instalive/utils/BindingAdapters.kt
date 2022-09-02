@@ -3,7 +3,9 @@ package com.example.instalive.utils
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.net.Uri
+import android.text.TextPaint
 import android.text.format.DateFormat
+import android.text.style.ClickableSpan
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
@@ -20,6 +22,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.imageview.ShapeableImageView
 import com.venus.dm.db.entity.MessageEntity
+import lt.neworld.spanner.SpanBuilder
 import splitties.dimensions.dp
 import timber.log.Timber
 import java.io.File
@@ -232,6 +235,23 @@ fun setDrawableTopVector(view: TextView, @DrawableRes res: Int) {
         null,
         null
     )
+}
+
+class NoUnderlineClickableSpan(val onClick: () -> Unit) : ClickableSpan() {
+    override fun updateDrawState(ds: TextPaint) {
+        ds.isUnderlineText = false
+    }
+
+    override fun onClick(widget: View) {
+        onClick.invoke()
+    }
+
+}
+
+class NoUnderlineClickableSpanBuilder(val onClick: () -> Unit) : SpanBuilder {
+    override fun build(): Any {
+        return NoUnderlineClickableSpan(onClick)
+    }
 }
 
 @BindingAdapter("messageVideoLength")

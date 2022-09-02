@@ -393,7 +393,10 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
                 }
             }
         })
-
+        chatList.setOnTouchListener { _, _ ->
+            inputContainer.hideKeyboard()
+            false
+        }
         messageAdapter.registerAdapterDataObserver(messageAdapterDataObserver)
         messageEventSyncList.add(
             MessageEvent(6, null, null, System.currentTimeMillis(), timestampStart = System.currentTimeMillis())

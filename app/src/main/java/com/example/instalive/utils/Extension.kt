@@ -100,3 +100,54 @@ fun Context.requestStoragePermission(go: () -> Unit, no: (()->Unit)? = null){
         }
         .check()
 }
+
+fun Context.requestLivePermission(go: () -> Unit){
+    Dexter.withContext(this)
+        .withPermissions(
+            Manifest.permission.CAMERA,
+            Manifest.permission.RECORD_AUDIO
+        )
+        .withListener(object : MultiplePermissionsListener {
+            override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
+                if (p0?.areAllPermissionsGranted() == true) {
+                    //start live
+                    go.invoke()
+                } else {
+                    val deniedP = p0?.deniedPermissionResponses
+                    deniedP?.forEach {
+                        if (it.permissionName == Manifest.permission.CAMERA) {
+                            alertDialog {
+                                titleResource = R.string.camera_permission_dialog_title
+                                messageResource =  R.string.camera_permission_dialog_message
+                                positiveButton(R.string.go_to_settings) {
+                                    Utils.goToAppSettings(context, BuildConfig.APPLICATION_ID)
+                                }
+                                negativeButton(R.string.not_now) {
+                                    it.dismiss()
+                                }
+                            }.show()
+                        } else if (it.permissionName == Manifest.permission.RECORD_AUDIO) {
+                            alertDialog {
+                                titleResource = R.string.microphone_permission_dialog_title
+                                messageResource =  R.string.microphone_permission_dialog_message
+                                positiveButton(R.string.go_to_settings) {
+                                    Utils.goToAppSettings(context, BuildConfig.APPLICATION_ID)
+                                }
+                                negativeButton(R.string.not_now) {
+                                    it.dismiss()
+                                }
+                            }.show()
+                        }
+                    }
+                }
+            }
+
+            override fun onPermissionRationaleShouldBeShown(
+                p0: MutableList<PermissionRequest>?,
+                p1: PermissionToken?,
+            ) {
+                p1?.continuePermissionRequest()
+            }
+        })
+        .check()
+}

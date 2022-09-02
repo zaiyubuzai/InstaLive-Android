@@ -16,20 +16,26 @@ import com.example.instalive.app.SessionPreferences
 import com.example.instalive.db.InstaLiveDBProvider
 import com.example.instalive.model.AppInitData
 import com.example.instalive.model.InstaLiveStringTemplate
+import com.example.instalive.utils.DMSocketIO
 import com.example.instalive.utils.FlipperInitializer
 import com.example.instalive.utils.SysUtils
 import com.google.gson.Gson
 import com.venus.framework.rest.UrlSignature
+import com.venus.livesdk.rtc.AgoraEventHandler
+import com.venus.livesdk.rtc.IAgoraConfig
+import io.agora.rtc.RtcEngine
 import splitties.permissions.hasPermission
 import timber.log.Timber
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.properties.Delegates
 
-class InstaLiveApp: Application(), ViewModelStoreOwner {
+class InstaLiveApp: Application(), ViewModelStoreOwner, IAgoraConfig {
     companion object{
         var appInstance: InstaLiveApp by Delegates.notNull()
     }
+    override var mHandler: AgoraEventHandler? = null
+    override var mRtcEngine: RtcEngine? = null
 
     var isColdLaunch: Boolean = true
     val timeDiscrepancy: Long = 0
@@ -80,7 +86,11 @@ class InstaLiveApp: Application(), ViewModelStoreOwner {
         InstaLiveDBProvider.db.directMessagingDao()
 
         appInitData.observeForever {
+            try {
+                configLive(this.applicationContext, "673ffc96f1a84f49be95ff2d8fe02fe2", 1024 * 5)
+            } catch (e: Exception){
 
+            }
         }
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
@@ -118,6 +128,14 @@ class InstaLiveApp: Application(), ViewModelStoreOwner {
                 return randomUUID
             }
         }
+    }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    override fun onTerminate() {
+        registerActivityLifecycleCallbacks(null)
+        DMSocketIO.releaseSocket()
+        destroyRtcEngine()
+        super.onTerminate()
     }
 
     fun addActivity(activity: Activity) {

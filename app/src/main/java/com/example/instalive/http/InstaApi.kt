@@ -218,4 +218,19 @@ interface InstaApi : BaseApi {
     suspend fun messageReportACK(
         @Field("uuids") uuids: String,
     ): BaseResponse<Any>
+
+    //"title": "xxx", # 可选
+    //    "desc": "xxxxxx", # 可选
+    //    "ticket_gift_id": "xxxxxx", # 门票礼物id 可选参数 非必传
+    //    "divide_income": 1, # 可选
+    //    "divide_income_rate": 50, # 分成比例 0-60 0:turn-off
+    @FormUrlEncoded
+    @POST("api/v1/live/live/start/")
+    suspend fun createLive(
+        @Field("title") title: String?,
+        @Field("desc") desc: String?,
+        @Field("ticket_gift_id") ticketGiftId: String?,
+        @Field("divide_income") divideIncome: Int?,//0 or 1
+        @Field("divide_income_rate") divideIncomeRate: Int,//分成比例 0-60 0:turn-off
+    ):BaseResponse<LiveDataInfo>
 }

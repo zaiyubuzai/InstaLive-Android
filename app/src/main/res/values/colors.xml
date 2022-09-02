@@ -16,4 +16,6 @@
     <color name="transparent">#00000000</color>
     <color name="default_yellow">#ffcc33</color>
     <color name="black_gray">#333131</color>
+    <color name="translate_black33">#33000000</color>
+    <color name="translate_black88">#88000000</color>
 </resources>

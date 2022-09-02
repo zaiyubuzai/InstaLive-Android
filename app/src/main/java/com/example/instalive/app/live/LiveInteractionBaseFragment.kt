@@ -11,18 +11,13 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Browser
 import android.text.method.LinkMovementMethod
-import android.util.DisplayMetrics
 import android.view.View
-import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
-import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -32,20 +27,25 @@ import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.baselibrary.utils.BarUtils
+import com.example.baselibrary.utils.Utils.processTemplate
+import com.example.baselibrary.utils.liveGiftAnimatorSet
 import com.example.baselibrary.views.BaseFragment
 import com.example.baselibrary.views.DataBindingConfig
 import com.example.instalive.InstaLiveApp
 import com.example.instalive.R
-import com.example.instalive.api.DataRepository
 import com.example.instalive.app.Constants
 import com.example.instalive.app.Constants.DEFAULT_EMOJI_LIST
+import com.example.instalive.app.InstaLivePreferences
 import com.example.instalive.app.SESSION
 import com.example.instalive.app.SessionPreferences
 import com.example.instalive.app.base.SharedViewModel
+import com.example.instalive.app.base.TextPopupWindow
 import com.example.instalive.app.conversation.TopSmoothScroller
 import com.example.instalive.app.live.ui.LiveCommentInputDialog
 import com.example.instalive.mentions.Mentionable
 import com.example.instalive.model.*
+import com.example.instalive.utils.NoUnderlineClickableSpanBuilder
+import com.example.instalive.utils.VenusNumberFormatter
 import com.example.instalive.utils.marsToast
 import com.example.instalive.view.KsgLikeView
 import com.jeremyliao.liveeventbus.LiveEventBus
@@ -53,7 +53,6 @@ import com.jeremyliao.liveeventbus.core.LiveEvent
 import com.lxj.xpopup.XPopup
 import com.opensource.svgaplayer.*
 import com.venus.dm.app.ChatConstants
-import com.venus.dm.db.entity.ConversationsEntity
 import com.venus.dm.db.entity.MessageEntity
 import com.venus.dm.model.UserData
 import com.venus.dm.model.event.MessageEvent
@@ -64,13 +63,10 @@ import kotlinx.coroutines.*
 import lt.neworld.spanner.Spanner
 import lt.neworld.spanner.Spans
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
-import org.json.JSONArray
-import splitties.activities.start
 import splitties.alertdialog.appcompat.*
 import splitties.dimensions.dp
 import splitties.fragmentargs.arg
 import splitties.fragmentargs.argOrDefault
-import splitties.intents.start
 import splitties.systemservices.layoutInflater
 import splitties.views.imageDrawable
 import splitties.views.onClick
@@ -80,11 +76,10 @@ import java.net.URL
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.math.abs
 
 @ExperimentalStdlibApi
 abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
-    BaseFragment<LiveInteractionViewModel, VDB>() {
+    BaseFragment<LiveViewModel, VDB>() {
 
     protected val sharedViewModel by lazy {
         InstaLiveApp.appInstance.getAppViewModelProvider().get(SharedViewModel::class.java)
@@ -92,8 +87,6 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
 
     var diamondPublicEnabled: Boolean by argOrDefault(false)
     var makeUpEnabled: Boolean by argOrDefault(false)
-    var conversationsEntity: ConversationsEntity by arg()
-    var conversationId: String by arg()
     var isHost: Boolean by arg()
     var liveId: String by arg()
 
@@ -109,8 +102,9 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
     var giftAnim: SVGAImageView? = null
 
     var isProfileLoading = false
-    var isMicrophone = false//是否为连麦直播
     var isPaidLive = false
+
+    private var topMessage: LiveEvent? = null
 
     var activityList = mutableListOf<LiveEvent>()
     val giftList = mutableListOf<LiveGiftEvent>()
@@ -127,6 +121,7 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
     private var newMessagePushTimeToken = 0L
     private var keyboardState = false
     private var subtitleFloatingView: View? = null
+    private var giftListData: GiftListData? = null
 
     private val messageEventSyncList = ConcurrentLinkedQueue<MessageEvent>()
 
@@ -208,31 +203,13 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
             when (it) {
                 is LiveActivityEvent -> {
                     if (it.event == 6) {
-                        //gift类型的activityevent扔掉
+                        //gift类型的activity event扔掉
                         return@observe
                     }
                     updateTotalViewerCount(it)
                     if (it.content.isNotEmpty()) {
-                        if (it.userInfo?.userId == SessionPreferences.id) {
-                            //如果是自己发生的事件，直接展示出来
-                            lastActivityEventEmitJob?.cancel()
-                            lastActivityEventEmitJob = lifecycleScope.launch {
-                                activityMessage.text = it.content
-                                activityMessage.isVisible = true
-//                                topMessageAdapter.notifyItemChanged(0)
-                                if (!commentSwipedAway) {
-                                    interactionsList.smoothScrollToPosition(0)
-                                }
-                                delay(2000)
-                                lastActivityEventEmitJob = null
-                            }
-                        } else {
-                            //不是自己的activity，压进list
-                            activityList.add(it)
-                            popActivityEvent()
-                        }
+                        handleActivityEvent(it)
                     }
-
                 }
                 is LikeEvent -> {
                     showCornerLikes(it)
@@ -244,9 +221,6 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
                         onNewGift(it, true)
                     }
                 }
-//                is LiveSystemEvent -> {
-//                    onNewEvent(it)
-//                }
             }
         })
 
@@ -291,11 +265,11 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
             }
         })
 
-//        viewModel.getGiftList()
-//        viewModel.liveGiftListData.observe(this, {
-//            //prefetch live gifts images
-//            topMessageAdapter.liveGiftData = it
-//        })
+        viewModel.getGiftList()
+        viewModel.giftListLiveData.observe(this, {
+            //prefetch live gifts images
+            giftListData = it
+        })
 
         newMessagesCount.onClick {
             interactionsList.smoothScrollToPosition(0)
@@ -463,7 +437,7 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
     private suspend fun insertMessages() {
         if (liveMessageAdapter.originalMessages.size < 1) return
         val currentTimestamp = System.currentTimeMillis()
-        if (isMicrophone || isHost) {
+        if (viewModel.isMicrophone.value == true || isHost) {
             if (currentTimestamp - newMessagePushTimeToken > 1000) {
                 newMessagePushTimeToken = currentTimestamp
                 when (liveMessageAdapter.originalMessages.size) {
@@ -565,8 +539,7 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
             mutableListOf(),
             mutableListOf(),
             mutableListOf(),
-            conversationsEntity.type == 2,
-            conversationsEntity,
+            true,
             object : LiveMessageAdapter.OnLiveMessageActionsListener {
                 override fun onPortraitClicked(senderId: String, senderRole: Int) {
                     Timber.d("$senderId $senderRole")
@@ -604,34 +577,23 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
 
                 override fun onReplyMessage(messageEntity: MessageEntity) {
                     val payload = MessageEntity.Payload.fromJson(messageEntity.payload)
-//                    payload?.targetMessage?.let {
-//                        if (it.type == 1) {
-//                            val messageSimpleTextViewer = MessageSimpleTextViewer()
-//                            messageSimpleTextViewer.message =
-//                                "${it.senderName}: ${it.payload.content}"
-//                            messageSimpleTextViewer.show(
-//                                activity.supportFragmentManager,
-//                                null
-//                            )
-//                        } else if (it.type == 3) {
-//                            val messageSimpleTextViewer = MessageSimpleTextViewer()
-//                            messageSimpleTextViewer.message = "${it.senderName}: [Image]"
-//                            messageSimpleTextViewer.show(
-//                                activity.supportFragmentManager,
-//                                null
-//                            )
-//                        } else {
-//                            if (!it.payload.content.isNullOrEmpty()) {
-//                                val messageSimpleTextViewer = MessageSimpleTextViewer()
-//                                messageSimpleTextViewer.message =
-//                                    "${it.senderName}: ${it.payload.content}"
-//                                messageSimpleTextViewer.show(
-//                                    activity.supportFragmentManager,
-//                                    null
-//                                )
-//                            }
-//                        }
-//                    }
+                    payload?.targetMessage?.let {
+                        if (it.type == 3) {
+                            getString(R.string.il_name_image, it.senderName)
+                        } else if (it.type == 4) {
+                            getString(R.string.il_name_video, it.senderName)
+                        } else {
+                            "${it.senderName}: ${it.payload.content}"
+                        }
+                    }?.let {
+                        val tokenPopupWindow =
+                            TextPopupWindow(requireActivity(), it)
+                        with(tokenPopupWindow) {
+                            isClippingEnabled = false
+                            animationStyle = R.style.anim_style
+                            show()
+                        }
+                    }
                 }
 
                 override fun onUsernameClick(username: String) {
@@ -646,20 +608,20 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
                 }
 
                 override fun onURLMessageClick(url: String) {
-//                    if (isHost) {
-//                        marsToast(R.string.fb_host_cant_leave)
-//                    } else if (activity is LiveActivity && (activity as LiveActivity).isMicrophoneUser()) {
-//                        marsToast(R.string.fb_microphone_user_cant_leave)
-//                    } else {
-//                        val c = context ?: return
-//                        val uri = Uri.parse(url)
-//                        val intent = Intent(Intent.ACTION_VIEW, uri)
-//                        intent.putExtra(Browser.EXTRA_APPLICATION_ID, c.packageName)
-//                        try {
-//                            c.startActivity(intent)
-//                        } catch (e: ActivityNotFoundException) {
-//                        }
-//                    }
+                    if (isHost) {
+                        marsToast(R.string.fb_host_cant_leave)
+                    } else if (viewModel.isMicrophoneUser.value == true) {
+                        marsToast(R.string.fb_microphone_user_cant_leave)
+                    } else {
+                        val c = context ?: return
+                        val uri = Uri.parse(url)
+                        val intent = Intent(Intent.ACTION_VIEW, uri)
+                        intent.putExtra(Browser.EXTRA_APPLICATION_ID, c.packageName)
+                        try {
+                            c.startActivity(intent)
+                        } catch (e: ActivityNotFoundException) {
+                        }
+                    }
                 }
 
                 override fun onClickGift(giftId: String) {
@@ -692,7 +654,7 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
         interactionsList.itemAnimator = null
 
         interactionsList.adapter = liveMessageAdapter
-        viewModel.getMessageList(true, liveId, conversationId, 0L, messageListLoadObserver)
+        viewModel.getMessageList(true, liveId, 0L, messageListLoadObserver)
         interactionsList.addOnLayoutChangeListener { _, _, top, _, bottom, _, oldTop, _, oldBottom ->
 //            Timber.d("OnLayoutChange $bottom $oldBottom $top $oldTop")
             val firstPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
@@ -881,6 +843,7 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
             giftUuids.add(event.uuid)
             popGift()
             if (event.giftInfo?.systemMessage?.show == true) {
+                handleActivityEvent(event)
                 if (event.userInfo.userId == SessionPreferences.id) {
                     //如果是自己发生的事件，直接展示出来
                     lastActivityEventEmitJob?.cancel()
@@ -904,77 +867,70 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
             return
         }
         val firstGift = giftList[0]
-//        if (firstGift.giftInfo?.specialEffect?.show == true && !bigAnimIsPlaying.get()) {
-//            //如果第一个礼物是特效礼物，就走展示特效礼物
-//            val gift = giftList.removeAt(0)
-//            val url = gift.giftInfo?.specialEffect?.img
-////            firstGiftCardViewJob?.cancel()
-////            firstGiftCardViewJob = null
-//            bigAnimIsPlaying.set(true)
-//            val gifts = DataRepository.findGiftCache(gift.giftInfo?.specialEffect?.img ?: "")
-//            try {
-//                val parseCompletion = object : SVGAParser.ParseCompletion {
-//                    override fun onComplete(videoItem: SVGAVideoEntity) {
-//                        toShowGiftAnimation(videoItem, gift)
-//                    }
-//
-//                    override fun onError() {
-//                    }
-//                }
-//                if (gifts.isNeitherNullNorEmpty()) {
-//                    val giftImg = gifts[0]
-//                    if (File(giftImg).exists()) {
-//                        val file = File(giftImg)
-//                        svgaParser.decodeFromInputStream(
-//                            file.inputStream(),
-//                            gift.giftInfo?.specialEffect?.img ?: "",
-//                            parseCompletion
-//                        )
-//                    } else {
-//                        svgaParser.decodeFromURL(URL(url), parseCompletion)
-//                        viewModel.cacheGift(gift.giftInfo?.specialEffect?.img ?: "")
-//                    }
-//                } else {
-//                    svgaParser.decodeFromURL(URL(url), parseCompletion)
-//                    viewModel.cacheGift(gift.giftInfo?.specialEffect?.img ?: "")
-//                }
-//            } catch (e: Exception) {
-//            }
-//        } else {
-//            if (firstGiftCardViewJob != null) {
-//                if (secondGiftCardViewJob == null && giftSecondContainer != null) {
-//                    val index = giftList.indexOfFirst {
-//                        it.giftInfo?.specialEffect?.show != true
-//                    }
-//                    if (index != -1) {
-//                        val gift = giftList.removeAt(index)
-//                        secondGiftCardViewJob = popGiftCard(gift, giftSecondContainer) {
-//                            secondGiftCardViewJob?.cancel()
-//                            secondGiftCardViewJob = null
-//                            if (giftList.isNotEmpty()) {
-//                                popGift()
-//                            }
-//                        }
-//                    }
-//                }
-//            } else if (!bigAnimIsPlaying.get()) {
-//                val index = giftList.indexOfFirst {
-//                    it.giftInfo?.specialEffect?.show != true
-//                }
-//                if (index != -1) {
-//                    val gift = giftList.removeAt(index)
-//                    if (giftFirstContainer != null) {
-//                        firstGiftCardViewJob = popGiftCard(gift, giftFirstContainer) {
-//                            firstGiftCardViewJob?.cancel()
-//                            firstGiftCardViewJob = null
-//                            if (giftList.isNotEmpty()) {
-//                                popGift()
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        if (firstGift.giftInfo?.specialEffect?.show == true && !bigAnimIsPlaying.get()) {
+            //如果第一个礼物是特效礼物，就走展示特效礼物
+            val gift = giftList.removeAt(0)
+            val url = gift.giftInfo?.specialEffect?.img ?: ""
+
+            bigAnimIsPlaying.set(true)
+            val giftImgCachePath = InstaLivePreferences.findGiftCache(url)?:""
+            try {
+                val parseCompletion = object : SVGAParser.ParseCompletion {
+                    override fun onComplete(videoItem: SVGAVideoEntity) {
+                        toShowGiftAnimation(videoItem, gift)
+                    }
+
+                    override fun onError() {
+                    }
+                }
+                if (File(giftImgCachePath).exists()) {
+                        val file = File(giftImgCachePath)
+                        svgaParser.decodeFromInputStream(
+                            file.inputStream(),
+                            url,
+                            parseCompletion
+                        )
+                } else {
+                    svgaParser.decodeFromURL(URL(url), parseCompletion)
+                    viewModel.cacheGift(url)
+                }
+            } catch (e: Exception) {
+            }
+        } else {
+            if (firstGiftCardViewJob != null) {
+                if (secondGiftCardViewJob == null && giftSecondContainer != null) {
+                    val index = giftList.indexOfFirst {
+                        it.giftInfo?.specialEffect?.show != true
+                    }
+                    if (index != -1) {
+                        val gift = giftList.removeAt(index)
+                        secondGiftCardViewJob = popGiftCard(gift, giftSecondContainer) {
+                            secondGiftCardViewJob?.cancel()
+                            secondGiftCardViewJob = null
+                            if (giftList.isNotEmpty()) {
+                                popGift()
+                            }
+                        }
+                    }
+                }
+            } else if (!bigAnimIsPlaying.get()) {
+                val index = giftList.indexOfFirst {
+                    it.giftInfo?.specialEffect?.show != true
+                }
+                if (index != -1) {
+                    val gift = giftList.removeAt(index)
+                    if (giftFirstContainer != null) {
+                        firstGiftCardViewJob = popGiftCard(gift, giftFirstContainer) {
+                            firstGiftCardViewJob?.cancel()
+                            firstGiftCardViewJob = null
+                            if (giftList.isNotEmpty()) {
+                                popGift()
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun toShowGiftAnimation(videoItem: SVGAVideoEntity, gift: LiveGiftEvent) {
@@ -1048,35 +1004,31 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
                 }
             }
 
-//            val options = RequestOptions.bitmapTransform(RoundedCorners(activity.dip(12)))
-//            Glide.with(activity)
-//                .load(giftEvent.giftInfo?.card?.img)
-//                .apply(options)
-//                .skipMemoryCache(false)
-//                .diskCacheStrategy(DiskCacheStrategy.ALL)
-//                .error(R.drawable.ic_live_gift_default)
-//                .placeholder(R.drawable.ic_live_gift_default)
-//                .into(giftPop.giftGift)
-//            Glide.with(activity)
-//                .load(giftEvent.userInfo.portrait)
-//                .apply(options)
-//                .skipMemoryCache(false)
-//                .diskCacheStrategy(DiskCacheStrategy.ALL)
-//                .error(R.drawable.ic_default_avatar)
-//                .placeholder(R.drawable.ic_default_avatar)
-//                .into(giftPop.giftAvatar)
-//            giftPop.giftUsername.textSize = if (isHost) 15f else 13f
-//            giftPop.content.textSize = if (isHost) 12f else 11f
-//            giftPop.giftUsername.text = giftEvent.userInfo.nickname
-//            giftPop.content.text = giftEvent.giftInfo?.card?.content
-////            giftPop.giftGift.setImageURI(giftEvent.giftInfo?.card?.img)
-//            giftPop.giftContainer.setBackgroundResource(if (giftEvent.giftInfo?.card?.highlight == true) R.drawable.bg_live_interaction_gift_highlighted_container else R.drawable.bg_live_interaction_gift_container)
-//            giftContainer?.addView(giftPop)
-//            giftPop.liveGiftAnimatorSet(duration, {
-//            }, {
-//                giftFirstContainer?.removeView(giftPop)
-//                onFinish()
-//            })
+            val options = RequestOptions.bitmapTransform(RoundedCorners(c.dp(12)))
+            Glide.with(c)
+                .load(giftEvent.giftInfo?.card?.img)
+                .apply(options)
+                .skipMemoryCache(false)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(giftPop.giftGift)
+            Glide.with(c)
+                .load(giftEvent.userInfo.portrait)
+                .apply(options)
+                .skipMemoryCache(false)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(giftPop.giftAvatar)
+            giftPop.giftUsername.textSize = if (isHost) 15f else 13f
+            giftPop.content.textSize = if (isHost) 12f else 11f
+            giftPop.giftUsername.text = giftEvent.userInfo.nickname
+            giftPop.content.text = giftEvent.giftInfo?.card?.content
+
+            giftPop.giftContainer.setBackgroundResource(if (giftEvent.giftInfo?.card?.highlight == true) R.drawable.bg_live_interaction_gift_highlighted_container else R.drawable.bg_live_interaction_gift_container)
+            giftContainer?.addView(giftPop)
+            giftPop.liveGiftAnimatorSet(duration, {
+            }, {
+                giftFirstContainer?.removeView(giftPop)
+                onFinish()
+            })
         }
     }
 
@@ -1205,15 +1157,15 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
     }
 
     private fun canLeaveLive(): Boolean {
-//        if (isHost) {
-//            marsToast(R.string.fb_host_cant_leave)
-//            return false
-//        } else if (activity is LiveActivity && (activity as LiveActivity).isMicrophoneUser()) {
-//            marsToast(R.string.fb_microphone_user_cant_leave)
-//            return false
-//        } else {
+        if (isHost) {
+            marsToast(R.string.fb_host_cant_leave)
+            return false
+        } else if (viewModel.isMicrophoneUser.value == true) {
+            marsToast(R.string.fb_microphone_user_cant_leave)
+            return false
+        } else {
             return true
-//        }
+        }
     }
 
     /**
@@ -1233,6 +1185,34 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
     }
 
     open fun doRequestHandsUp() {
+    }
+
+    private fun handleActivityEvent(event: LiveEvent){
+        if (event is LiveActivityEvent && event.userInfo?.userId == SessionPreferences.id) {
+            //如果是自己发生的事件，直接展示出来
+            lastActivityEventEmitJob?.cancel()
+            lastActivityEventEmitJob = lifecycleScope.launch {
+                topMessage = event
+                activityMessage.text = event.content
+                activityMessage.isVisible = true
+                delay(2000)
+                lastActivityEventEmitJob = null
+            }
+
+        }else if (event is LiveGiftEvent && event.userInfo.userId == SessionPreferences.id) {
+            //如果是自己发生的事件，直接展示出来
+            lastActivityEventEmitJob?.cancel()
+            lastActivityEventEmitJob = lifecycleScope.launch {
+                topMessage = event
+                buildActivityMessage(event)
+                delay(2000)
+                lastActivityEventEmitJob = null
+            }
+        } else {
+            //不是自己的activity，压进list
+            activityList.add(event)
+            popActivityEvent()
+        }
     }
 
     private fun popActivityEvent() {
@@ -1302,7 +1282,7 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
             liveCommentInputDialog = LiveCommentInputDialog(
                 c,
                 pendingComment ?: "",
-                conversationsEntity.ownerId == SessionPreferences.id,
+                isHost,
                 insertedMentions,
                 object : LiveCommentInputDialog.OnLiveCommentEditListener {
                     override fun onSend(text: String) {
@@ -1337,38 +1317,38 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
     }
 
     private fun showNewMessageView() {
-//        val unreadMessages = liveMessageAdapter.messages.subList(0, newEventCount)
-//        var count = 0
-//        unreadMessages.forEach {
-//            if (!listOf(8, 9, 31, 201).contains(it.type) || it.renderType > 2){
-//                count++
-//            }
-//        }
-//
-//        newMessagesCount.text = when {
-//            count > 99 -> {
-//                newMessagesCount.isVisible = true
-//                getString(
-//                    R.string.new_messages_counts,
-//                    "99+"
-//                )
-//            }
-//            count > 1 -> {
-//                newMessagesCount.isVisible = true
-//                getString(
-//                    R.string.new_messages_counts,
-//                    VenusNumberFormatter.format(count.toLong())
-//                )
-//            }
-//            count == 1 -> {
-//                newMessagesCount.isVisible = true
-//                getString(R.string.new_messages_count)
-//            }
-//            else -> {
-//                newMessagesCount.isVisible = false
-//                ""
-//            }
-//        }
+        val unreadMessages = liveMessageAdapter.messages.subList(0, newEventCount)
+        var count = 0
+        unreadMessages.forEach {
+            if (!listOf(8, 9, 31, 201).contains(it.type) || it.renderType > 2){
+                count++
+            }
+        }
+
+        newMessagesCount.text = when {
+            count > 99 -> {
+                newMessagesCount.isVisible = true
+                getString(
+                    R.string.il_new_messages_counts,
+                    "99+"
+                )
+            }
+            count > 1 -> {
+                newMessagesCount.isVisible = true
+                getString(
+                    R.string.il_new_messages_counts,
+                    VenusNumberFormatter.format(count.toLong())
+                )
+            }
+            count == 1 -> {
+                newMessagesCount.isVisible = true
+                getString(R.string.il_new_messages_counts)
+            }
+            else -> {
+                newMessagesCount.isVisible = false
+                ""
+            }
+        }
     }
 
     private fun hideNewMessageView() {
@@ -1426,17 +1406,17 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
         liveLikesAnimView?.addFavor(emojiList.random())
     }
 
-//    open fun onRaiseHand() {
-////        liveInteractionsAdapter.dataList.forEach {
-////            if (it is LiveSystemEvent && it.isRequest == 1) {
-////                it.isRequest = 2
-////                liveInteractionsAdapter.notifyDataSetChanged()
-////            }
-////        }
-//    }
-//
-//    open fun onHandsDown() {
-//    }
+    open fun onRaiseHand() {
+//        liveInteractionsAdapter.dataList.forEach {
+//            if (it is LiveSystemEvent && it.isRequest == 1) {
+//                it.isRequest = 2
+//                liveInteractionsAdapter.notifyDataSetChanged()
+//            }
+//        }
+    }
+
+    open fun onHandsDown() {
+    }
 
     protected abstract fun getLayoutId(): Int
 
@@ -1467,134 +1447,41 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
             val userInfo = topMessage.userInfo
             val content = topMessage.giftInfo?.systemMessage?.content
 
-//            val processedContent = processTemplate(
-//                content ?: "",
-//                mapOf("user_name" to userInfo.nickname)
-//            )
-//            activityMessage.onClick {
-//                if (userInfo.userId != SessionPreferences.id) {
-//                    topMessageAdapter.goToUser(userInfo, 9)
-//                }
-//            }
-//
-//            topMessageAdapter.liveGiftData?.gifts?.let { giftList ->
-//                val gift =
-//                    giftList.find { it.id == topMessage.giftId }
-//                if (gift != null) {
-//                    val nickname = userInfo.nickname
-//                    activityMessage.text = Spanner()
-//                        .append(
-//                            processedContent,
-//                            Spans.foreground(Color.parseColor("#ffffff"))
-//                        )
-//                        .span(
-//                            nickname,
-//                            Spans.custom(NoUnderlineClickableSpanBuilder {
-//                                if (userInfo.userId != SessionPreferences.id) {
-//                                    topMessageAdapter.goToUser(userInfo, 9)
-//                                }
-//                            }),
-//                            Spans.foreground(Color.parseColor("#ffffff")),
-//                        )
-//                    activityMessage.isVisible = true
-//                }
-//            }
+            val processedContent = processTemplate(
+                content ?: "",
+                mapOf("user_name" to userInfo.nickname)
+            )
+            activityMessage.onClick {
+                if (userInfo.userId != SessionPreferences.id) {
+
+                }
+            }
+
+            giftListData?.gifts?.let { giftList ->
+                val gift =
+                    giftList.find { it.id == topMessage.giftId }
+                if (gift != null) {
+                    val nickname = userInfo.nickname
+                    activityMessage.text = Spanner()
+                        .append(
+                            processedContent,
+                            Spans.foreground(Color.parseColor("#ffffff"))
+                        )
+                        .span(
+                            nickname,
+                            Spans.custom(NoUnderlineClickableSpanBuilder {
+                                if (userInfo.userId != SessionPreferences.id) {
+
+                                }
+                            }),
+                            Spans.foreground(Color.parseColor("#ffffff")),
+                        )
+                    activityMessage.isVisible = true
+                }
+            }
         }
     }
 
-//    class TopMessageAdapter(
-//        var topMessage: LiveEvent?,
-//        val goToUser: (id: LiveUserInfo, role: Int) -> Unit,
-//        var liveGiftData: LiveGiftData?
-//    ) : RecyclerView.Adapter<TopMessageAdapter.ItemActivityViewHolder>() {
-//
-//        override fun onCreateViewHolder(
-//            parent: ViewGroup,
-//            viewType: Int,
-//        ): ItemActivityViewHolder =
-//            ItemActivityViewHolder(
-//                DataBindingUtil.inflate(
-//                    parent.layoutInflater,
-//                    R.layout.item_live_interactions_activity,
-//                    parent,
-//                    false
-//                )
-//            )
-//
-//        override fun onBindViewHolder(
-//            holder: ItemActivityViewHolder,
-//            position: Int,
-//        ) {
-//            if (topMessage == null) {
-//                holder.binding.desc.isVisible = false
-//            } else {
-//                holder.binding.desc.isVisible = true
-//                if (topMessage is LiveActivityEvent) {
-//                    val userInfo = (topMessage as LiveActivityEvent).userInfo
-//                    if (userInfo != null && userInfo.userId != SessionPreferences.id) {
-//                        val spanner = Spanner((topMessage as LiveActivityEvent).content)
-//                            .span(
-//                                userInfo.nickname,
-//                                Spans.foreground(Color.parseColor("#ffffff")),
-//                            )
-//                        holder.binding.desc.movementMethod = LinkMovementMethod()
-//                        holder.binding.desc.text = spanner
-//                    } else {
-//                        holder.binding.desc.text = (topMessage as LiveActivityEvent).content
-//                    }
-//                    holder.binding.desc.onClick {
-//                        userInfo?.let {
-//                            if (it.userId != SessionPreferences.id) {
-//                                goToUser(it, 9)
-//                            }
-//                        }
-//                    }
-//                } else if (topMessage is LiveGiftEvent) {
-//                    //展示gift类型的message
-//                    val userInfo = (topMessage as LiveGiftEvent).userInfo
-//                    val content =
-//                        (topMessage as LiveGiftEvent).giftInfo?.systemMessage?.content
-//
-//                    val processedContent = processTemplate(
-//                        content ?: "",
-//                        mapOf("user_name" to userInfo.nickname)
-//                    )
-//                    holder.binding.desc.onClick {
-//                        if (userInfo.userId != SessionPreferences.id) {
-//                            goToUser(userInfo, 9)
-//                        }
-//                    }
-//
-//                    liveGiftData?.gifts?.let { giftList ->
-//                        val gift =
-//                            giftList.find { it.id == (topMessage as LiveGiftEvent).giftId }
-//                        if (gift != null) {
-//                            val nickname = userInfo.nickname
-//                            holder.binding.desc.text = Spanner()
-//                                .append(
-//                                    processedContent,
-//                                    Spans.foreground(Color.parseColor("#ffffff"))
-//                                )
-//                                .span(
-//                                    nickname,
-//                                    Spans.custom(NoUnderlineClickableSpanBuilder {
-//                                        if (userInfo.userId != SessionPreferences.id) {
-//                                            goToUser(userInfo, 9)
-//                                        }
-//                                    }),
-//                                    Spans.foreground(Color.parseColor("#ffffff")),
-//                                )
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//        override fun getItemCount(): Int = 1
-//
-//        class ItemActivityViewHolder(val binding: ItemLiveInteractionsActivityBinding) :
-//            RecyclerView.ViewHolder(binding.root)
-//    }
 
     override fun onResume() {
         super.onResume()
@@ -1617,8 +1504,8 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
         super.onDestroy()
     }
 
-    override fun initViewModel(): LiveInteractionViewModel {
-        return getFragmentViewModel(LiveInteractionViewModel::class.java)
+    override fun initViewModel(): LiveViewModel {
+        return getActivityViewModel(LiveViewModel::class.java)
     }
 
     override fun getDataBindingConfig(): DataBindingConfig {

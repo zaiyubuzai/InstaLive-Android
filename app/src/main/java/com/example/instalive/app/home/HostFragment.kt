@@ -22,6 +22,7 @@ import com.example.baselibrary.views.DataBindingConfig
 import com.example.instalive.BuildConfig
 import com.example.instalive.R
 import com.example.instalive.app.SessionPreferences
+import com.example.instalive.app.live.LiveHostActivity
 import com.example.instalive.databinding.FragmentHostBinding
 import com.example.instalive.utils.GlideEngine
 import com.karumi.dexter.Dexter
@@ -40,6 +41,7 @@ import kotlinx.coroutines.launch
 import splitties.alertdialog.appcompat.*
 import splitties.dimensions.dp
 import splitties.fragments.start
+import splitties.intents.start
 import splitties.views.onClick
 
 /**
@@ -47,6 +49,7 @@ import splitties.views.onClick
  * Use the [HostFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+@ExperimentalStdlibApi
 class HostFragment : BaseFragment<HomeViewModel, FragmentHostBinding>() {
 
     private var permissionDialog: AlertDialog? = null
@@ -59,6 +62,7 @@ class HostFragment : BaseFragment<HomeViewModel, FragmentHostBinding>() {
         return DataBindingConfig(R.layout.fragment_host, viewModel)
     }
 
+
     override fun initData(savedInstanceState: Bundle?) {
         name.text = "@${SessionPreferences.nickName}"
         val options = RequestOptions.bitmapTransform(RoundedCorners(context?.dp(20)?:100))
@@ -69,7 +73,10 @@ class HostFragment : BaseFragment<HomeViewModel, FragmentHostBinding>() {
 
         }
         btnStartLive.onClick{
-
+            start(LiveHostActivity) { _, spec ->
+                spec.isCanLive = true
+                spec.isLiveNeedResume = false
+            }
         }
         btnScheduleLive.onClick{
             start<CreateEventActivity> {  }

@@ -34,7 +34,6 @@ class LiveMessageAdapter(
     var originalMessages: MutableList<MessageEntity>,
     var messageUUIDList: MutableList<String>,
     var isGroupChat: Boolean,
-    val conversationsEntity: ConversationsEntity,
     val onMessageActionsListener: OnLiveMessageActionsListener,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 

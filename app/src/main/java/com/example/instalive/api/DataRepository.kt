@@ -4,6 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import com.example.baselibrary.api.*
 import com.example.baselibrary.model.CountryCodeData
 import com.example.baselibrary.model.CountryCodeListData
+import com.example.baselibrary.utils.MediaPathUtil
+import com.example.instalive.InstaLiveApp
 import com.example.instalive.app.InstaLivePreferences
 import com.example.instalive.app.SessionPreferences
 import com.example.instalive.http.InstaApi
@@ -18,6 +20,10 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.HttpException
 import timber.log.Timber
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
 import java.lang.Exception
 
 object DataRepository : BaseRemoteRepository(), IRemoteRequest {
@@ -347,6 +353,84 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
 //            processListData<GroupMember>(response, meta, liveData, isRefresh)
 //        }
 
+    }
+
+    suspend fun cacheGift(imageUrl: String){
+        if (imageUrl.isEmpty()) return
+        val list = Gson().fromJson<List<String>>(
+            InstaLivePreferences.liveGiftCache,
+            object : TypeToken<List<String>>() {}.type
+        ).toMutableList()
+
+        var netPath = imageUrl
+        val netPathList = netPath.split("/")
+        if (netPathList.size < 2) return
+        netPath = netPathList.last().replace(".svga", "")
+        val netPath2 = netPath+"_"
+//        netPath += liveGiftDetail.id
+
+
+        val giftImgCachePath = list.firstOrNull {
+            it.contains(netPath2)
+        }
+
+        if (giftImgCachePath!=null) {
+            if (File(giftImgCachePath).exists()) {
+                return
+            } else {
+                list.remove(giftImgCachePath)
+                InstaLivePreferences.liveGiftCache = Gson().toJson(list)
+            }
+        }
+
+        //下载
+        val savePath = MediaPathUtil.getCustomGiftOutputPath(InstaLiveApp.appInstance, netPath)
+        Timber.d("cache save path: $savePath")
+        val response = safeApiCall(null) {
+            baseApi.downloadFile(imageUrl)
+        }
+        if (response?.isSuccessful == true) {
+            val inputStream = response.body()?.byteStream()
+            val length = response.body()?.contentLength()
+            var outputStream: FileOutputStream? = null
+            if (inputStream != null && length != null) {
+                try {
+                    outputStream = FileOutputStream(savePath)
+                    var currentLength = 0L
+                    var len: Int
+                    val buff = ByteArray(1024)
+                    while ((inputStream.read(buff).also { len = it }) != -1) {
+                        outputStream?.write(buff, 0, len)
+                        currentLength += len
+                        //计算当前下载百分比，并经由回调传出
+                        val progressInt = (100L * currentLength / length).toInt()
+//                        withContext(Dispatchers.Main) {
+//                            progressData.postValue(progressInt)
+//                        }
+
+                        if (progressInt == 100) {
+                            list.add(savePath)
+                            InstaLivePreferences.liveGiftCache = Gson().toJson(list)
+                        }
+                    }
+                } catch (e: FileNotFoundException) {
+                    e.printStackTrace()
+//                    remoteEventEmitter?.onError(0, "", ErrorType.NETWORK)
+                } catch (e: IOException) {
+                    e.printStackTrace()
+//                    remoteEventEmitter?.onError(0, "", ErrorType.NETWORK)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+//                    remoteEventEmitter?.onError(0, "", ErrorType.NETWORK)
+                } finally {
+                    try {
+                        inputStream.close()
+                        outputStream?.close()
+                    } catch (e: Exception) {
+                    }
+                }
+            }
+        }
     }
 
     override fun responseError(mError: BaseRepositoryError) {

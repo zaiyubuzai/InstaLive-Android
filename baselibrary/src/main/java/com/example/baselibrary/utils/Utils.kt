@@ -34,6 +34,19 @@ object Utils {
         Pattern.CASE_INSENSITIVE
     )
 
+    val TEMPLATE_PATTERN = Pattern.compile("\\$\\{\\w+\\}")
+    fun processTemplate(template: String, params: Map<String, String?>): String {
+        val stringBuffer = StringBuffer()
+        val matcher = TEMPLATE_PATTERN.matcher(template)
+        while (matcher.find()) {
+            val param = matcher.group()
+            val value = params[param.substring(2, param.length - 1)]
+            matcher.appendReplacement(stringBuffer, value ?: "")
+        }
+        matcher.appendTail(stringBuffer)
+        return stringBuffer.toString()
+    }
+
     fun goToAppSettings(context: Context, applicationPackage: String) {
         val i = Intent(
             Settings.ACTION_APPLICATION_DETAILS_SETTINGS,

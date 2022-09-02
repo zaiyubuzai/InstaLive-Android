@@ -14,7 +14,7 @@
         android:background="@mipmap/bg_live"
         android:clipChildren="false"
         android:keepScreenOn="true"
-        tools:context=".app.live.LiveActivity">
+        tools:context=".app.live.LiveAudienceActivity">
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

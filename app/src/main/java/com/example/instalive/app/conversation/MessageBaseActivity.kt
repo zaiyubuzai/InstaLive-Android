@@ -28,7 +28,8 @@ import java.net.URL
 import java.util.*
 
 @ExperimentalStdlibApi
-abstract class MessageBaseActivity<VDB : ViewDataBinding> : InstaBaseActivity<MessageViewModel, VDB>() {
+abstract class MessageBaseActivity<VDB : ViewDataBinding> :
+    InstaBaseActivity<MessageViewModel, VDB>() {
     private var likeCount = 0
     private var likeJob: Job? = null
     private val likedUuid = mutableSetOf<String>()
@@ -267,21 +268,21 @@ abstract class MessageBaseActivity<VDB : ViewDataBinding> : InstaBaseActivity<Me
     fun doLikeFavor() {
         showLikeFavor(emojiList.random())
         if (likeCount == 0) {
-                Glide.with(this)
-                    .asBitmap()
-                    .load(SessionPreferences.portrait)
-                    .circleCrop()
-                    .into(object : CustomTarget<Bitmap>() {
-                        override fun onResourceReady(
-                            resource: Bitmap,
-                            transition: Transition<in Bitmap>?,
-                        ) {
-                            showLikeFavor(resource)
-                        }
+            Glide.with(this)
+                .asBitmap()
+                .load(SessionPreferences.portrait)
+                .circleCrop()
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: Transition<in Bitmap>?,
+                    ) {
+                        showLikeFavor(resource)
+                    }
 
-                        override fun onLoadCleared(placeholder: Drawable?) {
-                        }
-                    })
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                    }
+                })
         }
         likeCount++
 
