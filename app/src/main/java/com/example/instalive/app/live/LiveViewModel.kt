@@ -18,7 +18,7 @@ import kotlinx.coroutines.*
 import org.json.JSONObject
 import kotlin.random.Random
 
-class LiveViewModel: MessageBaseViewModel() {
+class LiveViewModel : MessageBaseViewModel() {
     val commentLiveData = MutableLiveData<Any>()
     val liveTokenInfo = MutableLiveData<TokenInfo>()
     var inviteData = MutableLiveData<LiveWithInviteEvent>()
@@ -26,30 +26,60 @@ class LiveViewModel: MessageBaseViewModel() {
     var liveInitInfo = MutableLiveData<LiveInitInfo>()
     val liveEndDetailData = MutableLiveData<LiveEndDetailData>()
     val liveInfoLiveData = MutableLiveData<LiveDataInfo>()
-    val liveResultInfoLiveData = MutableLiveData<LiveResultInfo>()
+    val liveCloseLiveData = MutableLiveData<LiveCloseData>()
 
 
     val isMicrophoneUser = MutableLiveData<Boolean>()//本人是否连麦中
     val isMicrophone = MutableLiveData<Boolean>()//直播是否为连麦直播
 
-
-    fun createLive(title: String?, desc: String, ticketGiftId: String?, divideLiveIncome: Int, divideIncomeRate: Int, error: (String) -> Unit) {
+    fun joinLive(userId: String,
+                 liveId: String,
+                 liveJoinData: MutableLiveData<Pair<LiveStateInfo?, JoinLiveError?>>,
+                 password: String? = null) {
         viewModelScope.launch {
-            LiveDataRepository.createLive(title, desc, ticketGiftId, divideLiveIncome, divideIncomeRate, liveInfoLiveData, object :
-                RemoteEventEmitter {
+            LiveDataRepository.joinLive(liveId, liveJoinData, object : RemoteEventEmitter{
                 override fun onError(code: Int, msg: String, errorType: ErrorType) {
-                    error(msg)
+                    this@LiveViewModel.onError(code, msg, errorType)
                 }
 
                 override fun onEvent(event: StatusEvent) {
                     this@LiveViewModel.onEvent(event)
                 }
-
             })
         }
     }
 
-    fun liveReport(type: Int, liveId: String, agoraChannel: String, uid: Int?){
+    fun createLive(
+        title: String?,
+        desc: String?,
+        ticketGiftId: String?,
+        divideLiveIncome: Int?,
+        divideIncomeRate: Int?,
+        error: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            LiveDataRepository.createLive(
+                title,
+                desc,
+                ticketGiftId,
+                divideLiveIncome,
+                divideIncomeRate,
+                liveInfoLiveData,
+                object :
+                    RemoteEventEmitter {
+                    override fun onError(code: Int, msg: String, errorType: ErrorType) {
+                        error(msg)
+                    }
+
+                    override fun onEvent(event: StatusEvent) {
+                        this@LiveViewModel.onEvent(event)
+                    }
+
+                })
+        }
+    }
+
+    fun liveReport(type: Int, liveId: String, agoraChannel: String, uid: Int?) {
         viewModelScope.launch {
             val dataJson = JSONObject()
             dataJson.put("live_id", liveId)
@@ -59,7 +89,7 @@ class LiveViewModel: MessageBaseViewModel() {
         }
     }
 
-    fun initLive(conId:String, onError: (code: Int, msg: String, errorType: ErrorType) -> Unit){
+    fun initLive(conId: String, onError: (code: Int, msg: String, errorType: ErrorType) -> Unit) {
         viewModelScope.launch {
 //            DataRepository.initLive(conId, liveInitInfo, object : RemoteEventEmitter{
 //                override fun onError(code: Int, msg: String, errorType: ErrorType) {
@@ -76,15 +106,18 @@ class LiveViewModel: MessageBaseViewModel() {
 
 
     fun closeLive(liveId: String?) {
-//        viewModelScope.launch {
-//            DataRepository.closeLive(liveId, liveCloseResultInfo, this@LiveFragmentViewModel)
-//        }
+        if (liveId.isNullOrEmpty()) return
+        viewModelScope.launch {
+            LiveDataRepository.closeLive(liveId, liveCloseLiveData, this@LiveViewModel)
+        }
     }
 
-    fun getLiveState(liveId: String,
-                     liveStateInfoLiveData: MutableLiveData<Pair<LiveStateInfo?, JoinLiveError?>>,
-                     onError: (code: Int, msg: String) -> Unit,
-                     onStatusEvent:(event: StatusEvent) -> Unit) {
+    fun getLiveState(
+        liveId: String,
+        liveStateInfoLiveData: MutableLiveData<Pair<LiveStateInfo?, JoinLiveError?>>,
+        onError: (code: Int, msg: String) -> Unit,
+        onStatusEvent: (event: StatusEvent) -> Unit
+    ) {
         viewModelScope.launch {
 //            DataRepository.getLiveState(liveId, liveStateInfoLiveData, object : RemoteEventEmitter {
 //                override fun onError(code: Int, msg: String, errorType: ErrorType) {
@@ -101,13 +134,13 @@ class LiveViewModel: MessageBaseViewModel() {
         }
     }
 
-    fun liveUIPause(liveId: String, userType: Int){
+    fun liveUIPause(liveId: String, userType: Int) {
         viewModelScope.launch {
 //            DataRepository.liveUIPause(liveId, userType, System.currentTimeMillis())
         }
     }
 
-    fun liveUIResume(liveId: String, userType: Int){
+    fun liveUIResume(liveId: String, userType: Int) {
         viewModelScope.launch {
 //            DataRepository.liveUIResume(liveId, userType, System.currentTimeMillis())
         }
@@ -125,7 +158,7 @@ class LiveViewModel: MessageBaseViewModel() {
         }
     }
 
-    fun getLiveEndDetail(liveId: String, onError: (code: Int, msg: String) -> Unit){
+    fun getLiveEndDetail(liveId: String, onError: (code: Int, msg: String) -> Unit) {
         viewModelScope.launch {
 //            DataRepository.liveEndDetail(liveId, liveEndDetailData, object : RemoteEventEmitter {
 //                override fun onError(code: Int, msg: String, errorType: ErrorType) {
@@ -141,7 +174,7 @@ class LiveViewModel: MessageBaseViewModel() {
         }
     }
 
-    fun getPersonalData(userId: String, event:(StatusEvent) -> Unit) {
+    fun getPersonalData(userId: String, event: (StatusEvent) -> Unit) {
         viewModelScope.launch {
 //            DataRepository.getUserDetail(
 //                userId,
@@ -466,37 +499,37 @@ class LiveViewModel: MessageBaseViewModel() {
 //        }
     }
 //
-//    fun raiseHand(onError: (String) -> Unit, onStatus: (StatusEvent) -> Unit) {
-//        viewModelScope.launch {
-//            DataRepository.raiseHandLive(roomId, raiseHandData, object : RemoteEventEmitter {
-//                override fun onError(code: Int, msg: String, errorType: ErrorType) {
-//                    this@LiveInteractionViewModel.onError(code, msg, errorType)
-//                    onError.invoke(msg)
-//                }
-//
-//                override fun onEvent(event: StatusEvent) {
-//                    this@LiveInteractionViewModel.onEvent(event)
-//                    onStatus.invoke(event)
-//                }
-//            })
-//        }
-//    }
-//
-//    fun handsDown(onError: (String) -> Unit, onStatus: (StatusEvent) -> Unit) {
-//        viewModelScope.launch {
-//            DataRepository.handsDownLive(roomId, handsDownData, object : RemoteEventEmitter {
-//                override fun onError(code: Int, msg: String, errorType: ErrorType) {
-//                    this@LiveInteractionViewModel.onError(code, msg, errorType)
-//                    onError.invoke(msg)
-//                }
-//
-//                override fun onEvent(event: StatusEvent) {
-//                    this@LiveInteractionViewModel.onEvent(event)
-//                    onStatus.invoke(event)
-//                }
-//            })
-//        }
-//    }
+    fun raiseHand(liveId: String, onError: (String) -> Unit, onStatus: (StatusEvent) -> Unit) {
+        viewModelScope.launch {
+            LiveDataRepository.raiseHandLive(liveId, raiseHandData, object : RemoteEventEmitter {
+                override fun onError(code: Int, msg: String, errorType: ErrorType) {
+                    this@LiveViewModel.onError(code, msg, errorType)
+                    onError.invoke(msg)
+                }
+
+                override fun onEvent(event: StatusEvent) {
+                    this@LiveViewModel.onEvent(event)
+                    onStatus.invoke(event)
+                }
+            })
+        }
+    }
+
+    fun handsDown(liveId: String, onError: (String) -> Unit, onStatus: (StatusEvent) -> Unit) {
+        viewModelScope.launch {
+            LiveDataRepository.handsDownLive(liveId, handsDownData, object : RemoteEventEmitter {
+                override fun onError(code: Int, msg: String, errorType: ErrorType) {
+                    this@LiveViewModel.onError(code, msg, errorType)
+                    onError.invoke(msg)
+                }
+
+                override fun onEvent(event: StatusEvent) {
+                    this@LiveViewModel.onEvent(event)
+                    onStatus.invoke(event)
+                }
+            })
+        }
+    }
 //
 //    suspend fun memberRole(
 //        roomId: String,

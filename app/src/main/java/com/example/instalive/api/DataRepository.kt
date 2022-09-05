@@ -69,7 +69,7 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
             baseApi.getAnyData<StringTemplate>(stringCache.apiPath)
         }
         if (response != null) {
-            val string = Gson().toJson(response.data, object : TypeToken<StringTemplate>() {}.type)
+            val string = Gson().toJson(response.data)
             InstaLiveStringTemplate.cacheTemplate(string)
             InstaLivePreferences.stringTemplateVersion = stringCache.version
         }
@@ -81,7 +81,7 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
 
     override suspend fun fetchCountryCode(countryCode: CacheConfig.Cache) {
         val response = safeApiCall(null) {
-            baseApi.getAnyData<CountryCodeListData>(countryCode.apiPath)
+            baseApi.getCountryCode(countryCode.apiPath)
         }
         if (response != null) {
             val countryMutableList = mutableListOf<CountryCodeData>()

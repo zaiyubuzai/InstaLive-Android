@@ -1,9 +1,14 @@
 package com.example.instalive.app.live
 
 import android.annotation.SuppressLint
-import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
+import com.example.baselibrary.utils.alphaClick
+import com.example.instalive.BuildConfig
 import com.example.instalive.InstaLiveApp
 import com.example.instalive.app.SessionPreferences
 import com.example.instalive.databinding.FragmentLiveInteractionHostBinding
@@ -17,7 +22,15 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.ticker
 import splitties.alertdialog.appcompat.*
 import com.example.instalive.R
+import com.example.instalive.app.Constants.EVENT_BUS_KEY_LIVE
+import com.example.instalive.app.Constants.EVENT_BUS_KEY_LIVE_HOST_ACTIONS
+import com.example.instalive.app.Constants.ITRCT_TYPE_LIVE_OFF
 import com.example.instalive.app.live.ui.GoLiveWithDialog
+import com.example.instalive.model.LiveRaiseHandEvent
+import com.example.instalive.model.LiveWithCallEvent
+import com.example.instalive.utils.VenusNumberFormatter
+import splitties.dimensions.dp
+import splitties.views.onClick
 
 @ExperimentalStdlibApi
 class LiveInteractionHostFragment :
@@ -33,6 +46,7 @@ class LiveInteractionHostFragment :
     @SuppressLint("SetTextI18n")
     @OptIn(ExperimentalStdlibApi::class)
     override fun init() {
+        val options = RequestOptions.bitmapTransform(RoundedCorners(context?.dp(12)?:36))
         Glide.with(activity)
             .load(SessionPreferences.portrait)
             .apply(options)
@@ -46,69 +60,69 @@ class LiveInteractionHostFragment :
                 name.text = it
             }
         }
-        giftLiveImage.isVisible =
-            MarsApp.appInstance.getAppInitData()?.appFeature?.midwayPaidLiveEnabled == 1 && RecentConversation.conversationsEntity.type == 2
+//        giftLiveImage.isVisible =
+//            InstaLiveApp.appInstance.appInitData?.appFeature?.midwayPaidLiveEnabled == 1
 
         onlineCountContainer.onClick {
-            val c = context
-            if (c != null && (liveViewersHostDialog?.isShow == false || liveViewersHostDialog == null)) {
-                logFirebaseEvent("open_viewer", bundleOf("from" to "viewer_count"))
-
-                liveViewersHostDialog = LiveViewersHostDialog(
-                    c,
-                    viewModel.roomId,
-                    currentDiamonds,
-                    isMicrophone,
-                    isPaidLive,
-                    currentLiveWithUser
-                ) {
-                    if (activity is RecordActivity) {
-                        (activity as RecordActivity).tryHangUp(
-                            currentLiveWithUser?.nickname ?: "",
-                            currentLiveWithUser?.userId ?: ""
-                        )
-                    }
-                }
-
-                XPopup.Builder(c)
-                    .isDestroyOnDismiss(true)
-                    .enableDrag(true)
-                    .asCustom(liveViewersHostDialog)
-                    .show()
-            }
+//            val c = context
+//            if (c != null && (liveViewersHostDialog?.isShow == false || liveViewersHostDialog == null)) {
+//                logFirebaseEvent("open_viewer", bundleOf("from" to "viewer_count"))
+//
+//                liveViewersHostDialog = LiveViewersHostDialog(
+//                    c,
+//                    viewModel.roomId,
+//                    currentDiamonds,
+//                    isMicrophone,
+//                    isPaidLive,
+//                    currentLiveWithUser
+//                ) {
+//                    if (activity is RecordActivity) {
+//                        (activity as RecordActivity).tryHangUp(
+//                            currentLiveWithUser?.nickname ?: "",
+//                            currentLiveWithUser?.userId ?: ""
+//                        )
+//                    }
+//                }
+//
+//                XPopup.Builder(c)
+//                    .isDestroyOnDismiss(true)
+//                    .enableDrag(true)
+//                    .asCustom(liveViewersHostDialog)
+//                    .show()
+//            }
         }
 
         hostDiamond.onClick {
-            val c = context
-            if (c != null && (liveViewersHostDialog?.isShow == false || liveViewersHostDialog == null)) {
-                logFirebaseEvent("open_viewer", bundleOf("from" to "click_diamond"))
-
-                liveViewersHostDialog =
-                    LiveViewersHostDialog(
-                        c,
-                        viewModel.roomId,
-                        currentDiamonds,
-                        isMicrophone,
-                        isPaidLive,
-                        currentLiveWithUser,
-                        cancelLiveWith = {
-                            if (activity is RecordActivity) {
-                                (activity as RecordActivity).tryHangUp(
-                                    currentLiveWithUser?.nickname ?: "",
-                                    currentLiveWithUser?.userId ?: ""
-                                )
-                            } else if (activity is LiveAudienceActivity) {
-                                (activity as LiveAudienceActivity).tryHangUpLiveWith(
-                                    currentLiveWithUser?.userId ?: ""
-                                )
-                            }
-                        })
-                XPopup.Builder(c)
-                    .isDestroyOnDismiss(true)
-                    .enableDrag(true)
-                    .asCustom(liveViewersHostDialog)
-                    .show()
-            }
+//            val c = context
+//            if (c != null && (liveViewersHostDialog?.isShow == false || liveViewersHostDialog == null)) {
+//                logFirebaseEvent("open_viewer", bundleOf("from" to "click_diamond"))
+//
+//                liveViewersHostDialog =
+//                    LiveViewersHostDialog(
+//                        c,
+//                        viewModel.roomId,
+//                        currentDiamonds,
+//                        isMicrophone,
+//                        isPaidLive,
+//                        currentLiveWithUser,
+//                        cancelLiveWith = {
+//                            if (activity is RecordActivity) {
+//                                (activity as RecordActivity).tryHangUp(
+//                                    currentLiveWithUser?.nickname ?: "",
+//                                    currentLiveWithUser?.userId ?: ""
+//                                )
+//                            } else if (activity is LiveAudienceActivity) {
+//                                (activity as LiveAudienceActivity).tryHangUpLiveWith(
+//                                    currentLiveWithUser?.userId ?: ""
+//                                )
+//                            }
+//                        })
+//                XPopup.Builder(c)
+//                    .isDestroyOnDismiss(true)
+//                    .enableDrag(true)
+//                    .asCustom(liveViewersHostDialog)
+//                    .show()
+//            }
         }
 
         icMore.alphaClick {
@@ -120,24 +134,24 @@ class LiveInteractionHostFragment :
         }
 
         icDiamondView.alphaClick {
-            if (FambasePreferences.isFirstGuideOpenDiamonds) {
-                FambasePreferences.isFirstGuideOpenDiamonds = false
-                context?.alertDialog {
-                    titleResource = R.string.fb_live_open_diamonds_guide_title
-                    messageResource = R.string.fb_live_open_diamonds_guide_message
-                    positiveButton(R.string.fb_turn_on) {
-                        viewModel.liveSettingUpdate(liveId, if (diamondPublicEnabled) 0 else 1) {
-                            liveProfileLoadingView.isVisible = it == StatusEvent.LOADING
-                        }
-                    }
-                    cancelButton()
-                    setCancelable(false)
-                }?.show()
-            } else {
-                viewModel.liveSettingUpdate(liveId, if (diamondPublicEnabled) 0 else 1) {
-                    liveProfileLoadingView.isVisible = it == StatusEvent.LOADING
-                }
-            }
+//            if (FambasePreferences.isFirstGuideOpenDiamonds) {
+//                FambasePreferences.isFirstGuideOpenDiamonds = false
+//                context?.alertDialog {
+//                    titleResource = R.string.fb_live_open_diamonds_guide_title
+//                    messageResource = R.string.fb_live_open_diamonds_guide_message
+//                    positiveButton(R.string.fb_turn_on) {
+//                        viewModel.liveSettingUpdate(liveId, if (diamondPublicEnabled) 0 else 1) {
+//                            liveProfileLoadingView.isVisible = it == StatusEvent.LOADING
+//                        }
+//                    }
+//                    cancelButton()
+//                    setCancelable(false)
+//                }?.show()
+//            } else {
+//                viewModel.liveSettingUpdate(liveId, if (diamondPublicEnabled) 0 else 1) {
+//                    liveProfileLoadingView.isVisible = it == StatusEvent.LOADING
+//                }
+//            }
         }
 
         icShutDown.alphaClick {
@@ -145,15 +159,15 @@ class LiveInteractionHostFragment :
         }
 
         icGoLiveWith.alphaClick {
-            logFirebaseEvent("click_live_request")
+//            logFirebaseEvent("click_live_request")
             startLiveWith()
         }
 
         startLoop.isVisible =
-            BuildConfig.DEBUG && (BuildConfig.FLAVOR == "internaltest")
+            BuildConfig.DEBUG
         startLoop.onClick {
             if (viewModel.messageLoopJob == null) {
-                viewModel.startSendMessageLoop()
+                viewModel.startSendMessageLoop(liveId)
                 startLoop.text = "stop send"
             } else {
                 viewModel.stopSendMessageLoop()
@@ -163,13 +177,13 @@ class LiveInteractionHostFragment :
 
         giftLiveImage.onClick {
             if (!isPaidLive) {
-                val data = (activity as RecordActivity).getLiveInitData()
+                val data = viewModel.liveInitInfo.value
                 if (data != null) {
                     context?.alertDialog {
                         title = data.midwayPaidLiveTitle
                         message = data.midwayPaidLiveDesc
                         positiveButton(R.string.fb_turn_on) {
-                            (activity as RecordActivity).openTicketGiftDialog()
+//                            (activity as LiveHostActivity).openTicketGiftDialog()
                         }
                         cancelButton()
                         setCancelable(false)
@@ -179,7 +193,7 @@ class LiveInteractionHostFragment :
                         titleResource = R.string.fb_midway_turn_pay_live_dialog_title
                         messageResource = R.string.fb_midway_turn_pay_live_dialog_message
                         positiveButton(R.string.fb_turn_on) {
-                            (activity as RecordActivity).openTicketGiftDialog()
+//                            (activity as LiveHostActivity).openTicketGiftDialog()
                         }
                         cancelButton()
                         setCancelable(false)
@@ -199,33 +213,33 @@ class LiveInteractionHostFragment :
 //            if (activity is RecordActivity && (activity as RecordActivity).microphoneState()) {
             if (mute != 1) {
                 mute = 1
-                icMute.setImageResource(R.drawable.live_mute_close)
-                viewModel.liveMute(liveId, mute)
-                (activity as RecordActivity).muteLocalAudioStream(mute == 1)
+                icMute.setImageResource(R.mipmap.live_mute_close)
+//                viewModel.liveMute(liveId, mute)
+                (activity as LiveHostActivity).muteLocalAudioStream(mute == 1)
             } else {
                 mute = 0
-                icMute.setImageResource(R.drawable.live_mute_open)
-                viewModel.liveMute(liveId, mute)
-                (activity as RecordActivity).muteLocalAudioStream(mute == 1)
+                icMute.setImageResource(R.mipmap.live_mute_open)
+//                viewModel.liveMute(liveId, mute)
+                (activity as LiveHostActivity).muteLocalAudioStream(mute == 1)
             }
 //            }
         }
 
         viewModel.liveSettingUpdateData.observe(this, {
             diamondPublicEnabled = !diamondPublicEnabled
-            icDiamondView.setImageResource(if (diamondPublicEnabled) R.drawable.icon_diamond_view_unlock else R.drawable.icon_diamond_view_lock)
+            icDiamondView.setImageResource(if (diamondPublicEnabled) R.mipmap.icon_diamond_view_unlock else R.mipmap.icon_diamond_view_lock)
         })
 
-        LiveEventBus.get(Constants.EVENT_BUS_KEY_PAY_LIVE).observe(this) {
-            (activity as RecordActivity).justNowGiftTicketData?.let { liveGiftData ->
-                (activity as RecordActivity).giftTicketData = liveGiftData
-            }
-            isPaidLive = true
-            giftLiveImage.setImageResource(R.drawable.icon_pay_live_on)
-            showHostGiftLiveTip()
-        }
+//        LiveEventBus.get(EVENT_BUS_KEY_PAY_LIVE).observe(this) {
+//            (activity as RecordActivity).justNowGiftTicketData?.let { liveGiftData ->
+//                (activity as RecordActivity).giftTicketData = liveGiftData
+//            }
+//            isPaidLive = true
+//            giftLiveImage.setImageResource(R.drawable.icon_pay_live_on)
+//            showHostGiftLiveTip()
+//        }
 
-        LiveEventBus.get(Constants.EVENT_BUS_KEY_LIVE).observe(this) { event ->
+        LiveEventBus.get(EVENT_BUS_KEY_LIVE).observe(this) { event ->
             when (event) {
                 is LiveWithCallEvent -> {
                     when (event.event) {
@@ -246,12 +260,11 @@ class LiveInteractionHostFragment :
                         }
                         3 -> {
                             //对方接受，开始连麦，ui变化
-                            isMicrophone = true
-                            currentLiveWithUser = event.userInfo
+                            viewModel.isMicrophone.value = true
                             goLiveWithWaitingContainer.isVisible = false
                             goLiveWithTicker?.cancel()
 
-                            icMute.setImageResource(if (mute == 0) R.drawable.live_mute_open else R.drawable.live_mute_close)
+                            icMute.setImageResource(if (mute == 0) R.mipmap.live_mute_open else R.mipmap.live_mute_close)
                         }
                         4 -> {
                             //对方拒绝，停止等待
@@ -269,7 +282,7 @@ class LiveInteractionHostFragment :
                         }
                         5 -> {
                             //对方挂断，停止连麦，ui变化
-                            currentLiveWithUser = null
+//                            currentLiveWithUser = null
                         }
                     }
                 }
@@ -288,7 +301,7 @@ class LiveInteractionHostFragment :
         hostGiftLiveTipJob?.cancel()
         hostGiftLiveTipJob = null
         hostGiftLiveTipJob = lifecycleScope.launch(Dispatchers.Main) {
-            (activity as RecordActivity).giftTicketData?.let {
+            (activity as LiveHostActivity).giftTicketData?.let {
                 hostGiftLiveTip.text =
                     "${getString(R.string.fb_host_gift_live_tip1)} ${it.name} (${it.coins}${
                         getString(
@@ -325,18 +338,18 @@ class LiveInteractionHostFragment :
     }
 
     private suspend fun startGoLiveWithCounting(endTime: Long, targetUsername: String, id: String) {
-        liveViewersHostDialog?.dismiss()
+//        liveViewersHostDialog?.dismiss()
         goLiveWithWaitingContainer.isVisible = true
         txtGoLiveWithWaiting.text = getString(R.string.lbl_live_with_waiting_for, targetUsername)
         cancelLiveWith.onClick {
-            viewModel.cancelLiveWith(id)
+//            viewModel.cancelLiveWith(id)
         }
         goLiveWithWaitingContainer.onClick {}
         goLiveWithTicker = ticker(1000, 0)
         val ticker = goLiveWithTicker
         if (ticker != null) {
             for (event in ticker) {
-                if ((System.currentTimeMillis() - MarsApp.appInstance.timeDiscrepancy) / 1000 > endTime) {
+                if ((System.currentTimeMillis() - InstaLiveApp.appInstance.timeDiscrepancy) / 1000 > endTime) {
                     goLiveWithWaitingContainer.isVisible = false
                     break
                 }
@@ -346,29 +359,29 @@ class LiveInteractionHostFragment :
     }
 
     private fun showMoreDialog() {
-        if (moreDialog == null || moreDialog?.isShow == false) {
-            moreDialog = LiveMoreDialog(activity, activity, liveId = liveId,
-                mode = 1, makeupEnable = makeUpEnabled,
-                showMessage = {
-                    openComment()
-                }, onMakeupClick = {
-                    makeUpEnabled = !makeUpEnabled
-                    LiveEventBus.get(EVENT_BUS_KEY_LIVE_HOST_ACTIONS)
-                        .post(if (!makeUpEnabled) ITRCT_TYPE_MAKEUP_OFF else ITRCT_TYPE_MAKEUP_ON)
-                    logFirebaseEvent(if (makeUpEnabled) "open_beauty" else "close_beauty")
-                }, showFlip = {
-                    LiveEventBus.get(EVENT_BUS_KEY_LIVE_HOST_ACTIONS)
-                        .post(ITRCT_TYPE_FLIP)
-                }, showGifSelector = {
-                    showGifDialog()
-                }
-            )
-
-            XPopup.Builder(activity)
-                .isDestroyOnDismiss(true)
-                .asCustom(moreDialog)
-                .show()
-        }
+//        if (moreDialog == null || moreDialog?.isShow == false) {
+//            moreDialog = LiveMoreDialog(activity, activity, liveId = liveId,
+//                mode = 1, makeupEnable = makeUpEnabled,
+//                showMessage = {
+//                    openComment()
+//                }, onMakeupClick = {
+//                    makeUpEnabled = !makeUpEnabled
+//                    LiveEventBus.get(EVENT_BUS_KEY_LIVE_HOST_ACTIONS)
+//                        .post(if (!makeUpEnabled) ITRCT_TYPE_MAKEUP_OFF else ITRCT_TYPE_MAKEUP_ON)
+//                    logFirebaseEvent(if (makeUpEnabled) "open_beauty" else "close_beauty")
+//                }, showFlip = {
+//                    LiveEventBus.get(EVENT_BUS_KEY_LIVE_HOST_ACTIONS)
+//                        .post(ITRCT_TYPE_FLIP)
+//                }, showGifSelector = {
+//                    showGifDialog()
+//                }
+//            )
+//
+//            XPopup.Builder(activity)
+//                .isDestroyOnDismiss(true)
+//                .asCustom(moreDialog)
+//                .show()
+//        }
     }
 
     @ExperimentalStdlibApi
@@ -380,8 +393,8 @@ class LiveInteractionHostFragment :
             .asCustom(
                 GoLiveWithDialog(
                     c,
-                    viewModel.roomId,
-                    isMicrophone)
+                    liveId,
+                    viewModel.isMicrophone.value?:false)
             )
             .show()
     }
@@ -395,17 +408,17 @@ class LiveInteractionHostFragment :
         raisedHandCount?.isVisible = count > 0
         raisedHandCount?.text = if (count > 99) "99+" else count.toString()
 
-        (activity as RecordActivity).giftTicketData?.let {
+        (activity as LiveHostActivity).giftTicketData?.let {
             hostGiftLiveTip?.text =
                 "${getString(R.string.fb_host_gift_live_tip1)} ${it.name} (${it.coins}${getString(R.string.fb_host_gift_live_tip2)}"
         }
         if (data.isPaidLive) {
             giftLiveImage?.isVisible = true
-            giftLiveImage?.setImageResource(R.drawable.icon_pay_live_on)
+            giftLiveImage?.setImageResource(R.mipmap.icon_pay_live_on)
             showHostGiftLiveTip()
         }
 
-        icDiamondView?.setImageResource(if (data.liveDiamondsPublic) R.drawable.icon_diamond_view_unlock else R.drawable.icon_diamond_view_lock)
+        icDiamondView?.setImageResource(if (data.liveDiamondsPublic) R.mipmap.icon_diamond_view_unlock else R.mipmap.icon_diamond_view_lock)
 
 //        You set {{gift_name}}({{count}} coins) to unlock this Live.q
 //        privateSwitch.isVisible = data.privateInfo.visible

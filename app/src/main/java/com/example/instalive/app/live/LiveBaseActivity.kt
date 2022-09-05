@@ -63,7 +63,7 @@ abstract class LiveBaseActivity<VDB : ViewDataBinding> : InstaBaseActivity<LiveV
     private var microphoneHeight4: Int = 0
     private var microphoneHeight6: Int = 0
     private var microphoneHeight9: Int = 0
-    private var resolution: Resolution? = null
+    var resolution: Resolution? = null
 
     private var pauseReportJob: Job? = null
 
@@ -80,7 +80,7 @@ abstract class LiveBaseActivity<VDB : ViewDataBinding> : InstaBaseActivity<LiveV
     }
 
     override fun initData(savedInstanceState: Bundle?) {
-        removeEventHandler(this)
+        registerEventHandler(this)
         appInstance.mRtcEngine?.let {
             agoraManager.initAgora(it)
             agoraManager.initComponents(this, true, 400)
@@ -458,84 +458,85 @@ abstract class LiveBaseActivity<VDB : ViewDataBinding> : InstaBaseActivity<LiveV
 
     // region EventHandler
     override fun onLeaveChannel(stats: IRtcEngineEventHandler.RtcStats?) {
-        TODO("Not yet implemented")
+        Timber.d("sw onLeaveChannel")
     }
 
     override fun onJoinChannelSuccess(channel: String?, uid: Int, elapsed: Int) {
+        Timber.d("sw onJoinChannelSuccess channel:$channel uid:$uid elapsed:$elapsed")
         lifecycleScope.launch(Dispatchers.Main) {
             showInteractionFragment()
         }
     }
 
     override fun onUserOffline(uid: Int, reason: Int) {
-        TODO("Not yet implemented")
+        Timber.d("sw onUserOffline uid:$uid reason:$reason")
     }
 
     override fun onUserJoined(uid: Int, elapsed: Int) {
-        TODO("Not yet implemented")
+        Timber.d("sw onUserJoined uid:$uid elapsed:$elapsed")
     }
 
     override fun onLastmileQuality(quality: Int) {
-        TODO("Not yet implemented")
+        Timber.d("sw onLastmileQuality")
     }
 
     override fun onLastmileProbeResult(result: IRtcEngineEventHandler.LastmileProbeResult?) {
-        TODO("Not yet implemented")
+        Timber.d("sw onLastmileProbeResult")
     }
 
     override fun onLocalVideoStats(stats: IRtcEngineEventHandler.LocalVideoStats?) {
-        TODO("Not yet implemented")
+        Timber.d("sw onLocalVideoStats")
     }
 
     override fun onRtcStats(stats: IRtcEngineEventHandler.RtcStats?) {
-        TODO("Not yet implemented")
+        Timber.d("sw onRtcStats")
     }
 
     override fun onNetworkQuality(uid: Int, txQuality: Int, rxQuality: Int) {
-        TODO("Not yet implemented")
+        Timber.d("sw onNetworkQuality uid:$uid")
     }
 
     override fun onRemoteVideoStats(stats: IRtcEngineEventHandler.RemoteVideoStats?) {
-        TODO("Not yet implemented")
+        Timber.d("sw onRemoteVideoStats")
     }
 
     override fun onRemoteAudioStats(stats: IRtcEngineEventHandler.RemoteAudioStats?) {
-        TODO("Not yet implemented")
+        Timber.d("sw onRemoteAudioStats")
     }
 
     override fun onRemoteVideoStateChanged(uid: Int, state: Int, reason: Int, elapsed: Int) {
-        TODO("Not yet implemented")
+        Timber.d("sw onRemoteVideoStateChanged uid:$uid state:$state reason:$reason elapsed:$elapsed")
     }
 
     override fun onTokenPrivilegeWillExpire(token: String?) {
-        TODO("Not yet implemented")
+        Timber.d("sw onTokenPrivilegeWillExpire token:$token")
     }
 
     override fun onRequestToken() {
-        TODO("Not yet implemented")
+        Timber.d("sw onRequestToken")
     }
 
     override fun onConnectionStateChanged(state: Int, reason: Int) {
-        TODO("Not yet implemented")
+        Timber.d("sw onConnectionStateChanged state:$state reason:$reason")
     }
 
     override fun onAudioVolumeIndication(
         speakers: Array<out IRtcEngineEventHandler.AudioVolumeInfo>?,
         totalVolume: Int
     ) {
-        TODO("Not yet implemented")
+        Timber.d("sw onAudioVolumeIndication totalVolume:$totalVolume")
     }
 
     override fun onRemoteAudioStateChanged(uid: Int, state: Int, reason: Int, elapsed: Int) {
-        TODO("Not yet implemented")
+        Timber.d("sw onRemoteAudioStateChanged uid:$uid state:$state reason:$reason $elapsed")
     }
 
     override fun onUserMuteAudio(uid: Int, muted: Boolean) {
-        TODO("Not yet implemented")
+        Timber.d("sw onUserMuteAudio uid:$uid muted:$muted")
     }
 
     override fun onError(code: Int) {
-        TODO("Not yet implemented")
+        Timber.d("sw onError $code")
     }
     //endregion
 

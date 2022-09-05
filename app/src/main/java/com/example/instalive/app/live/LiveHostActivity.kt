@@ -6,9 +6,9 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.SurfaceView
 import android.view.WindowManager
-import android.widget.RelativeLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
@@ -74,8 +74,6 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
     //查看uid对应的surfaceView是否创建
     private var addedUidSet = HashSet<Int>()
 
-    //分辨率
-    private var resolution: Resolution? = null
     private var currentFragmentTag: String? = null
     private lateinit var hostFragment: LiveInteractionHostFragment
     lateinit var conversationsEntity: ConversationsEntity
@@ -261,7 +259,7 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
     }
 
     override fun changeNetworkUIPosition(isSingleLive: Boolean) {
-        val layoutParams = networkQualityContainer.layoutParams as RelativeLayout.LayoutParams
+        val layoutParams = networkQualityContainer.layoutParams as ConstraintLayout.LayoutParams
         layoutParams.setMargins(
             0,
             if (!isSingleLive) dp(47) + BarUtils.statusBarHeight else dp(68) + BarUtils.statusBarHeight,
@@ -318,11 +316,11 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
         isStarted = true
         startLive.isEnabled = false
         viewModel.createLive(
-            "",
-            "",
+            " ",
+            null,
             justNowGiftTicketData?.id,
-            if (divideSwitchBanned.isChecked) 1 else 0,
-            1,
+            null,
+            null,
         ) {
             isStarted = false
             alertDialog {
@@ -349,7 +347,7 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
         mUid: Int,
     ) {
         mToken = token
-        this.mUid = mUid
+//        this.mUid = mUid
 
         isLiving = true
         val clientRoleOptions = ClientRoleOptions()
@@ -412,28 +410,21 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
                     count?.text = "3"
 
                     liveId = it.id
-                    anchorUid = it.tokenInfo.uid
+                    anchorUid = it.uid.toString()
                     if (switchBanned.isChecked) {
                         justNowGiftTicketData?.let { liveGiftData ->
                             giftTicketData = liveGiftData
                         }
                     }
 
-                    joinChannel(
-                        it.tokenInfo.token,
-                        try {
-                            it.tokenInfo.uid.toInt()
-                        } catch (e: Exception) {
-                            0
-                        },
-                    )
+                    joinChannel(it.token, it.uid)
                     SessionPreferences.divideIncomeState = divideSwitchBanned?.isChecked ?: false
                 }
             }
         })
 
         //直播间关闭回调
-        viewModel.liveResultInfoLiveData.observe(this, {
+        viewModel.liveCloseLiveData.observe(this, {
 
             if (isCountTimeOver) {
                 closeLiveContainer?.isVisible = true
@@ -441,23 +432,23 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
                 hideInteractionContainer()
 
                 if (it != null) {
-                    youGotDiamonds.text = VenusNumberFormatter.format(it.youGot.toLong())
-                    liveDuration.text = it.liveDuration
-                    diamonds.text = VenusNumberFormatter.format(it.diamonds.toLong())
+                    youGotDiamonds.text = VenusNumberFormatter.format(it.gotDiamonds)
+                    liveDuration.text = it.liveDuration.toString()
+                    diamonds.text = VenusNumberFormatter.format(it.diamonds)
                     viewers.text = VenusNumberFormatter.format(it.viewerCount.toLong())
                     likes.text = VenusNumberFormatter.format(it.likeCount.toLong())
 
-                    if (it.unlockLiveDiamonds == null) {
-                        unlockLiveDiamonds.text = getString(R.string.un_know_views)
-                    } else {
-                        unlockLiveDiamonds.text = it.unlockLiveDiamonds.toString()
-                    }
-                    youGotDiamonds.isVisible = !it.loadingData
-                    youGotProgress.isVisible = it.loadingData
-                    moreProgress.isVisible = it.loadingData
-                    if (it.loadingData) {
-                        startLiveEndJob()
-                    }
+//                    if (it.unlockLiveDiamonds == null) {
+//                        unlockLiveDiamonds.text = getString(R.string.un_know_views)
+//                    } else {
+//                        unlockLiveDiamonds.text = it.unlockLiveDiamonds.toString()
+//                    }
+//                    youGotDiamonds.isVisible = !it.loadingData
+//                    youGotProgress.isVisible = it.loadingData
+//                    moreProgress.isVisible = it.loadingData
+//                    if (it.loadingData) {
+//                        startLiveEndJob()
+//                    }
                 } else {
                     unlockLiveDiamonds.text = getString(R.string.un_know_views)
                     liveDuration.text = getString(R.string.un_know_time)
@@ -742,6 +733,10 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
 
     fun getLiveUser(): MutableList<LiveUserInfo> {
         return liveUsers.toMutableList()
+    }
+
+    fun muteLocalAudioStream(isMute: Boolean){
+        agoraManager.muteLocalAudioStream(isMute)
     }
 
     private fun liveUIController(liveUserInfos: List<LiveUserInfo>) {

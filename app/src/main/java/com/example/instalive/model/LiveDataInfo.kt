@@ -4,28 +4,68 @@ import com.example.baselibrary.network.BooleanTypeAdapter
 import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
-
+//{
+//  "code": 200,
+//  "result": "ok",
+//  "data": {
+//    "diamonds": 100000,
+//    "id": "le5Aaw8VuvyKYpkB",
+//    "live_diamonds_public": 1,
+//    "live_gift": 1,
+//    "live_type": 1,
+//    "live_user_infos": [
+//      {
+//        "uid": 11,
+//        "user_info": {
+//          "nickname": "wuyapeng",
+//          "user_id": "pZvgxo2ozO",
+//          "user_name": "wuyapeng"
+//        }
+//      }
+//    ],
+//    "messages": [
+//      "Welcome to your Live! We're telling group members that you've started a Live."
+//    ],
+//    "online_str": "0",
+//    "owner": {
+//      "nickname": "wuyapeng",
+//      "user_id": "pZvgxo2ozO",
+//      "user_name": "wuyapeng"
+//    },
+//    "raise_hand_count": 8,
+//    "resolution": {
+//      "live_high": 720,
+//      "live_width": 1280,
+//      "live_with_high": 360,
+//      "live_with_width": 640
+//    },
+//    "resolution_level": 4,
+//    "role": 1,
+//    "state": 1,
+//    "title": " ",
+//    "token": "007eJxSYJC+7ag1l79h66R3bj73WGZFxB5lLDo/R9z/qR7XW8VSyTQFBhMjA2MjS0uj5CTLFBNzUxMLM9PURJPkVHMT01TDlJQk3yWiyQJ8DAweaw8wMjIwMrAwMDKA+ExgkhlMsoBJAYacVFPHxHKLsNKySu/IgmwnJgZDQ0AAAAD//wVzIJM=",
+//    "uid": 11
+//  }
+//}
 data class LiveDataInfo(
-    val id: String,
-    val uid: Int,
-    val owner: Owner,
-    @SerializedName("online_num") val onlineNum: Int,
-    @SerializedName("online_str") val onlineStr: String,
-    val title: String,
-    val role: Int,
     val diamonds: Int,
-    @SerializedName("live_with") val liveWith: Int,
-    val beauty: Int,
-    @SerializedName("state") val state: Int,
+    val id: String,
+    @SerializedName("live_diamonds_public") val liveDiamondsPublic: Int,
+    @SerializedName("live_gift") val liveGift: Int,
+    @SerializedName("live_type") val liveType: Int,
+    @SerializedName("live_user_infos") val liveWithUserInfos: List<LiveUserInfo>,
     @SerializedName("online_list") val onlineList: List<Online>?,
     val messages: List<String>,
-    @SerializedName("token_info") val tokenInfo: TokenInfo,
-    @SerializedName("live_user_infos") val liveWithUserInfos: List<LiveUserInfo>,
-    @SerializedName("resolution_level") val resolutionLevel: Int,
-    @SerializedName("resolution") val resolution: Resolution,
-    @SerializedName("join_music_link") val joinMusicLink: String,
+    @SerializedName("online_str") val onlineStr: String,
+    val owner: Owner,
     @SerializedName("raise_hand_count") val raiseHandCount: Int,
-    @SerializedName("request_on_join") val requestOnJoin: String
+    @SerializedName("resolution") val resolution: Resolution,
+    @SerializedName("resolution_level") val resolutionLevel: Int,
+    val role: Int,
+    val state: Int,
+    val title: String,
+    val token: String,
+    val uid: Int,
 )
 
 data class Resolution(

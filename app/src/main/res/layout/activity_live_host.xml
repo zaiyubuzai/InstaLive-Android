@@ -13,7 +13,6 @@
         android:layout_height="match_parent"
         android:background="@mipmap/bg_live"
         android:clipChildren="false"
-        android:fitsSystemWindows="true"
         android:keepScreenOn="true"
         tools:context=".app.live.LiveHostActivity">
 
@@ -415,7 +414,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginStart="@dimen/dimen_42dp"
                 android:src="@mipmap/live_flip"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="@+id/startLive"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/startLive" />
@@ -428,7 +427,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginEnd="@dimen/dimen_42dp"
                 android:src="@mipmap/live_beauty_yes"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="@+id/startLive"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/startLive" />
@@ -443,7 +442,7 @@
                 android:background="@drawable/bg_start_live"
                 android:padding="@dimen/dimen_26dp"
                 android:src="@mipmap/live_camera_white"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />

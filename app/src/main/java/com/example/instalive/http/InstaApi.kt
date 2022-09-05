@@ -2,6 +2,7 @@ package com.example.instalive.http
 
 import com.example.baselibrary.api.BaseApi
 import com.example.baselibrary.api.BaseResponse
+import com.example.baselibrary.model.CountryCodeListData
 import com.example.baselibrary.model.PresignData
 import com.example.instalive.model.*
 import com.venus.dm.model.UserData
@@ -17,6 +18,9 @@ interface InstaApi : BaseApi {
 
     @GET
     suspend fun <T> getAnyData(@Url url: String): BaseResponse<T>
+
+    @GET
+    suspend fun getCountryCode(@Url url: String): BaseResponse<CountryCodeListData>
 
     @GET("api/core/system/current_time/")
     suspend fun calibrationTime(): BaseResponse<CalibrationTimeData>
@@ -225,12 +229,36 @@ interface InstaApi : BaseApi {
     //    "divide_income": 1, # 可选
     //    "divide_income_rate": 50, # 分成比例 0-60 0:turn-off
     @FormUrlEncoded
-    @POST("api/v1/live/live/start/")
+    @POST("api/live/live/start/")
     suspend fun createLive(
         @Field("title") title: String?,
         @Field("desc") desc: String?,
         @Field("ticket_gift_id") ticketGiftId: String?,
         @Field("divide_income") divideIncome: Int?,//0 or 1
-        @Field("divide_income_rate") divideIncomeRate: Int,//分成比例 0-60 0:turn-off
+        @Field("divide_income_rate") divideIncomeRate: Int?,//分成比例 0-60 0:turn-off
     ):BaseResponse<LiveDataInfo>
+
+    @FormUrlEncoded
+    @POST("api/live/live/close/")
+    suspend fun closeLive(
+        @Field("live_id") liveId: String
+    ):BaseResponse<LiveCloseData>
+
+    @FormUrlEncoded
+    @POST("api/live/live/join/")
+    suspend fun joinLive(
+        @Field("live_id") liveId: String
+    ):BaseResponse<LiveStateInfo>
+
+    @FormUrlEncoded
+    @POST("api/live/live/raise_hand/")
+    suspend fun raiseHandLive(
+        @Field("live_id") liveId: String
+    ):BaseResponse<Any>
+
+    @FormUrlEncoded
+    @POST("api/live/live/hand_down/")
+    suspend fun handDownLive(
+        @Field("live_id") liveId: String
+    ):BaseResponse<Any>
 }

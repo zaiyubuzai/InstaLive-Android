@@ -1,0 +1,520 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@mipmap/bg_live"
+        android:clipChildren="false"
+        android:keepScreenOn="true"
+        tools:context=".app.live.LiveAudienceActivity">
+
+        <RelativeLayout
+            android:id="@+id/rlContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!--本地主播播放端-->
+            <com.example.instalive.app.live.ui.LiveRelativeLayout
+                android:id="@+id/localVideo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/transparent"
+                android:tag="fambase"
+                android:visibility="gone" />
+
+        </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/pauseContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@mipmap/bg_live"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/screenCover"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:tintMode="src_over"
+                    android:visibility="visible"
+                    app:tint="#a6000000" />
+
+                <ImageView
+                    android:id="@+id/pauseIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="180dp"
+                    android:layerType="software"
+                    android:src="@mipmap/icon_live_pause" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/pauseIcon"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/dimen_16dp"
+                    android:text="@string/host_will_be_back_in_a_minute2"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+            </RelativeLayout>
+
+            <!--网络错误ui-->
+            <RelativeLayout
+                android:id="@+id/networkCheck"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/networkCover"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:tintMode="src_over"
+                    app:tint="#a6000000" />
+
+                <TextView
+                    android:id="@+id/networkDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:paddingHorizontal="@dimen/dimen_20dp"
+                    android:text="@string/poor_connection_please_check_network"
+                    android:textColor="@color/white"
+                    android:textSize="17sp" />
+
+            </RelativeLayout>
+
+            <!--        <TextView-->
+            <!--            android:id="@+id/networkData"-->
+            <!--            style="@style/live_message_text_shadow2"-->
+            <!--            android:layout_width="match_parent"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:layout_centerInParent="true"-->
+            <!--            android:gravity="start"-->
+            <!--            android:paddingHorizontal="@dimen/dimen_20dp"-->
+            <!--            android:textColor="@color/white"-->
+            <!--            android:textSize="15sp" -->
+            <!--            android:visibility="gone"/>-->
+
+        <LinearLayout
+            android:id="@+id/networkQualityContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:background="@drawable/bg_15_tra_white_6c"
+            android:layout_marginTop="@dimen/dimen_68dp"
+            android:layout_marginEnd="@dimen/dimen_16dp"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible">
+
+            <View
+                android:id="@+id/networkQualityIcon"
+                android:layout_width="5dp"
+                android:layout_height="5dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/dimen_4dp"
+                android:background="@drawable/icon_network_quality_green" />
+
+            <TextView
+                android:id="@+id/networkQuality"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingHorizontal="@dimen/dimen_4dp"
+                android:textColor="#ffffff"
+                android:textSize="10sp"
+                android:textStyle="normal"
+                tools:text="Your network is poor" />
+
+        </LinearLayout>
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:visibility="gone" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/giftContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <FrameLayout
+                android:id="@+id/giftFirstContainer"
+                android:layout_width="214dp"
+                android:layout_height="52dp"
+                android:layout_marginBottom="@dimen/dimen_16dp"
+                app:layout_constraintBottom_toTopOf="@+id/giftSecondContainer"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <FrameLayout
+                android:id="@+id/giftSecondContainer"
+                android:layout_width="214dp"
+                android:layout_height="52dp"
+                android:layout_marginBottom="382dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <com.example.instalive.view.KsgLikeView
+                android:id="@+id/liveLikesAnimView"
+                android:layout_width="@dimen/dimen_96dp"
+                android:layout_height="300dp"
+                android:layout_marginBottom="76dp"
+                app:ksg_curve_duration="2000"
+                app:ksg_enter_duration="500"
+                app:ksg_image_width="@dimen/dimen_32dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <com.opensource.svgaplayer.SVGAImageView
+                android:id="@+id/giftAnim"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                app:loopCount="1"
+                tools:visibility="gone" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <FrameLayout
+            android:id="@+id/touchFl"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- 观众端直播结束 -->
+        <RelativeLayout
+            android:id="@+id/leavePrompt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            tools:visibility="gone">
+
+            <ImageView
+                android:id="@+id/leaveBgCover"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:tintMode="src_over"
+                android:visibility="visible"
+                app:tint="#a6000000" />
+
+            <TextView
+                android:id="@+id/liveEndPromote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/dimen_160dp"
+                android:text="@string/fb_this_live_has_ended"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/profileAvatar"
+                android:layout_width="@dimen/dimen_100dp"
+                android:layout_height="@dimen/dimen_100dp"
+                android:layout_below="@+id/liveEndPromote"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/dimen_36dp"
+                app:failureImageScaleType="centerCrop" />
+
+            <TextView
+                android:id="@+id/username"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_below="@+id/profileAvatar"
+                android:layout_marginTop="@dimen/dimen_12dp"
+                android:gravity="center_horizontal"
+                android:lineSpacingExtra="6sp"
+                android:textColor="#ffffff"
+                android:textSize="18sp"
+                android:textStyle="normal"
+                tools:text="Katie Kelly" />
+
+            <TextView
+                android:id="@+id/done"
+                style="@style/tw_bg_style"
+                android:layout_width="115dp"
+                android:layout_height="@dimen/dimen_40dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="@dimen/dimen_48dp"
+                android:text="@string/fb_done"
+                android:textColor="@color/white" />
+
+        </RelativeLayout>
+
+        <!-- 用户移除ui -->
+        <RelativeLayout
+            android:id="@+id/removePrompt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            tools:visibility="gone">
+
+            <ImageView
+                android:id="@+id/removeBgCover"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:tintMode="src_over"
+                android:visibility="visible"
+                app:tint="#a6000000" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/activityDesc"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="@dimen/dimen_16dp"
+                android:src="@mipmap/icon_live_remove" />
+
+            <TextView
+                android:id="@+id/activityDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="@dimen/dimen_16dp"
+                android:layout_marginTop="@dimen/dimen_10dp"
+                android:layout_marginEnd="@dimen/dimen_16dp"
+                android:gravity="center"
+                android:text="@string/host_will_be_back_in_a_minute2"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/removeDone"
+                style="@style/tw_bg_style"
+                android:layout_width="115dp"
+                android:layout_height="@dimen/dimen_40dp"
+                android:layout_below="@+id/activityDesc"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/dimen_40dp"
+                android:layout_marginBottom="@dimen/dimen_48dp"
+                android:text="@string/fb_done"
+                android:textColor="@color/white"
+                android:visibility="visible" />
+
+        </RelativeLayout>
+
+        <!-- non gifter -->
+        <RelativeLayout
+            android:id="@+id/nonGifterPrompt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            tools:visibility="gone">
+
+            <ImageView
+                android:id="@+id/nonGifterBgCover"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:tintMode="src_over"
+                android:visibility="visible"
+                app:tint="#a6000000" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/nonGifterDesc"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="@dimen/dimen_16dp"
+                android:src="@mipmap/icon_non_gifter" />
+
+            <TextView
+                android:id="@+id/nonGifterDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginHorizontal="@dimen/dimen_32dp"
+                android:layout_marginTop="@dimen/dimen_10dp"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:text="@string/fb_owner_disabled_watching_live_for_non_gifter"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="normal" />
+
+            <TextView
+                android:id="@+id/sendGiftBtn"
+                style="@style/yellow_12c_button_style_with_selector"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimen_50dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginHorizontal="@dimen/dimen_16dp"
+                android:layout_marginBottom="@dimen/dimen_24dp"
+                android:gravity="center_horizontal"
+                android:lineSpacingExtra="1sp"
+                android:paddingVertical="13dp"
+                android:text="@string/fb_send_gift_and_open_live" />
+
+        </RelativeLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/unlockLivePrompt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:elevation="@dimen/dimen_0dp"
+            android:visibility="gone"
+            tools:visibility="gone">
+
+            <ImageView
+                android:id="@+id/unlockBgCover"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:tintMode="src_over"
+                android:visibility="visible"
+                app:tint="#a6000000" />
+
+            <ImageView
+                android:id="@+id/unlockLiveAvatar"
+                android:layout_width="@dimen/dimen_100dp"
+                android:layout_height="@dimen/dimen_100dp"
+                android:layout_marginTop="190dp"
+                app:failureImageScaleType="centerCrop"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/onLiveNow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/dimen_16dp"
+                android:layout_marginTop="@dimen/dimen_12dp"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center_horizontal"
+                android:lineSpacingExtra="6sp"
+                android:text="@string/fb_unlock_live_i_on_live_now"
+                android:textColor="#ffffff"
+                android:textSize="18sp"
+                android:textStyle="normal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/unlockLiveAvatar"
+                tools:text="I’m on Live now" />
+
+            <TextView
+                android:id="@+id/unlockLiveDesc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen_16dp"
+                android:text="@string/fb_unlock_live_send_gift_desc"
+                android:textColor="#ffffff"
+                android:textSize="15sp"
+                android:textStyle="normal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/onLiveNow"
+                tools:text="Send me a gift to unlock my Live." />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/unlockLiveGift"
+                android:layout_width="@dimen/dimen_72dp"
+                android:layout_height="@dimen/dimen_72dp"
+                android:layout_marginTop="@dimen/dimen_64dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/unlockLiveDesc" />
+
+            <TextView
+                android:id="@+id/unlockLiveGiftCoin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen_8dp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#ffffff"
+                android:textSize="15sp"
+                android:textStyle="normal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/unlockLiveGift"
+                tools:text="10 Coins" />
+
+            <TextView
+                android:id="@+id/unlockLiveBtn"
+                style="@style/yellow_12c_button_style_with_selector"
+                android:layout_width="@dimen/dimen_0dp"
+                android:layout_height="@dimen/dimen_44dp"
+                android:layout_marginHorizontal="@dimen/dimen_16dp"
+                android:layout_marginBottom="@dimen/dimen_48dp"
+                android:text="@string/fb_unlock_live"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <ProgressBar
+                android:id="@+id/progress"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="12dp"
+                android:indeterminateTint="#000000"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/unlockLiveBtn"
+                app:layout_constraintEnd_toEndOf="@+id/unlockLiveBtn"
+                app:layout_constraintTop_toTopOf="@+id/unlockLiveBtn"
+                tools:visibility="visible" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <FrameLayout
+            android:id="@+id/loadingAnimContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/loadingBgCover"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:tintMode="src_over"
+                android:visibility="visible"
+                app:tint="#a6000000"
+                tools:visibility="gone" />
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/loadingAnim"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/dimen_100dp"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="lotLoading.json"
+                app:lottie_loop="true" />
+
+        </FrameLayout>
+
+        <ImageView
+            android:id="@+id/closeActivity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/dimen_16dp"
+            android:src="@mipmap/ic_close_white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -67,7 +67,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
 
 //    private lateinit var conversationsEntity: ConversationsEntity
-    private lateinit var screenName: String
+//    private lateinit var screenName: String
 
     private lateinit var messageAdapter: MessageAdapter
     private lateinit var layoutManager: LinearLayoutManager

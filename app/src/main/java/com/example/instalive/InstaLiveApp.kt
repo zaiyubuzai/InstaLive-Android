@@ -84,13 +84,18 @@ class InstaLiveApp: Application(), ViewModelStoreOwner, IAgoraConfig {
         }
 
         InstaLiveDBProvider.db.directMessagingDao()
+        try {
+            configLive(this.applicationContext, "42032992cb9d4754865ea4ce745e1ddb", 1024 * 5)
+        } catch (e: Exception){
 
+        }
         appInitData.observeForever {
-            try {
-                configLive(this.applicationContext, "673ffc96f1a84f49be95ff2d8fe02fe2", 1024 * 5)
-            } catch (e: Exception){
-
-            }
+            Timber.d("appInitData observeForever")
+//            try {
+//                configLive(this.applicationContext, "42032992cb9d4754865ea4ce745e1ddb", 1024 * 5)
+//            } catch (e: Exception){
+//
+//            }
         }
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 

@@ -65,7 +65,6 @@
 
                 <ImageView
                     android:id="@+id/levelIconView"
-                    setLevelIcon="@{level}"
                     android:layout_width="@dimen/dimen_17dp"
                     android:layout_height="13dp"
                     app:layout_constraintBottom_toBottomOf="parent"

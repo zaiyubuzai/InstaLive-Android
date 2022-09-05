@@ -20,6 +20,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.example.instalive.R
 import com.google.android.material.imageview.ShapeableImageView
 import com.venus.dm.db.entity.MessageEntity
 import lt.neworld.spanner.SpanBuilder
@@ -34,6 +35,14 @@ import java.util.*
 @BindingAdapter("android:text")
 fun setLongText(view: TextView, num: Long) {
     view.text = num.toString()
+}
+
+@BindingAdapter("userName")
+fun setUserName(view: TextView, userName: String?) {
+    view.text = if (userName == null) "" else view.context.getString(
+        R.string.username_placeholder,
+        userName
+    )
 }
 
 @BindingAdapter("utf")

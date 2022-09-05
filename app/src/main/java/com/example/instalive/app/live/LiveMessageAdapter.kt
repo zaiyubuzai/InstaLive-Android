@@ -404,7 +404,7 @@ class LiveMessageAdapter(
                 val payload = MessageEntity.Payload.fromJson(item.payload)
                 holder.binding.messageEntity = item
                 holder.binding.messageContent.text =
-                    InstaLiveStringTemplate.template?.unsupported_msg_type_tips
+                    InstaLiveStringTemplate.template?.unsupportedMsgTypeTips
 
                 holder.binding.isGroup = isGroupChat
                 holder.binding.level = payload?.level ?: -1

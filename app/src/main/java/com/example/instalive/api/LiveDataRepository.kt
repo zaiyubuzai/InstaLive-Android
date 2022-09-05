@@ -5,10 +5,11 @@ import androidx.paging.PagingSource
 import com.example.baselibrary.api.BaseRemoteRepository
 import com.example.baselibrary.api.RemoteEventEmitter
 import com.example.instalive.http.InstaApi
-import com.example.instalive.model.LiveDataInfo
-import com.example.instalive.model.LiveViewerData
+import com.example.instalive.model.*
+import com.google.gson.Gson
+import retrofit2.HttpException
 
-object LiveDataRepository: ILiveDataRepository, BaseRemoteRepository() {
+object LiveDataRepository : ILiveDataRepository, BaseRemoteRepository() {
 
     val instaApi = RetrofitProvider.baseApi as InstaApi
 
@@ -46,16 +47,80 @@ object LiveDataRepository: ILiveDataRepository, BaseRemoteRepository() {
         title: String?,
         desc: String?,
         ticketGiftId: String?,
-        divideIncome: Int,
-        divideIncomeRate: Int,
+        divideIncome: Int?,
+        divideIncomeRate: Int?,
         liveDataInfo: MutableLiveData<LiveDataInfo>,
         remoteEventEmitter: RemoteEventEmitter,
     ) {
-        val response = safeApiCall(remoteEventEmitter){
+        val response = safeApiCall(remoteEventEmitter) {
             instaApi.createLive(title, desc, ticketGiftId, divideIncome, divideIncomeRate)
         }
-        if (response?.resultOk() == true){
+        if (response?.resultOk() == true) {
             liveDataInfo.postValue(response.data)
+        }
+    }
+
+    override suspend fun closeLive(
+        liveId: String,
+        liveData: MutableLiveData<LiveCloseData>,
+        remoteEventEmitter: RemoteEventEmitter,
+    ) {
+        val response = safeApiCall(remoteEventEmitter) {
+            instaApi.closeLive(liveId)
+        }
+        if (response != null) {
+            liveData.postValue(response.data)
+        }
+    }
+
+    override suspend fun joinLive(
+        liveId: String,
+        liveData: MutableLiveData<Pair<LiveStateInfo?, JoinLiveError?>>,
+        remoteEventEmitter: RemoteEventEmitter,
+    ) {
+        try {
+            val response = instaApi.joinLive(liveId)
+            liveData.postValue(Pair(response.data, null))
+        } catch (e: Exception) {
+            when (e) {
+                is HttpException -> {
+                    val body = e.response()?.errorBody()?.string()
+                    if (body != null) {
+                        val marsError = try {
+                            Gson().fromJson(body, JoinLiveError::class.java)
+                        } catch (e: java.lang.Exception) {
+                            null
+                        }
+                        liveData.postValue(Pair(null, marsError))
+                    }
+                }
+            }
+        }
+    }
+
+    override suspend fun raiseHandLive(
+        liveId: String,
+        liveData: MutableLiveData<Any>,
+        remoteEventEmitter: RemoteEventEmitter
+    ) {
+        val response = safeApiCall(remoteEventEmitter) {
+            instaApi.raiseHandLive(liveId)
+        }
+        if (response != null) {
+            liveData.postValue(response.data)
+        }
+    }
+
+    override suspend fun handsDownLive(
+        liveId: String,
+        liveData: MutableLiveData<Any>,
+        remoteEventEmitter: RemoteEventEmitter
+    ) {
+        val response = safeApiCall(remoteEventEmitter) {
+            instaApi.handDownLive(liveId)
+        }
+        if (response != null) {
+            liveData.postValue(response.data)
         }
     }
 }

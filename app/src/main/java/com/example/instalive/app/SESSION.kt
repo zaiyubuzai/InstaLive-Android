@@ -1,5 +1,7 @@
 package com.example.instalive.app
 
+import android.content.Context
+import com.example.baselibrary.utils.SharedPreferencesUtil
 import com.example.instalive.api.RetrofitProvider
 import com.example.instalive.model.LoginData
 import com.google.gson.Gson
@@ -9,6 +11,26 @@ import splitties.preferences.Preferences
 import splitties.preferences.edit
 
 object SESSION {
+
+    fun <T> getSpValue(context: Context?, name: String, default: T): T? {
+        val c = context ?: return null
+        val data: T by SharedPreferencesUtil(
+            c,
+            name,
+            default
+        )
+        return data
+    }
+
+    fun <T> setSpValue(context: Context?, name: String, value: T, default: T) {
+        val c = context ?: return
+        var data: T by SharedPreferencesUtil(
+            c,
+            name,
+            default
+        )
+        data = value
+    }
 
     fun saveLoginData(data: LoginData){
         SessionPreferences.apply {
@@ -156,6 +178,7 @@ object InstaLivePreferences : Preferences("instaLiveState") {
     var liveGiftVersion by IntPref("live_gifts_version", 0)
     var liveSendGiftClicked by BoolPref("live_send_gift_clicked", false)
     var liveGiftCache by StringPref("live_gift_cache", "[]")
+
 
     fun findGiftCache(imgUrl:String):String?{
         var netPath = imgUrl

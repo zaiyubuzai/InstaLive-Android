@@ -47,6 +47,7 @@
         <entry key="app/src/main/res/layout/activity_home.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_insta_web.xml" value="0.38958333333333334" />
         <entry key="app/src/main/res/layout/activity_live.xml" value="0.31965811965811963" />
+        <entry key="app/src/main/res/layout/activity_live_audience.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/activity_live_host.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/activity_message.xml" value="0.31965811965811963" />
@@ -63,6 +64,7 @@
         <entry key="app/src/main/res/layout/fragment_host.xml" value="0.31965811965811963" />
         <entry key="app/src/main/res/layout/fragment_live_empty.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/fragment_live_host.xml" value="0.3311965811965812" />
+        <entry key="app/src/main/res/layout/fragment_live_interaction.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/fragment_live_interaction_host.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/fragment_not_login.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_original_phone.xml" value="0.4036458333333333" />

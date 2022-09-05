@@ -84,6 +84,9 @@
     <style name="ShapeAppearanceOverlay.App.CornerSize12dp" parent="">
         <item name="cornerSize">12dp</item>
     </style>
+    <style name="ShapeAppearanceOverlay.App.CornerSize14dp" parent="">
+        <item name="cornerSize">14dp</item>
+    </style>
     <style name="ShapeAppearanceOverlay.App.CornerSize6dp" parent="">
         <item name="cornerSize">6dp</item>
     </style>

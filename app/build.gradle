@@ -79,7 +79,7 @@ dependencies {
     implementation 'com.airbnb.android:lottie:5.2.0'
 
     //room persistence
-    def room_version = "2.5.0-alpha03"
+    def room_version = "2.5.0-alpha02"
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-ktx:$room_version"

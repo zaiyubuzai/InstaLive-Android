@@ -260,4 +260,20 @@
     <string name="hang_up_live_video">Hang up %1$s \'s live video</string>
     <string name="please_hang_up_your_invited_user_live_video">Please hang up your invited user\'s live video</string>
     <string name="hung_up_by_the_host">Hung up by the host.</string>
+
+    <string name="username_placeholder">\@%1$s</string>
+    <string name="lbl_live_with_waiting_for">Waiting for %1$s</string>
+
+    <string name="fb_turn_on">Turn on</string>
+    <string name="fb_midway_turn_pay_live_dialog_title">Show diamonds of this Live</string>
+    <string name="fb_midway_turn_pay_live_dialog_message">After turning on, Mod and Guest can join Live for free, anyone else requires sending a gift to unlock this Live.\nAnd it will not be allowed to turn off in this Live.</string>
+
+    <string name="fb_owner_disabled_watching_live_for_non_gifter">Owner disabled watching Live for non-gifters.</string>
+    <string name="fb_send_gift_and_open_live">Send Gift and Open Live</string>
+    <string name="fb_close">Close</string>
+
+
+    <string name="fb_live_you_on_live_now">You are on Live now.</string>
+    <string name="you_have_been_removed_from_the_live_video">You have been removed from the live video</string>
+    <string name="fb_hi">Hi</string>
 </resources>

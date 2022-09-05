@@ -14,6 +14,7 @@ object Constants {
 
     const val EXTRA_USERNAME = "username"
     const val EXTRA_LOGIN_SOURCE = "login_source"
+    const val EXTRA_LIVE_ID = "live_id"
 //    const val EXTRA_CONVERSATION_ENTITY = "conversation_entity"
 
     const val DEFAULT_TIME_OUT = 15L
