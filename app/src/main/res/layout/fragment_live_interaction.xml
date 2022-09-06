@@ -147,7 +147,7 @@
             android:contentDescription="@string/fb_close"
             android:layerType="software"
             android:scaleType="fitXY"
-            android:src="@mipmap/ic_close_white"
+            android:src="@mipmap/ic_leave_live"
             app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/linearLayout" />

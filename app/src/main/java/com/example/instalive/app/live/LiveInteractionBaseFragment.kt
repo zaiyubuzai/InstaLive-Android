@@ -244,7 +244,7 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
                     it.userId == info.owner.userId
                 }
 //            val count = VenusNumberFormatter.format(info.onlineNumber)
-                onlineCount.text = info.onlineNumStr
+                onlineCount.text = info.onlineStr
                 val n = info.owner.nickname
                 if (n.length > 12) {
                     name.text = n.substring(0, 10).plus("...")
@@ -252,16 +252,16 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
                     name.text = n
                 }
 
-                if (info.state == Constants.LIVE_START && info.needLiveWith == 1) {
-                    showLiveWith()
-                }
-
-                isPaidLive = info.isPaidLive
-                giftFirstContainer?.isVisible = info.liveGiftShowEnable
-                giftSecondContainer?.isVisible = info.liveGiftShowEnable
+//                if (info.state == Constants.LIVE_START && info.needLiveWith == 1) {
+//                    showLiveWith()
+//                }
+//
+//                isPaidLive = info.isPaidLive
+//                giftFirstContainer?.isVisible = info.liveGiftShowEnable
+//                giftSecondContainer?.isVisible = info.liveGiftShowEnable
                 onLiveStateInfoInJoined(info)
 
-                diamondPublicEnabled = info.liveDiamondsPublic
+                diamondPublicEnabled = info.liveDiamondsPublic == 1
             }
         })
 

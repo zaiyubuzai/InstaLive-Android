@@ -2,16 +2,8 @@ package com.example.instalive.app.live
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.baselibrary.api.ErrorType
-import com.example.baselibrary.api.RemoteEventEmitter
-import com.example.baselibrary.api.StatusEvent
-import com.example.instalive.api.ConversationDataRepository
-import com.example.instalive.api.DataRepository
 import com.example.instalive.app.InstaLivePreferences
-import com.example.instalive.app.SessionPreferences
 import com.example.instalive.app.conversation.MessageBaseViewModel
-import com.example.instalive.db.MessageComposer
-import com.example.instalive.model.GiftData
 import com.example.instalive.model.GiftListData
 import com.example.instalive.model.LiveWithInviteEvent
 import com.google.gson.Gson

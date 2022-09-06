@@ -3,7 +3,10 @@ package com.example.instalive.api
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagingSource
 import com.example.baselibrary.api.BaseRemoteRepository
+import com.example.baselibrary.api.Meta
 import com.example.baselibrary.api.RemoteEventEmitter
+import com.example.baselibrary.api.StatusEvent
+import com.example.instalive.app.live.LiveViewModel
 import com.example.instalive.http.InstaApi
 import com.example.instalive.model.*
 import com.google.gson.Gson
@@ -118,6 +121,56 @@ object LiveDataRepository : ILiveDataRepository, BaseRemoteRepository() {
     ) {
         val response = safeApiCall(remoteEventEmitter) {
             instaApi.handDownLive(liveId)
+        }
+        if (response != null) {
+            liveData.postValue(response.data)
+        }
+    }
+
+    override suspend fun hangUpLive(
+        liveId: String,
+        targetUserId: String,
+        liveData: MutableLiveData<Any>,
+        remoteEventEmitter: RemoteEventEmitter
+    ){
+        val response = safeApiCall(remoteEventEmitter) {
+            instaApi.hangUpLive(liveId, targetUserId)
+        }
+        if (response != null) {
+            liveData.postValue(response.data)
+        }
+    }
+
+    override suspend fun getLiveList(
+        isRefresh: Boolean,
+        meta: MutableLiveData<Meta>,
+        liveData: MutableLiveData<List<LiveData>>,
+        remoteEventEmitter: RemoteEventEmitter,
+    ) {
+        var offset = 0
+        val metaData = if (isRefresh) Meta() else meta.value
+        if (metaData != null) {
+            offset = metaData.nextOffset
+        }
+        if (metaData?.hasNext == false) {
+            remoteEventEmitter.onEvent(StatusEvent.SUCCESS)
+            return
+        }
+        val response = safeApiCall(remoteEventEmitter) {
+            instaApi.getLiveList(offset)
+        }
+        if (response != null) {
+            processListData(response, meta, liveData, isRefresh)
+        }
+    }
+
+    override suspend fun getLiveToken(
+        liveId: String,
+        liveData: MutableLiveData<TokenInfo>,
+        remoteEventEmitter: RemoteEventEmitter,
+    ) {
+        val response = safeApiCall(remoteEventEmitter) {
+            instaApi.getLiveToken(liveId)
         }
         if (response != null) {
             liveData.postValue(response.data)

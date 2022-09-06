@@ -148,7 +148,7 @@ class LiveViewModel : MessageBaseViewModel() {
 
     fun getLiveToken(liveId: String) {
         viewModelScope.launch {
-//            DataRepository.getLiveToken(liveId, liveTokenInfo, this@LiveFragmentViewModel)
+            LiveDataRepository.getLiveToken(liveId, liveTokenInfo, this@LiveViewModel)
         }
     }
 
@@ -196,7 +196,7 @@ class LiveViewModel : MessageBaseViewModel() {
 
     val likeLiveData = MutableLiveData<Any>()
     val cancelLiveWithData = MutableLiveData<Any>()
-    val hangUpLiveWithData = MutableLiveData<Any>()
+    val hangUpLiveData = MutableLiveData<Any>()
     val giftListLiveData = MutableLiveData<GiftListData>()
     val raiseHandData = MutableLiveData<Any>()
     val handsDownData = MutableLiveData<Any>()
@@ -518,6 +518,22 @@ class LiveViewModel : MessageBaseViewModel() {
     fun handsDown(liveId: String, onError: (String) -> Unit, onStatus: (StatusEvent) -> Unit) {
         viewModelScope.launch {
             LiveDataRepository.handsDownLive(liveId, handsDownData, object : RemoteEventEmitter {
+                override fun onError(code: Int, msg: String, errorType: ErrorType) {
+                    this@LiveViewModel.onError(code, msg, errorType)
+                    onError.invoke(msg)
+                }
+
+                override fun onEvent(event: StatusEvent) {
+                    this@LiveViewModel.onEvent(event)
+                    onStatus.invoke(event)
+                }
+            })
+        }
+    }
+
+    fun hangUpLiveWith(liveId: String, userId: String, onError: (String) -> Unit, onStatus: (StatusEvent) -> Unit) {
+        viewModelScope.launch {
+            LiveDataRepository.hangUpLive(liveId, userId, hangUpLiveData, object : RemoteEventEmitter {
                 override fun onError(code: Int, msg: String, errorType: ErrorType) {
                     this@LiveViewModel.onError(code, msg, errorType)
                     onError.invoke(msg)

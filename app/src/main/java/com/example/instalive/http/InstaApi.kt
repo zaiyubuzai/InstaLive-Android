@@ -2,6 +2,8 @@ package com.example.instalive.http
 
 import com.example.baselibrary.api.BaseApi
 import com.example.baselibrary.api.BaseResponse
+import com.example.baselibrary.api.BaseResponseWithExt
+import com.example.baselibrary.api.Meta
 import com.example.baselibrary.model.CountryCodeListData
 import com.example.baselibrary.model.PresignData
 import com.example.instalive.model.*
@@ -261,4 +263,21 @@ interface InstaApi : BaseApi {
     suspend fun handDownLive(
         @Field("live_id") liveId: String
     ):BaseResponse<Any>
+
+    @FormUrlEncoded
+    @POST("api/live/live/live_with/hang_up/")
+    suspend fun hangUpLive(
+        @Field("live_id") liveId: String,
+        @Field("target_user_id") targetUserId: String,
+    ):BaseResponse<Any>
+
+    @GET("api/live/live/list/")
+    suspend fun getLiveList(
+        @Query("offset") offset: Int
+    ): BaseResponseWithExt<List<LiveData>, Meta>
+
+    @GET("api/live/live/token/")
+    suspend fun getLiveToken(
+        @Query("live_id") liveId: String
+    ): BaseResponse<TokenInfo>
 }

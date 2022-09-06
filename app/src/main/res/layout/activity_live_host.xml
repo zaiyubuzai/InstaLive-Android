@@ -68,7 +68,6 @@
                 android:textSize="15sp" />
         </LinearLayout>
 
-        <!-- 观众端进入直播loading ui -->
         <RelativeLayout
             android:id="@+id/loading"
             android:layout_width="match_parent"
@@ -99,41 +98,6 @@
 
         </RelativeLayout>
 
-        <!--网络错误ui-->
-        <RelativeLayout
-            android:id="@+id/networkCheck"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone">
-
-            <ImageView
-                android:id="@+id/networkCover"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#a6000000" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/networkDesc"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="@string/poor_network_you_may_try_later"
-                    android:textColor="@color/white"
-                    android:textSize="17sp" />
-
-            </LinearLayout>
-        </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/networkQualityContainer"
@@ -570,50 +534,6 @@
                 tools:visibility="gone" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <!-- 主播端错误提示 -->
-        <RelativeLayout
-            android:id="@+id/errorPrompt"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone">
-
-            <ImageView
-                android:id="@+id/activityCover"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#a6000000" />
-
-            <TextView
-                android:id="@+id/activityDesc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginStart="@dimen/dimen_16dp"
-                android:layout_marginEnd="@dimen/dimen_16dp"
-                android:gravity="center"
-                android:text="@string/your_live_video_has_ended"
-                android:textColor="@color/white"
-                android:textSize="20sp" />
-
-            <TextView
-                android:id="@+id/activityDone"
-                style="@style/tw_bg_style"
-                android:layout_width="115dp"
-                android:layout_height="@dimen/dimen_40dp"
-                android:layout_alignBottom="@id/activityCover"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="@dimen/dimen_30dp"
-                android:text="@string/fb_done"
-                android:textColor="@color/white" />
-
-        </RelativeLayout>
 
         <!--设置直播结束后展示时长和观看人数ui-->
         <RelativeLayout

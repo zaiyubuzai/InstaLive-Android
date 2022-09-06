@@ -2,10 +2,14 @@ package com.example.instalive.app.live
 
 import android.os.Bundle
 import android.view.SurfaceView
+import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.core.view.isVisible
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.example.baselibrary.api.StatusEvent
 import com.example.baselibrary.utils.BarUtils
 import com.example.baselibrary.utils.ScreenUtils
@@ -25,16 +29,17 @@ import com.example.instalive.app.live.ui.LiveRelativeLayout
 import com.example.instalive.model.LiveUserInfo
 import com.example.instalive.model.Resolution
 import com.jeremyliao.liveeventbus.LiveEventBus
+import com.venus.framework.util.isNeitherNullNorEmpty
 import com.venus.livesdk.rtc.AgoraManager
 import com.venus.livesdk.rtc.EventHandler
+import io.agora.rtc.Constants
 import io.agora.rtc.IRtcEngineEventHandler
 import io.agora.rtc.video.VideoEncoderConfiguration
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import jp.wasabeef.glide.transformations.BlurTransformation
+import kotlinx.coroutines.*
 import splitties.dimensions.dp
 import timber.log.Timber
+import java.util.HashSet
 
 @ExperimentalStdlibApi
 abstract class LiveBaseActivity<VDB : ViewDataBinding> : InstaBaseActivity<LiveViewModel, VDB>(),
@@ -42,8 +47,9 @@ abstract class LiveBaseActivity<VDB : ViewDataBinding> : InstaBaseActivity<LiveV
 
     protected val liveContainers: MutableList<LiveRelativeLayout> = mutableListOf()
     protected var liveUsers: MutableList<LiveUserInfo> = mutableListOf()
-
+    protected var addedUidSet = HashSet<Int>()
     protected var liveStateStatus = false
+    protected var isFirstLoading = true
     protected var isOpenBeauty = true
     protected var isNotStop = true//某些页面打开后，有可能禁止触发直播间进后台的逻辑
     protected var isLiving = false
@@ -53,6 +59,8 @@ abstract class LiveBaseActivity<VDB : ViewDataBinding> : InstaBaseActivity<LiveV
     protected var mToken: String? = null
 
     protected var mUid: Int = 0
+
+    protected var isAnchor = false
 
     //从直播详情接口获取 主播的uid
     protected var anchorUid: String? = null
@@ -119,6 +127,10 @@ abstract class LiveBaseActivity<VDB : ViewDataBinding> : InstaBaseActivity<LiveV
 
         LiveEventBus.get(EVENT_BUS_KEY_APP_STOP).observe(this, {
             agoraManager.mRtcEngine?.enableLocalVideo(it == 0)
+        })
+
+        viewModel.liveTokenInfo.observe(this, {
+            agoraManager.renewToken(it.token)
         })
     }
 
@@ -350,6 +362,10 @@ abstract class LiveBaseActivity<VDB : ViewDataBinding> : InstaBaseActivity<LiveV
     abstract fun addLiveVideoContainer(liveRl: LiveRelativeLayout)
     abstract fun removeLiveVideoContainer(liveRl: LiveRelativeLayout)
     abstract fun showInteractionFragment()
+    abstract fun setNetworkQuality(quality: Int)
+    abstract fun hideLoadingCover()
+    abstract fun hidePause()
+    abstract fun showPause()
 
     private fun userAndLayout() {
         var needLayoutCount = 1
@@ -440,7 +456,10 @@ abstract class LiveBaseActivity<VDB : ViewDataBinding> : InstaBaseActivity<LiveV
             pauseReportJob = lifecycleScope.launch(Dispatchers.IO) {
                 delay(3000)
                 if (isLiving) {//看播角度有些情况不算是在live中，
-                    viewModel.liveUIPause(liveId?:"", if (viewModel.isMicrophoneUser.value == true) 2 else 9)
+                    viewModel.liveUIPause(
+                        liveId ?: "",
+                        if (viewModel.isMicrophoneUser.value == true) 2 else 9
+                    )
                 }
             }
         }
@@ -452,8 +471,20 @@ abstract class LiveBaseActivity<VDB : ViewDataBinding> : InstaBaseActivity<LiveV
             pauseReportJob = null
         }
         if (isLiving) {
-            viewModel.liveUIResume(liveId?:"", if (viewModel.isMicrophoneUser.value == true) 2 else 9)
+            viewModel.liveUIResume(
+                liveId ?: "",
+                if (viewModel.isMicrophoneUser.value == true) 2 else 9
+            )
         }
+    }
+
+    protected fun showBlurTransformationCover(portrait: String, view: ImageView) {
+        Glide.with(this)
+            .load(portrait)
+            .skipMemoryCache(false)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .apply(RequestOptions.bitmapTransform(BlurTransformation(this, 25, 8)))
+            .into(view)
     }
 
     // region EventHandler
@@ -492,8 +523,72 @@ abstract class LiveBaseActivity<VDB : ViewDataBinding> : InstaBaseActivity<LiveV
         Timber.d("sw onRtcStats")
     }
 
+    private val QUALITY_GOOD_LIST = listOf(
+        io.agora.rtc.Constants.QUALITY_GOOD,
+        io.agora.rtc.Constants.QUALITY_UNKNOWN,
+        io.agora.rtc.Constants.QUALITY_EXCELLENT
+    )
+
+    private val QUALITY_POOR_LIST = listOf(
+        io.agora.rtc.Constants.QUALITY_BAD,
+        io.agora.rtc.Constants.QUALITY_POOR,
+        io.agora.rtc.Constants.QUALITY_VBAD
+    )
+
     override fun onNetworkQuality(uid: Int, txQuality: Int, rxQuality: Int) {
         Timber.d("sw onNetworkQuality uid:$uid")
+        if (uid != 0) return
+        //网络比较差，但是还可以播放
+
+        lifecycleScope.launch(Dispatchers.Main) {
+//            networkData?.text = "uid: $uid \n上行网络质量: $txQuality \n下行网络质量: $rxQuality"
+            if (!isAnchor) {
+                setNetworkQuality(
+                    if (if (viewModel.isMicrophoneUser.value == true) {
+                            QUALITY_GOOD_LIST.contains(txQuality)
+                                    && QUALITY_GOOD_LIST.contains(rxQuality)
+                        } else {
+                            QUALITY_GOOD_LIST.contains(rxQuality)
+                        }
+                    ) {
+                        1
+                    } else if (if (viewModel.isMicrophoneUser.value == true) {
+                            QUALITY_POOR_LIST.contains(txQuality)
+                                    || QUALITY_POOR_LIST.contains(rxQuality)
+                        } else {
+                            QUALITY_POOR_LIST.contains(rxQuality)
+                        }
+                    ) {
+                        2
+                    } else if (if (viewModel.isMicrophoneUser.value == true)
+                            rxQuality == Constants.QUALITY_DOWN
+                                    || txQuality == Constants.QUALITY_DOWN
+                        else rxQuality == Constants.QUALITY_DOWN
+                    ) {
+                        3
+                    } else {
+                        4
+                    }
+                )
+            } else {
+                setNetworkQuality(
+                    if (listOf(
+                            Constants.QUALITY_GOOD,
+                            Constants.QUALITY_EXCELLENT
+                        ).contains(txQuality)
+                    ) {
+                        1
+                    } else if (QUALITY_POOR_LIST.contains(txQuality)
+                    ) {
+                        2
+                    } else if (txQuality == Constants.QUALITY_DOWN) {
+                        3
+                    } else {
+                        4
+                    }
+                )
+            }
+        }
     }
 
     override fun onRemoteVideoStats(stats: IRtcEngineEventHandler.RemoteVideoStats?) {
@@ -506,14 +601,146 @@ abstract class LiveBaseActivity<VDB : ViewDataBinding> : InstaBaseActivity<LiveV
 
     override fun onRemoteVideoStateChanged(uid: Int, state: Int, reason: Int, elapsed: Int) {
         Timber.d("sw onRemoteVideoStateChanged uid:$uid state:$state reason:$reason elapsed:$elapsed")
+
+        //没有连麦的逻辑
+
+        if (viewModel.isMicrophone.value != true) {
+            if (state == io.agora.rtc.Constants.REMOTE_VIDEO_STATE_DECODING
+                && uid == anchorUid?.toInt()
+            ) {
+                Timber.d("StateChanged 1")
+                if (!isAnchor) {
+                    hidePause()
+                    if (liveContainers.isNotEmpty()) {
+                        liveContainers[0].hidePause()
+                    }
+                    if (!isFirstLoading) {
+                        hideLoadingCover()
+                    } else {
+                        isFirstLoading = false
+                    }
+                }
+            }
+            //主播离开
+            else if ((reason == io.agora.rtc.Constants.REMOTE_VIDEO_STATE_REASON_REMOTE_MUTED)
+                && uid == anchorUid?.toInt()
+            ) {
+                //观众端暂停页面展示
+                if (!isAnchor) {
+                    Timber.d("live直播暂停 3")
+                    if (!isFirstLoading) showPause()
+                }
+            }
+        } else {
+            //连麦收到连麦的流
+            if (state == io.agora.rtc.Constants.REMOTE_VIDEO_STATE_DECODING
+                && uid != anchorUid?.toInt()
+            ) {
+                //连麦 主播端收到连麦人的直播流，隐藏loading
+
+                //连麦 观众端收到流
+
+                hideLoadingCover()
+                hidePause()
+                val liveContainer = liveContainers.filter {
+                    it.liveUserInfo?.uid == uid
+                }
+                if (liveContainer.isNeitherNullNorEmpty()) {
+                    liveContainer[0].hidePause()
+                }
+            }
+
+            //连麦收到主播端流 对应的 观众端和连麦端的ui
+            else if (state == io.agora.rtc.Constants.REMOTE_VIDEO_STATE_DECODING
+                && uid == anchorUid?.toInt()
+            ) {
+                //连麦 连麦人收到流的情况
+                if (!isAnchor && viewModel.isMicrophoneUser.value == true) {
+
+                    hidePause()
+                    hideLoadingCover()
+                    val liveContainer = liveContainers.filter {
+                        it.liveUserInfo?.uid == uid || it.isHost
+                    }
+                    if (liveContainer.isNeitherNullNorEmpty()) {
+                        liveContainer[0].hidePause()
+                    }
+                }
+
+                //连麦 观众收到流的情况
+                if (!isAnchor && viewModel.isMicrophoneUser.value != true) {
+                    hidePause()
+                    hideLoadingCover()
+                    val liveContainer = liveContainers.filter {
+                        it.liveUserInfo?.uid == uid || it.isHost
+                    }
+                    if (liveContainer.isNeitherNullNorEmpty()) {
+                        liveContainer[0].hidePause()
+                    }
+                }
+            }
+
+            //连麦状态 主播断流
+            if ((state == io.agora.rtc.Constants.REMOTE_VIDEO_STATE_FROZEN
+                        || state == io.agora.rtc.Constants.REMOTE_VIDEO_STATE_STOPPED)
+                && uid == anchorUid?.toInt()
+            ) {
+                //连麦 连麦人断流的情况
+                if (reason != io.agora.rtc.Constants.REMOTE_VIDEO_STATE_REASON_NETWORK_CONGESTION) {
+                    if (!isAnchor && viewModel.isMicrophoneUser.value == true) {
+                        hideLoadingCover()
+                        val liveContainer = liveContainers.filter {
+                            it.liveUserInfo?.uid == uid || it.isHost
+                        }
+                        if (liveContainer.isNeitherNullNorEmpty()) {
+                            liveContainer[0].showPause()
+                        }
+                    }
+
+                    //连麦 观众断流的情况
+                    if (!isAnchor && viewModel.isMicrophoneUser.value != true) {
+                        val liveContainer = liveContainers.filter {
+                            it.liveUserInfo?.uid == uid || it.isHost
+                        }
+                        if (liveContainer.isNeitherNullNorEmpty()) {
+                            liveContainer[0].showPause()
+                        }
+                    }
+                }
+            }
+
+            //连麦状态 连麦人断流
+            else if ((state == io.agora.rtc.Constants.REMOTE_VIDEO_STATE_FROZEN
+                        || state == io.agora.rtc.Constants.REMOTE_VIDEO_STATE_STOPPED)
+                && uid != anchorUid?.toInt()
+            ) {
+                //主播展示ui
+                if (reason != io.agora.rtc.Constants.REMOTE_VIDEO_STATE_REASON_NETWORK_CONGESTION) {
+                    //观众展示ui
+                    if (viewModel.isMicrophoneUser.value != true) {
+                        val liveContainer = liveContainers.filter {
+                            it.liveUserInfo?.uid == uid || it.isHost
+                        }
+                        if (liveContainer.isNeitherNullNorEmpty()) {
+                            liveContainer[0].showPause()
+                        }
+                    }
+                }
+            }
+        }
+
+        if (reason == io.agora.rtc.Constants.CONNECTION_CHANGED_TOKEN_EXPIRED) {  //token 过期
+            liveId?.let { viewModel.getLiveToken(it) }
+        }
+
     }
 
     override fun onTokenPrivilegeWillExpire(token: String?) {
-        Timber.d("sw onTokenPrivilegeWillExpire token:$token")
+        liveId?.let { viewModel.getLiveToken(it) }
     }
 
     override fun onRequestToken() {
-        Timber.d("sw onRequestToken")
+        liveId?.let { viewModel.getLiveToken(it) }
     }
 
     override fun onConnectionStateChanged(state: Int, reason: Int) {
@@ -538,6 +765,6 @@ abstract class LiveBaseActivity<VDB : ViewDataBinding> : InstaBaseActivity<LiveV
     override fun onError(code: Int) {
         Timber.d("sw onError $code")
     }
-    //endregion
+//endregion
 
 }

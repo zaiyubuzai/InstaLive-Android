@@ -211,6 +211,7 @@
     <string name="fb_dialog_gift_select_gift">Select a Gift</string>
     <string name="fb_unlock_now">Unlock Now</string>
     <string name="fb_is_live_now">&#160;is Live now</string>
+    <string name="fb_is_live">%1$s is Live</string>
     <string name="fb_unlock_live">Unlock Live</string>
     <string name="fb_live_unlock_income">Unlock Live Diamonds</string>
     <string name="fb_co_host_got">Co-host Got</string>
@@ -276,4 +277,12 @@
     <string name="fb_live_you_on_live_now">You are on Live now.</string>
     <string name="you_have_been_removed_from_the_live_video">You have been removed from the live video</string>
     <string name="fb_hi">Hi</string>
+    <string name="permissino_denied">permission denied</string>
+    <string name="fb_join">Join</string>
+
+    <string name="fb_network_is_good">Network is good</string>
+    <string name="fb_network_is_poor">Network is poor</string>
+    <string name="fb_disconnected">Disconnected</string>
+    <string name="fb_your_network_is_poor">Your network is poor</string>
+    <string name="fb_you_are_disconnected">You are disconnected</string>
 </resources>

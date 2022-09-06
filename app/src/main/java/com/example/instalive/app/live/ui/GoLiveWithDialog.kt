@@ -17,7 +17,6 @@ import com.example.instalive.app.Constants
 import com.example.instalive.app.ui.FooterLoadStateAdapter
 import com.example.instalive.databinding.ItemGoLiveWithFeedBinding
 import com.example.instalive.model.LiveActivityEvent
-import com.example.instalive.model.LiveUserInfo
 import com.example.instalive.model.LiveViewerData
 import com.example.instalive.model.LiveWithInviteEvent
 import com.jeremyliao.liveeventbus.LiveEventBus

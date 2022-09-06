@@ -2,6 +2,7 @@ package com.example.instalive.api
 
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagingSource
+import com.example.baselibrary.api.Meta
 import com.example.baselibrary.api.RemoteEventEmitter
 import com.example.instalive.model.*
 
@@ -45,6 +46,26 @@ interface ILiveDataRepository {
     suspend fun handsDownLive(
         liveId: String,
         liveData: MutableLiveData<Any>,
+        remoteEventEmitter: RemoteEventEmitter
+    )
+
+    suspend fun hangUpLive(
+        liveId: String,
+        targetUserId: String,
+        liveData: MutableLiveData<Any>,
+        remoteEventEmitter: RemoteEventEmitter
+    )
+
+    suspend fun getLiveList(
+        isRefresh: Boolean,
+        meta: MutableLiveData<Meta>,
+        liveData: MutableLiveData<List<LiveData>>,
+        remoteEventEmitter: RemoteEventEmitter
+    )
+
+    suspend fun getLiveToken(
+        liveId: String,
+        liveData: MutableLiveData<TokenInfo>,
         remoteEventEmitter: RemoteEventEmitter
     )
 }

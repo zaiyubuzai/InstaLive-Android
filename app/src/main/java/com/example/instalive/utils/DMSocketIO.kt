@@ -1,11 +1,9 @@
 package com.example.instalive.utils
 
-import android.app.people.ConversationStatus
 import com.example.instalive.api.ConversationDataRepository
 import com.example.instalive.app.SessionPreferences
 import com.google.gson.Gson
 import com.venus.dm.model.VenusDirectMessageWrapper
-import com.venus.framework.util.isNeitherNullNorEmpty
 import io.socket.client.IO
 import io.socket.client.Socket
 import kotlinx.coroutines.CoroutineScope

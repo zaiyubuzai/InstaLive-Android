@@ -1,8 +1,6 @@
 package com.example.instalive.app.live
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.SurfaceView
 import android.view.WindowManager
@@ -16,20 +14,17 @@ import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.example.baselibrary.api.ErrorType
 import com.example.baselibrary.utils.BarUtils
 import com.example.baselibrary.utils.marsToast
 import com.example.instalive.InstaLiveApp.Companion.appInstance
 import com.example.instalive.R
-import com.example.instalive.app.Constants.ITRCT_TYPE_LIVE_OFF
 import com.example.instalive.app.Constants.ITRCT_TYPE_MAKEUP_OFF
 import com.example.instalive.app.Constants.ITRCT_TYPE_MAKEUP_ON
-import com.example.instalive.app.Constants.ITRCT_TYPE_FLIP
 import com.example.instalive.app.Constants.EVENT_BUS_KEY_LIVE
 import com.example.instalive.app.Constants.EVENT_BUS_KEY_LIVE_HOST_ACTIONS
+import com.example.instalive.app.Constants.ITRCT_TYPE_FLIP
+import com.example.instalive.app.Constants.ITRCT_TYPE_LIVE_OFF
 import com.example.instalive.app.Constants.LIVE_END
 import com.example.instalive.app.Constants.LIVE_START
 import com.example.instalive.app.InstaLivePreferences
@@ -37,6 +32,7 @@ import com.example.instalive.app.SessionPreferences
 import com.example.instalive.app.live.ui.LiveRelativeLayout
 import com.example.instalive.databinding.ActivityLiveHostBinding
 import com.example.instalive.model.*
+import com.example.instalive.utils.LiveSocketIO
 import com.example.instalive.utils.VenusNumberFormatter
 import com.example.instalive.view.CountDownProgressBar
 import com.google.gson.Gson
@@ -47,7 +43,6 @@ import com.venus.livesdk.rtc.AgoraTokenInfo
 import io.agora.rtc.Constants
 import io.agora.rtc.models.ClientRoleOptions
 import io.agora.rtc.video.VideoEncoderConfiguration
-import jp.wasabeef.glide.transformations.BlurTransformation
 import kotlinx.android.synthetic.main.activity_live_host.*
 import kotlinx.coroutines.*
 import splitties.alertdialog.appcompat.*
@@ -72,7 +67,7 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
     private var loopCount = 0
 
     //查看uid对应的surfaceView是否创建
-    private var addedUidSet = HashSet<Int>()
+
 
     private var currentFragmentTag: String? = null
     private lateinit var hostFragment: LiveInteractionHostFragment
@@ -134,30 +129,14 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
     }
 
     private fun initUI() {
+        startLiveContainer.setPadding(0, BarUtils.statusBarHeight, 0, 0)
         changeNetworkUIPosition(true)
         //主播端展示的cover
-        Glide.with(this)
-            .asBitmap()
-            .load(SessionPreferences.portrait)
-            .placeholder(R.mipmap.ic_default_avatar)
-            .skipMemoryCache(false)
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .apply(RequestOptions.bitmapTransform(BlurTransformation(this, 25, 8)))
-            .into(object : CustomTarget<Bitmap>() {
-                override fun onResourceReady(
-                    resource: Bitmap,
-                    transition: Transition<in Bitmap>?,
-                ) {
-                    closeLiveCover.setImageBitmap(resource)
-                    networkCover.setImageBitmap(resource)
-                    pauseCover.setImageBitmap(resource)
-                    cover.setImageBitmap(resource)
-                }
-
-                override fun onLoadCleared(placeholder: Drawable?) {
-                }
-            })
-
+        SessionPreferences.portrait?.let {
+            showBlurTransformationCover(it, closeLiveCover)
+            showBlurTransformationCover(it, pauseCover)
+            showBlurTransformationCover(it, cover)
+        }
         divideSwitchBanned.isChecked = SessionPreferences.divideIncomeState
     }
 
@@ -214,7 +193,6 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
                 okButton()
             }.show()
         }
-        networkCheck.onClick {}
         container.onClick {}
 
         switchBanned.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -376,6 +354,7 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
         viewModel.liveInfoLiveData.observe(this, {
             resolution = it.resolution
             liveId = it.id
+            LiveSocketIO.initLiveSocket(liveId!!)
             startLive?.isEnabled = true
             if (!isStarted) return@observe
             startLiveLaunch = CoroutineScope(Dispatchers.IO).launch {
@@ -662,13 +641,13 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
                         agoraManager.mRtcEngine?.enableVideo()
                         if (isLockedLive) agoraManager.mRtcEngine?.enableAudio()
                         agoraManager.mRtcEngine?.startPreview()
-                        sharedViewModel.liveOnlineCount.postValue(info.onlineNumStr)
+                        sharedViewModel.liveOnlineCount.postValue(info.onlineStr)
                     }
                     LIVE_END -> {
                         isLiving = false
                         // 展示直播结束画面
                         if (isCountTimeOver) {
-                            viewers.text = info.onlineNumStr
+                            viewers.text = info.onlineStr
                             diamonds.text = info.diamonds.toString()
                             closeLiveContainer?.isVisible = true
                             agoraManager.mRtcEngine?.disableAudio()
@@ -854,20 +833,6 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
     }
 
     fun showErrorPrompt(desc: String) {
-        errorPrompt.isVisible = true
-        Glide.with(this)
-            .load(SessionPreferences.portrait)
-            .placeholder(R.mipmap.ic_default_avatar)
-            .skipMemoryCache(false)
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .apply(RequestOptions.bitmapTransform(BlurTransformation(this, 25, 8)))
-            .into(activityCover)
-        activityDesc.text = desc
-        errorPrompt.isVisible = true
-        activityDone.onClick {
-            this.finish()
-        }
-        errorPrompt.onClick {}
     }
 
     companion object :
@@ -931,6 +896,7 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
                 }
             }
         }
+        LiveSocketIO.releaseLiveSocket()
         removeEventHandler(this)
         appInstance.rtcEngine()?.disableVideo()
         appInstance.rtcEngine()?.disableAudio()
@@ -1009,4 +975,32 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
     override fun onRaiseHandClick() {}
     //endregion
 
+    override fun setNetworkQuality(quality: Int) {
+        when (quality) {
+            1 -> {
+                networkQualityContainer.isVisible = true
+                networkQualityIcon.setBackgroundResource(R.drawable.icon_network_quality_green)
+                networkQuality.textResource = R.string.fb_network_is_good
+            }
+            2 -> {
+                networkQualityContainer.isVisible = true
+                networkQualityIcon.setBackgroundResource(R.drawable.icon_network_quality_orange)
+                networkQuality.textResource = R.string.fb_network_is_poor
+            }
+            3 -> {
+                networkQualityContainer.isVisible = true
+                networkQualityIcon.setBackgroundResource(R.drawable.icon_network_quality_red)
+                networkQuality.textResource = R.string.fb_disconnected
+            }
+        }
+    }
+
+    override fun hideLoadingCover() {
+    }
+
+    override fun hidePause() {
+    }
+
+    override fun showPause() {
+    }
 }

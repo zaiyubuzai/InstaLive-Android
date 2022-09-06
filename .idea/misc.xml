@@ -36,6 +36,8 @@
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/ic_user_feed_check_box_true.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/icon_network_quality_green.xml" value="0.34444444444444444" />
+        <entry key="app/src/main/res/drawable/icon_network_quality_orange.xml" value="0.34444444444444444" />
+        <entry key="app/src/main/res/drawable/icon_network_quality_red.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/insta_checkbox_style.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/switch_custom_thumb_off.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/switch_custom_track_off.xml" value="0.34444444444444444" />
@@ -78,6 +80,7 @@
         <entry key="app/src/main/res/layout/item_country_code_layout.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/item_go_live_with_feed.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/item_interested_member_layout.xml" value="0.3311965811965812" />
+        <entry key="app/src/main/res/layout/item_live_list_layout.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/item_live_message_gif_layout.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/item_live_message_gift_prompt_layout.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/item_live_message_image_me_layout.xml" value="0.3311965811965812" />

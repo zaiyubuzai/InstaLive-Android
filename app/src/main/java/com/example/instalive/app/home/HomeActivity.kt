@@ -21,21 +21,17 @@ import android.text.InputFilter.LengthFilter
 
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
 import com.example.instalive.app.SessionPreferences
 import com.example.instalive.app.conversation.ConversationListActivity
 import com.example.instalive.app.ui.OtherProfileDialog
 import com.lxj.xpopup.XPopup
 import com.venus.dm.model.UserData
 import splitties.activities.start
-import splitties.dimensions.dp
 
 @ExperimentalStdlibApi
 class HomeActivity : InstaBaseActivity<HomeViewModel, ActivityHomeBinding>() {
 
-    private val IS_DESTORY = "is_destory"
+    private val IS_DESTROY = "is_destroy"
     private val CURRENT_ROLE = "current_role"
     private var role = 1//1:host;2:viewer.
     private var isRestartActivity = false
@@ -52,7 +48,7 @@ class HomeActivity : InstaBaseActivity<HomeViewModel, ActivityHomeBinding>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //如果长时间待在后台导致Activity销毁，则在此处先移m除之前所有的fragment
-        if (savedInstanceState != null && savedInstanceState.getBoolean(IS_DESTORY, false)) {
+        if (savedInstanceState != null && savedInstanceState.getBoolean(IS_DESTROY, false)) {
             isRestartActivity = true
             removeAllFragment()
         }
@@ -196,7 +192,7 @@ class HomeActivity : InstaBaseActivity<HomeViewModel, ActivityHomeBinding>() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putBoolean(IS_DESTORY, true)
+        outState.putBoolean(IS_DESTROY, true)
         outState.putInt(CURRENT_ROLE, role)
     }
 
