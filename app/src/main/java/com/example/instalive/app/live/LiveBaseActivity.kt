@@ -26,7 +26,7 @@ import com.example.instalive.app.base.AppBackgroundObserver
 import com.example.instalive.app.base.InstaBaseActivity
 import com.example.instalive.app.base.SharedViewModel
 import com.example.instalive.app.live.ui.LiveRelativeLayout
-import com.example.instalive.model.LiveUserInfo
+import com.example.instalive.model.LiveUserWithUidData
 import com.example.instalive.model.Resolution
 import com.jeremyliao.liveeventbus.LiveEventBus
 import com.venus.framework.util.isNeitherNullNorEmpty
@@ -46,12 +46,12 @@ abstract class LiveBaseActivity<VDB : ViewDataBinding> : InstaBaseActivity<LiveV
     EventHandler, LiveRelativeLayout.OnLiveVideoViewListener {
 
     protected val liveContainers: MutableList<LiveRelativeLayout> = mutableListOf()
-    protected var liveUsers: MutableList<LiveUserInfo> = mutableListOf()
+    protected var liveUserWithUids: MutableList<LiveUserWithUidData> = mutableListOf()
     protected var addedUidSet = HashSet<Int>()
     protected var liveStateStatus = false
     protected var isFirstLoading = true
     protected var isOpenBeauty = true
-    protected var isNotStop = true//某些页面打开后，有可能禁止触发直播间进后台的逻辑
+    protected var isNotStop = false//某些页面打开后，有可能禁止触发直播间进后台的逻辑
     protected var isLiving = false
 
     protected var liveId: String? = null
@@ -91,7 +91,7 @@ abstract class LiveBaseActivity<VDB : ViewDataBinding> : InstaBaseActivity<LiveV
         registerEventHandler(this)
         appInstance.mRtcEngine?.let {
             agoraManager.initAgora(it)
-            agoraManager.initComponents(this, true, 400)
+            agoraManager.initComponents(this, isAnchor, 400)
             val surfaceView = agoraManager.getVideoUI(this, true, mUid)
             initLocalVideoView(surfaceView)
         }
@@ -176,7 +176,7 @@ abstract class LiveBaseActivity<VDB : ViewDataBinding> : InstaBaseActivity<LiveV
     abstract fun getImplLayoutId(): Int
 
     protected fun microphoneAnchor() {
-        Timber.d("${liveContainers.size} ${liveUsers.size}")
+        Timber.d("${liveContainers.size} ${liveUserWithUids.size}")
 
         userAndLayout()
 
@@ -369,13 +369,13 @@ abstract class LiveBaseActivity<VDB : ViewDataBinding> : InstaBaseActivity<LiveV
 
     private fun userAndLayout() {
         var needLayoutCount = 1
-        if (liveUsers.size == 2) {
+        if (liveUserWithUids.size == 2) {
             needLayoutCount = 2
-        } else if (liveUsers.size in 3..4) {
+        } else if (liveUserWithUids.size in 3..4) {
             needLayoutCount = 4
-        } else if (liveUsers.size in 5..6) {
+        } else if (liveUserWithUids.size in 5..6) {
             needLayoutCount = 6
-        } else if (liveUsers.size in 7..9) {
+        } else if (liveUserWithUids.size in 7..9) {
             needLayoutCount = 9
         }
 
@@ -403,7 +403,7 @@ abstract class LiveBaseActivity<VDB : ViewDataBinding> : InstaBaseActivity<LiveV
     protected fun setLiveResolution() {
         var width = resolution?.liveWidth ?: 720
         var height = resolution?.liveHigh ?: 1280
-        val size = liveUsers.size
+        val size = liveUserWithUids.size
         if (size in 1..2) {
             width /= size
             height /= size
@@ -485,6 +485,16 @@ abstract class LiveBaseActivity<VDB : ViewDataBinding> : InstaBaseActivity<LiveV
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .apply(RequestOptions.bitmapTransform(BlurTransformation(this, 25, 8)))
             .into(view)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        removeEventHandler(this)
+        sharedViewModel.liveReset()
+        appInstance.rtcEngine()?.stopPreview()
+        appInstance.rtcEngine()?.disableVideo()
+        appInstance.rtcEngine()?.disableAudio()
+        appInstance.rtcEngine()?.leaveChannel()
     }
 
     // region EventHandler
@@ -603,7 +613,6 @@ abstract class LiveBaseActivity<VDB : ViewDataBinding> : InstaBaseActivity<LiveV
         Timber.d("sw onRemoteVideoStateChanged uid:$uid state:$state reason:$reason elapsed:$elapsed")
 
         //没有连麦的逻辑
-
         if (viewModel.isMicrophone.value != true) {
             if (state == io.agora.rtc.Constants.REMOTE_VIDEO_STATE_DECODING
                 && uid == anchorUid?.toInt()
@@ -765,6 +774,6 @@ abstract class LiveBaseActivity<VDB : ViewDataBinding> : InstaBaseActivity<LiveV
     override fun onError(code: Int) {
         Timber.d("sw onError $code")
     }
-//endregion
+    //endregion
 
 }

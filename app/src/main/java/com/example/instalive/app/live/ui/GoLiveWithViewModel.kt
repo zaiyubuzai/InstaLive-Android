@@ -15,9 +15,9 @@ class GoLiveWithViewModel : BaseViewModel() {
 
     lateinit var viewerFlow: Flow<PagingData<LiveViewerData>>
     lateinit var liveId: String
-    var inviteData = MutableLiveData<LiveWithInviteEvent>()
+    var inviteData = MutableLiveData<Any>()
     var agreeLiveWithData = MutableLiveData<Any>()
-    var declineLiveWithData = MutableLiveData<Any>()
+    var rejectLiveWithData = MutableLiveData<Any>()
 
     fun initPagerFlow(liveId: String) {
         this.liveId = liveId
@@ -28,19 +28,19 @@ class GoLiveWithViewModel : BaseViewModel() {
 
     fun goLiveWith(userId: String) {
         viewModelScope.launch {
-//            DataRepository.goLiveWith(userId, liveId, inviteData, this@GoLiveWithViewModel)
+            LiveDataRepository.goLiveWith(userId, liveId, inviteData, this@GoLiveWithViewModel)
         }
     }
 
     fun agreeLiveWith(liveId: String) {
         viewModelScope.launch {
-//            DataRepository.agreeLiveWith(liveId, agreeLiveWithData, this@GoLiveWithViewModel)
+            LiveDataRepository.agreeLiveWith(liveId, agreeLiveWithData, this@GoLiveWithViewModel)
         }
     }
 
     fun declineLiveWith(liveId: String) {
         viewModelScope.launch {
-//            DataRepository.declineLiveWith(liveId, declineLiveWithData, this@GoLiveWithViewModel)
+            LiveDataRepository.rejectLiveWith(liveId, rejectLiveWithData, this@GoLiveWithViewModel)
         }
     }
 

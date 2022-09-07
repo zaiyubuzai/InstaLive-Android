@@ -7,7 +7,7 @@
 
         <variable
             name="userData"
-            type="com.example.instalive.model.LiveViewerData" />
+            type="com.example.instalive.model.LiveUserInfo" />
 
         <variable
             name="level"
@@ -114,7 +114,7 @@
                 android:layout_marginTop="@dimen/dimen_4dp"
                 android:ellipsize="end"
                 android:singleLine="true"
-                userName="@{userData.username}"
+                userName="@{userData.userName}"
                 android:textColor="#dddde8"
                 android:textSize="12sp"
                 app:layout_constraintStart_toStartOf="parent"

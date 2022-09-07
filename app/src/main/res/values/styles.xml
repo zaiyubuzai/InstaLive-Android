@@ -18,6 +18,24 @@
         <item name="android:background">@drawable/bg_btn_white_12</item>
     </style>
 
+    <style name="yellow_button_style">
+        <item name="android:background">@drawable/bg_btn_yellow_12c</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">#000000</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!--  浅灰背景 白字 加粗 居中 字号15sp -->
+    <style name="gray_button_style">
+        <item name="android:background">@drawable/bg_btn_invite_live_down</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
     <style name="CommentDialog" parent="@style/ThemeOverlay.AppCompat.Dialog.Alert">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:colorBackgroundCacheHint">@null</item>

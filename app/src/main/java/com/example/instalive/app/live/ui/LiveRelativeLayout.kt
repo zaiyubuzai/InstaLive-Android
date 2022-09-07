@@ -48,6 +48,14 @@ class LiveRelativeLayout : RelativeLayout {
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .placeholder(R.mipmap.ic_default_avatar)
                 .into(callAudioAvatar)
+            Glide.with(this)
+                .load(value?.portrait)
+                .apply(RequestOptions.bitmapTransform(
+                    RoundedCorners(dp(12))))
+                .skipMemoryCache(false)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .placeholder(R.mipmap.ic_default_avatar)
+                .into(portraitView)
 
             field = value
         }
@@ -138,7 +146,6 @@ class LiveRelativeLayout : RelativeLayout {
 
     fun initUserView(isShow: Boolean) {
         nameTV?.text = liveUserInfo?.nickname ?: ""
-        portraitView?.setImageURI(Uri.parse(liveUserInfo?.portrait))
         portraitView?.isVisible = true
         nameContainer?.isVisible = true
         myHangUp?.isVisible = isShow

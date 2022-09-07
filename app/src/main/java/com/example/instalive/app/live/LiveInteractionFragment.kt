@@ -11,34 +11,36 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.baselibrary.api.StatusEvent
 import com.example.baselibrary.utils.alphaClick
+import com.example.baselibrary.utils.debounceClick
 import com.example.baselibrary.utils.marsToast
 import com.example.baselibrary.utils.tinyMoveClickListener
 import com.example.instalive.BuildConfig
 import com.example.instalive.InstaLiveApp
+import com.example.instalive.InstaLiveApp.Companion.appInstance
 import com.example.instalive.R
-import com.example.instalive.app.Constants.EVENT_BUS_KEY_APP_STOP
 import com.example.instalive.app.Constants.EVENT_BUS_KEY_LIVE
 import com.example.instalive.app.Constants.EVENT_BUS_KEY_LIVE_HOST_ACTIONS
-import com.example.instalive.app.Constants.ITRCT_TYPE_FLIP
 import com.example.instalive.app.Constants.ITRCT_TYPE_MAKEUP_OFF
 import com.example.instalive.app.Constants.ITRCT_TYPE_MAKEUP_ON
 import com.example.instalive.app.Constants.LIVE_END
 import com.example.instalive.app.Constants.LIVE_START
 import com.example.instalive.app.InstaLivePreferences
 import com.example.instalive.app.SessionPreferences
+import com.example.instalive.app.live.ui.GoLiveWithInviteDialog
+import com.example.instalive.app.live.ui.LiveRaiseYourHandDialog
 import com.example.instalive.app.live.ui.LiveRelativeLayout
 import com.example.instalive.databinding.FragmentLiveInteractionBinding
 import com.example.instalive.model.*
 import com.example.instalive.utils.GlideEngine
 import com.example.instalive.utils.VenusNumberFormatter
 import com.jeremyliao.liveeventbus.LiveEventBus
-import com.lxj.xpopup.XPopup
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.language.LanguageConfig
 import com.luck.picture.lib.listener.OnResultCallbackListener
+import com.lxj.xpopup.XPopup
 import kotlinx.android.synthetic.main.activity_live_audience.*
 import kotlinx.android.synthetic.main.fragment_live_interaction.*
 import kotlinx.coroutines.*
@@ -55,14 +57,15 @@ class LiveInteractionFragment :
     private var goLiveWithJob: Job? = null
     private var likeJob: Job? = null
 
-//    private var goWithInviteDialog: GoLiveWithInviteDialog? = null
+    private var goWithInviteDialog: GoLiveWithInviteDialog? = null
 //    private var moreDialog: LiveMoreDialog? = null
 
     private var lastLikeTimeStamp = 0L
     private var likeCount = 0
     private var mute = 0
 
-    var isHandsUp = false
+    private var isHandClicking = false
+    private var isHandsUp = false
 
     @SuppressLint("SetTextI18n", "ClickableViewAccessibility")
     @OptIn(ExperimentalStdlibApi::class)
@@ -93,8 +96,8 @@ class LiveInteractionFragment :
             ownerLiveUserInfo?.let { it1 -> showPersonBottomDialog(it1, 1) }
         }
 
-        startLoop.isVisible =
-            BuildConfig.DEBUG
+//        startLoop.isVisible =
+//            BuildConfig.DEBUG
         startLoop.onClick {
             if (viewModel.messageLoopJob == null) {
                 viewModel.startSendMessageLoop(liveId)
@@ -125,7 +128,7 @@ class LiveInteractionFragment :
             }
         }
 
-        icRaiseHand.onClick {
+        icRaiseHand.debounceClick {
             onRaiseHandClick()
         }
 
@@ -221,49 +224,41 @@ class LiveInteractionFragment :
 
         LiveEventBus.get(EVENT_BUS_KEY_LIVE).observe(this) { event ->
             when (event) {
-                is LiveWithCallEvent -> {
-                    if (event.event == 1 && event.userInfo.userId == SessionPreferences.id) {
-                        //邀请上麦
-                        showLiveWithInvite(liveId, event.endTime)
-                    } else if (event.event == 2) {
-                        //主播取消
-                        hideLiveWithInvite()
-                        onHandsDown()
-                    } else if (event.event == 3) {
-                        //连麦人接受了
-//                        logFirebaseEvent("accept_live_request")
-                        //    liveWithUserContainer.isVisible = true
-                        if (event.userInfo.userId == SessionPreferences.id) {
-                            //只有我自己是连麦对象的时候才对以下view做操作
-                            //          liveWithHangUp.isVisible = true
-                            isShowLiveWithContainer(true)
-                            onHaveMicrophone()
-                        }
-                    } else if (event.event == 4) {
-                        //连麦人拒绝了
-//                        logFirebaseEvent("decline_live_request")
-                        if (event.userInfo.userId == SessionPreferences.id) {
-                            isShowLiveWithContainer(false)
-                            onHandsDown()
-                        }
-                    } else if (event.event == 5) {
-                        //连麦人挂断了
-                        if (event.userInfo.userId == SessionPreferences.id) {
-                            if (mute == 1) {
-                                mute = 0
-                                icLiveWithMute.setImageResource(if (mute == 0) R.mipmap.live_mute_open else R.mipmap.live_mute_close)
-                                (activity as LiveAudienceActivity).muteLocalAudioStream(mute == 1)
-                            }
-                            isShowLiveWithContainer(false)
-                            onHandsDown()
-                        }
+                is LiveWithInviteEvent -> {
+                    if (event.targetUserId == SessionPreferences.id){
+                        showLiveWithInvite(liveId, event.timeoutTS)
                     }
                 }
-//                is LiveRaiseHandEvent -> {
-//                    if (event.event == 2 && event.userInfo.userId == SessionPreferences.id) {
-//                        onRaiseHand()
-//                    }
-//                }
+                is LiveWithCancelEvent -> {
+                    hideLiveWithInvite()
+                    onHandsDown()
+                }
+                is LiveWithAgreeEvent -> {
+                    val have = event.liveUserWithUidInfos.any {
+                        it.userInfo.userId == SessionPreferences.id
+                    }
+                    if (have) {
+                        //只有我自己是连麦对象的时候才对以下view做操作
+                        //          liveWithHangUp.isVisible = true
+                        isShowLiveWithContainer(true)
+                        onHaveMicrophone()
+                    }
+                }
+                is LiveWithRejectEvent ->{
+                        isShowLiveWithContainer(false)
+                        onHandsDown()
+                }
+                is LiveWithHangupEvent -> {
+                    if (event.targetUserId == SessionPreferences.id) {
+                        if (mute == 1) {
+                            mute = 0
+                            icLiveWithMute.setImageResource(if (mute == 0) R.mipmap.live_mute_open else R.mipmap.live_mute_close)
+                            (activity as LiveAudienceActivity).muteLocalAudioStream(mute == 1)
+                        }
+                        isShowLiveWithContainer(false)
+                        onHandsDown()
+                    }
+                }
 //                is PublisherStateEvent -> {
 //                    if (SessionPreferences.id == event.targetUserInfo.userId) {
 //                        // 1 静音 2 取消静音 3 摄像头关闭 4 摄像头开启
@@ -405,68 +400,67 @@ class LiveInteractionFragment :
     }
 
     private fun showLiveWithInvite(id: String?, endTime: Long) {
-//        if (goWithInviteDialog?.isShow == true) return
-//        val liveInfo = this.sharedViewModel.liveStateInfoLiveData.value?.first ?: return
-//        val c = context ?: return
-//        goWithInviteDialog =
-//            GoLiveWithInviteDialog(
-//                c,
-//                id ?: liveId,
-//                liveInfo.owner.portrait,
-//                liveInfo.owner.nickname,
-//                (activity as LiveActivity).isUnlockLiveShowing()
-//            )
-//        XPopup.Builder(c)
-//            .isDestroyOnDismiss(true)
-//            .dismissOnTouchOutside(false)
-//            .enableDrag(false)
-//            .asCustom(goWithInviteDialog)
-//            .show()
-//
-//        goLiveWithJob?.cancel()
-//        goLiveWithJob = lifecycleScope.launch(Dispatchers.IO) {
-//            var time = (System.currentTimeMillis() - MarsApp.appInstance.timeDiscrepancy) / 1000 - endTime
-//            if (time > -10) time = -60
-//            while (time < 0) {
-//                time++
-//                delay(1000)
-//            }
-//            withContext(Dispatchers.Main) {
-//                hideLiveWithInvite()
-//            }
-//        }
+        if (goWithInviteDialog?.isShow == true) return
+        val liveInfo = this.sharedViewModel.liveStateInfoLiveData.value?.first ?: return
+        val c = context ?: return
+        goWithInviteDialog =
+            GoLiveWithInviteDialog(
+                c,
+                id ?: liveId,
+                liveInfo.owner.portrait,
+                liveInfo.owner.nickname,
+                false
+            )
+        XPopup.Builder(c)
+            .isDestroyOnDismiss(true)
+            .dismissOnTouchOutside(false)
+            .enableDrag(false)
+            .asCustom(goWithInviteDialog)
+            .show()
+
+        goLiveWithJob?.cancel()
+        goLiveWithJob = lifecycleScope.launch(Dispatchers.IO) {
+            var time = (System.currentTimeMillis() - appInstance.timeDiscrepancy) / 1000 - endTime
+            if (time > -10) time = -60
+            while (time < 0) {
+                time++
+                delay(1000)
+            }
+            withContext(Dispatchers.Main) {
+                hideLiveWithInvite()
+            }
+        }
     }
 
     fun hideLiveWithInvite() {
-//        if (goWithInviteDialog?.isShow == true) {
-//            Timber.d("hideLiveWithInvite")
-//            goWithInviteDialog?.dismiss()
-//        }
+        if (goWithInviteDialog?.isShow == true) {
+            Timber.d("hideLiveWithInvite")
+            goWithInviteDialog?.dismiss()
+        }
 
         goLiveWithJob?.cancel()
         goLiveWithJob = null
     }
 
     fun onRaiseHandClick() {
-//        if (!Utils.isFastClick()) return
         if (viewModel.isMicrophoneUser.value == true) {
             marsToast(R.string.fb_live_you_on_live_now)
             return
         }
 
-//        if (!isHandClicking){
-//            isHandClicking = true
+        if (!isHandClicking){
+            isHandClicking = true
             if (isHandsUp) {
 //                logFirebaseEvent("hands_down")
                 viewModel.handsDown(liveId, {
-//                    isHandClicking = false
+                    isHandClicking = false
                 }){
-                    (activity as LiveAudienceActivity).loadingAnimContainer?.isVisible = it == StatusEvent.LOADING
+                    loadingAnim?.isVisible = it == StatusEvent.LOADING
                 }
             } else {
                 doRequestHandsUp()
             }
-//        }
+        }
 
     }
 
@@ -509,36 +503,26 @@ class LiveInteractionFragment :
     }
 
     override fun doRequestHandsUp() {
-//        if (!FambasePreferences.liveRaiseHandDialogShowed) {
-//            val c = context ?: return
-//            XPopup.Builder(c)
-//                .asCustom(LiveRaiseYourHandDialog(c) {
+        if (!InstaLivePreferences.liveRaiseHandDialogShowed) {
+            val c = context ?: return
+            XPopup.Builder(c)
+                .asCustom(LiveRaiseYourHandDialog(c) {
 //                    logFirebaseEvent("raised_hand")
-//                    viewModel.raiseHand({}){
-////                        isHandClicking = false
-//                        (activity as LiveActivity).loadingLiveActivity?.isVisible =  it == StatusEvent.LOADING
-//                    }
-//                })
-//                .show()
-//            FambasePreferences.liveRaiseHandDialogShowed = true
-//        } else {
+                    viewModel.raiseHand(liveId, {}){
+                        isHandClicking = false
+                        loadingAnim?.isVisible =  it == StatusEvent.LOADING
+                    }
+                })
+                .show()
+            InstaLivePreferences.liveRaiseHandDialogShowed = true
+        } else {
 //            logFirebaseEvent("raised_hand")
-//            viewModel.raiseHand({}){
-////                isHandClicking = false
-//                (activity as LiveActivity).loadingLiveActivity?.isVisible = it == StatusEvent.LOADING
-//            }
-//        }
+            viewModel.raiseHand(liveId, {}){
+                isHandClicking = false
+                loadingAnim?.isVisible = it == StatusEvent.LOADING
+            }
+        }
     }
-
-//    private fun showPermissionDialog() {
-//        val c = context ?: return
-//        CoroutineScope(Dispatchers.Main).launch {
-//            XPopup.Builder(context)
-//                .isDestroyOnDismiss(true)
-//                .asCustom(GoLiveWithPermissionDialog(c))
-//                .show()
-//        }
-//    }
 
 //    private fun popupOpenGift(isOpenIAP: Boolean = false, iapProductId: RechargeBonusData? = null, giftId: String? = null) {
 //        val isMyShown = (activity as LiveAudienceActivity).popupOpenGift(isOpenIAP, iapProductId, giftId)
@@ -568,10 +552,10 @@ class LiveInteractionFragment :
     }
 
     override fun onLiveStateInfoInJoined(data: LiveStateInfo) {
-        icLiveWithGift?.isVisible = data.liveGiftShowEnable
-        icGift?.isVisible = data.liveGiftShowEnable && viewModel.isMicrophoneUser.value != true
-        icGiftReddot?.isVisible = data.liveGiftShowEnable && viewModel.isMicrophoneUser.value != true
-        showDiamonds(LiveDiamondsPublicEvent(if (data.liveDiamondsPublic) 1 else 0, data.diamonds))
+//        icLiveWithGift?.isVisible = data.liveGiftShowEnable
+//        icGift?.isVisible = data.liveGiftShowEnable && viewModel.isMicrophoneUser.value != true
+//        icGiftReddot?.isVisible = data.liveGiftShowEnable && viewModel.isMicrophoneUser.value != true
+        showDiamonds(LiveDiamondsPublicEvent(if (data.liveDiamondsPublic == 1) 1 else 0, data.diamonds))
         if (data.liveWithUserInfos.size in 1..1){
             hostMute?.isVisible = data.liveWithUserInfos[0].mute == 1
         }

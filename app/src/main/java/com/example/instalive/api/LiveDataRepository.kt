@@ -6,7 +6,7 @@ import com.example.baselibrary.api.BaseRemoteRepository
 import com.example.baselibrary.api.Meta
 import com.example.baselibrary.api.RemoteEventEmitter
 import com.example.baselibrary.api.StatusEvent
-import com.example.instalive.app.live.LiveViewModel
+import com.example.instalive.app.live.ui.GoLiveWithViewModel
 import com.example.instalive.http.InstaApi
 import com.example.instalive.model.*
 import com.google.gson.Gson
@@ -14,7 +14,7 @@ import retrofit2.HttpException
 
 object LiveDataRepository : ILiveDataRepository, BaseRemoteRepository() {
 
-    val instaApi = RetrofitProvider.baseApi as InstaApi
+    private val instaApi = RetrofitProvider.baseApi as InstaApi
 
     override suspend fun liveWithViewerPagingList(
         liveId: String,
@@ -23,27 +23,26 @@ object LiveDataRepository : ILiveDataRepository, BaseRemoteRepository() {
         onLimitChange: (Int) -> Unit,
         remoteEventEmitter: RemoteEventEmitter
     ): PagingSource.LoadResult<Int, LiveViewerData> {
-//        val response = safeApiCall(remoteEventEmitter) {
-//            instaApi.liveWithViewer(liveId, page * limit)
-//        }
-//        return if (response != null) {
-//            if (limit != response.meta.limit) {
-//                onLimitChange(response.meta.limit)
-//            }
-//            val nextKey = if (response.meta.hasNext) {
-//                response.meta.nextOffset / response.meta.limit
-//            } else {
-//                null
-//            }
-//            PagingSource.LoadResult.Page(
-//                data = response.data,
-//                prevKey = null,
-//                nextKey = nextKey
-//            )
-//        } else {
-//            throw NullPointerException()
-//        }
-        TODO()
+        val response = safeApiCall(remoteEventEmitter) {
+            instaApi.liveWithViewer(liveId, page * limit)
+        }
+        return if (response != null) {
+            if (limit != response.meta.limit) {
+                onLimitChange(response.meta.limit)
+            }
+            val nextKey = if (response.meta.hasNext) {
+                response.meta.nextOffset / response.meta.limit
+            } else {
+                null
+            }
+            PagingSource.LoadResult.Page(
+                data = response.data,
+                prevKey = null,
+                nextKey = nextKey
+            )
+        } else {
+            throw NullPointerException()
+        }
     }
 
     override suspend fun createLive(
@@ -171,6 +170,59 @@ object LiveDataRepository : ILiveDataRepository, BaseRemoteRepository() {
     ) {
         val response = safeApiCall(remoteEventEmitter) {
             instaApi.getLiveToken(liveId)
+        }
+        if (response != null) {
+            liveData.postValue(response.data)
+        }
+    }
+
+    override suspend fun leaveLive(
+        liveId: String,
+        liveData: MutableLiveData<Any>,
+        remoteEventEmitter: RemoteEventEmitter?
+    ){
+        val response = safeApiCall(remoteEventEmitter) {
+            instaApi.leaveLive(liveId)
+        }
+        if (response != null) {
+            liveData.postValue(response.data)
+        }
+    }
+
+    override suspend fun agreeLiveWith(
+        liveId: String,
+        liveData: MutableLiveData<Any>,
+        remoteEventEmitter: RemoteEventEmitter
+    ) {
+        val response = safeApiCall(remoteEventEmitter) {
+            instaApi.agreeLiveWith(liveId)
+        }
+        if (response != null) {
+            liveData.postValue(response.data)
+        }
+    }
+
+    override suspend fun rejectLiveWith(
+        liveId: String,
+        liveData: MutableLiveData<Any>,
+        remoteEventEmitter: RemoteEventEmitter
+    ) {
+        val response = safeApiCall(remoteEventEmitter) {
+            instaApi.rejectLiveWith(liveId)
+        }
+        if (response != null) {
+            liveData.postValue(response.data)
+        }
+    }
+
+    override suspend fun goLiveWith(
+        userId: String,
+        liveId: String,
+        liveData: MutableLiveData<Any>,
+        remoteEventEmitter: RemoteEventEmitter
+    ) {
+        val response = safeApiCall(remoteEventEmitter) {
+            instaApi.goLiveWith(liveId, userId)
         }
         if (response != null) {
             liveData.postValue(response.data)

@@ -265,6 +265,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="@dimen/dimen_16dp"
+            android:visibility="gone"
             android:src="@mipmap/ic_close_white"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

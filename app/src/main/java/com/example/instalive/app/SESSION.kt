@@ -162,6 +162,7 @@ object SessionPreferences : Preferences("instaLiveUserState") {
 }
 
 object InstaLivePreferences : Preferences("instaLiveState") {
+    var liveRaiseHandDialogShowed by BoolPref("live_raise_hand_dialog_showed", false)
     var countryCodeVersion by IntPref("country_code_version", 0)
     var countryCodeJson by StringOrNullPref("country_code_json", null)
 

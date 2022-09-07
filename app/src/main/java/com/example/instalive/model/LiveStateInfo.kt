@@ -7,12 +7,12 @@ import com.google.gson.annotations.JsonAdapter
 import java.io.Serializable
 
 data class LiveStateInfo(
-    val diamonds: Int,
+    val diamonds: Long,
     val id: String,
     @SerializedName("live_diamonds_public") val liveDiamondsPublic: Int,
     @SerializedName("live_gift") val liveGift: Int,
     @SerializedName("live_type") val liveType: Int,
-    @SerializedName("live_user_infos") val liveWithUserInfos: List<LiveUserInfo>,
+    @SerializedName("live_user_infos") val liveWithUserInfos: List<LiveUserWithUidData>,
     @SerializedName("online_list") val onlineList: List<Online>?,
     val messages: List<String>,
     @SerializedName("online_str") val onlineStr: String,

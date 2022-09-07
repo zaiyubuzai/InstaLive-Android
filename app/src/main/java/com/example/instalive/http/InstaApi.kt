@@ -238,38 +238,38 @@ interface InstaApi : BaseApi {
         @Field("ticket_gift_id") ticketGiftId: String?,
         @Field("divide_income") divideIncome: Int?,//0 or 1
         @Field("divide_income_rate") divideIncomeRate: Int?,//分成比例 0-60 0:turn-off
-    ):BaseResponse<LiveDataInfo>
+    ): BaseResponse<LiveDataInfo>
 
     @FormUrlEncoded
     @POST("api/live/live/close/")
     suspend fun closeLive(
         @Field("live_id") liveId: String
-    ):BaseResponse<LiveCloseData>
+    ): BaseResponse<LiveCloseData>
 
     @FormUrlEncoded
     @POST("api/live/live/join/")
     suspend fun joinLive(
         @Field("live_id") liveId: String
-    ):BaseResponse<LiveStateInfo>
+    ): BaseResponse<LiveStateInfo>
 
     @FormUrlEncoded
     @POST("api/live/live/raise_hand/")
     suspend fun raiseHandLive(
         @Field("live_id") liveId: String
-    ):BaseResponse<Any>
+    ): BaseResponse<Any>
 
     @FormUrlEncoded
     @POST("api/live/live/hand_down/")
     suspend fun handDownLive(
         @Field("live_id") liveId: String
-    ):BaseResponse<Any>
+    ): BaseResponse<Any>
 
     @FormUrlEncoded
     @POST("api/live/live/live_with/hang_up/")
     suspend fun hangUpLive(
         @Field("live_id") liveId: String,
         @Field("target_user_id") targetUserId: String,
-    ):BaseResponse<Any>
+    ): BaseResponse<Any>
 
     @GET("api/live/live/list/")
     suspend fun getLiveList(
@@ -280,4 +280,31 @@ interface InstaApi : BaseApi {
     suspend fun getLiveToken(
         @Query("live_id") liveId: String
     ): BaseResponse<TokenInfo>
+
+    @FormUrlEncoded
+    @POST("api/live/live/leave/")
+    suspend fun leaveLive(
+        @Field("live_id") liveId: String
+    ): BaseResponse<Any>
+
+    @FormUrlEncoded
+    @POST("api/live/live/live_with/agree/")
+    suspend fun agreeLiveWith(@Field("live_id") liveId: String): BaseResponse<Any>
+
+    @FormUrlEncoded
+    @POST("api/live/live/live_with/reject/")
+    suspend fun rejectLiveWith(@Field("live_id") liveId: String): BaseResponse<Any>
+
+    @GET("api/live/live/raised_hands/")
+    suspend fun liveWithViewer(
+        @Query("live_id") liveId: String,
+        @Query("offset") offset: Int,
+    ): BaseResponse<List<LiveViewerData>>
+
+    @FormUrlEncoded
+    @POST("api/live/live/live_with/invite/")
+    suspend fun goLiveWith(
+        @Field("live_id") liveId: String,
+        @Field("target_user_id") userId: String
+    ): BaseResponse<Any>
 }

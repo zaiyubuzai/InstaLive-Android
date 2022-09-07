@@ -22,6 +22,7 @@ import splitties.alertdialog.appcompat.*
 import com.example.instalive.R
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import timber.log.Timber
 
 fun marsToast(res: Int) {
     InstaLiveApp.appInstance.marsToast(res)
@@ -101,7 +102,7 @@ fun Context.requestStoragePermission(go: () -> Unit, no: (()->Unit)? = null){
         .check()
 }
 
-fun Context.requestLivePermission(go: () -> Unit){
+fun Context.requestLivePermission(go: () -> Unit, no: (() -> Unit)? = null){
     Dexter.withContext(this)
         .withPermissions(
             Manifest.permission.CAMERA,
@@ -139,6 +140,7 @@ fun Context.requestLivePermission(go: () -> Unit){
                             }.show()
                         }
                     }
+                    no?.invoke()
                 }
             }
 
@@ -149,5 +151,43 @@ fun Context.requestLivePermission(go: () -> Unit){
                 p1?.continuePermissionRequest()
             }
         })
+        .check()
+}
+
+fun Context.requestMicrophonePermission(go: () -> Unit, no: (()->Unit)? = null){
+    Dexter.withContext(this)
+        .withPermission(Manifest.permission.RECORD_AUDIO)
+        .withListener(object : PermissionListener {
+            override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
+                go()
+            }
+
+            override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
+//                if (p0?.isPermanentlyDenied == true) {
+                alertDialog {
+                    titleResource = R.string.microphone_permission_dialog_title
+                    messageResource = R.string.microphone_permission_dialog_message
+                    positiveButton(R.string.go_to_settings) {
+                        Utils.goToAppSettings(context, BuildConfig.APPLICATION_ID)
+                    }
+                    negativeButton(R.string.not_now) {
+                        no?.invoke()
+                        it.dismiss()
+                    }
+                }.show()
+//                }
+            }
+
+            override fun onPermissionRationaleShouldBeShown(
+                p0: PermissionRequest?,
+                p1: PermissionToken?,
+            ) {
+                p1?.continuePermissionRequest()
+            }
+
+        })
+        .withErrorListener {
+            Timber.d("DexterError: $it")
+        }
         .check()
 }

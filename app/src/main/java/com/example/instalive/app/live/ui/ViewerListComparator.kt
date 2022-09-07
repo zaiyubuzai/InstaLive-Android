@@ -8,13 +8,13 @@ class ViewerListComparator : DiffUtil.ItemCallback<LiveViewerData>() {
         oldItem: LiveViewerData,
         newItem: LiveViewerData,
     ): Boolean {
-        return oldItem.userId == newItem.userId
+        return oldItem.userInfo.userId == newItem.userInfo.userId
     }
 
     override fun areContentsTheSame(
         oldItem: LiveViewerData,
         newItem: LiveViewerData,
     ): Boolean {
-        return oldItem.userId == newItem.userId
+        return oldItem.userInfo.userId == newItem.userInfo.userId
     }
 }

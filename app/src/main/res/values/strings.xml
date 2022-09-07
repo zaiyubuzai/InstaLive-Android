@@ -285,4 +285,13 @@
     <string name="fb_disconnected">Disconnected</string>
     <string name="fb_your_network_is_poor">Your network is poor</string>
     <string name="fb_you_are_disconnected">You are disconnected</string>
+    <string name="fb_accept">Accept</string>
+    <string name="fb_livewith_invite_desc">Anyone can watch it in this Live.</string>
+    <string name="fb_ignore">Ignore</string>
+    <string name="fb_livewith_invite_title">invite you to join this Live</string>
+    <string name="fb_with_call_in_unlock_live">You should unlock this Live first.</string>
+
+    <string name="fb_live_risehand_guide_title">Raise your hand?</string>
+    <string name="fb_live_risehand_guide_subtitle">Let the host know you have something to say.You\'ll get a reminder when the Host accepts.</string>
+    <string name="fb_live_risehand_guide_nevermind">Never Mind</string>
 </resources>

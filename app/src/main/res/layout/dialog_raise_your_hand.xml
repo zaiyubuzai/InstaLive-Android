@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_bottom_282f3f_36c1"
+    android:paddingBottom="@dimen/dimen_28dp">
+
+    <ImageView
+        android:id="@+id/ic"
+        android:layout_width="@dimen/dimen_50dp"
+        android:layout_height="@dimen/dimen_50dp"
+        android:layout_marginStart="@dimen/dimen_16dp"
+        android:layout_marginTop="@dimen/dimen_28dp"
+        android:scaleType="fitXY"
+        android:src="@mipmap/live_raise_hand"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dimen_12dp"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:text="@string/fb_live_risehand_guide_title"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toBottomOf="@+id/ic"
+        app:layout_constraintStart_toEndOf="@+id/ic"
+        app:layout_constraintTop_toTopOf="@+id/ic" />
+
+    <TextView
+        android:id="@+id/desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dimen_16dp"
+        android:layout_marginTop="@dimen/dimen_12dp"
+        android:layout_marginEnd="@dimen/dimen_40dp"
+        android:gravity="start"
+        android:lineSpacingExtra="5sp"
+        android:text="@string/fb_live_risehand_guide_subtitle"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@+id/ic" />
+
+    <TextView
+        android:id="@+id/btnNeverMind"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/dimen_44dp"
+        android:layout_marginStart="@dimen/dimen_16dp"
+        android:layout_marginTop="@dimen/dimen_28dp"
+        style="@style/gray_button_style"
+        android:gravity="center"
+        android:text="@string/fb_live_risehand_guide_nevermind"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/btnRaiseHand"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/desc" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/btnRaiseHand"
+        android:layout_width="@dimen/dimen_0dp"
+        android:layout_height="@dimen/dimen_44dp"
+        android:layout_marginStart="@dimen/dimen_15dp"
+        android:layout_marginTop="@dimen/dimen_28dp"
+        android:layout_marginEnd="@dimen/dimen_16dp"
+        style="@style/yellow_button_style"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnNeverMind"
+        app:layout_constraintTop_toBottomOf="@+id/desc">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dimen_44dp"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:text="@string/fb_live_risehand_guide_raisehand"
+            android:textColor="@color/black_gray"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

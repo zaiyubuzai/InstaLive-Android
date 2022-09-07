@@ -18,15 +18,16 @@ data class LiveWithRejectEvent(
 ): LiveEvent
 data class LiveWithAgreeEvent(
     val id: String,
-    @SerializedName("live_user_infos")val liveUserInfos: List<LiveWithAgreeUserData>
+    @SerializedName("live_user_infos") val liveUserWithUidInfos: List<LiveUserWithUidData>
 ): LiveEvent
 data class LiveWithHangupEvent(
     val id: String,
     @SerializedName("target_user_id") val targetUserId: String,
-    @SerializedName("live_user_infos")val liveUserInfos: List<LiveWithAgreeUserData>
+    @SerializedName("live_user_infos")val liveUserWithUidInfos: List<LiveUserWithUidData>
 ): LiveEvent
 
-data class LiveWithAgreeUserData(
+data class LiveUserWithUidData(
     val uid: Int,
-    @SerializedName("user_info")val userInfo: LiveUserInfo
+    @SerializedName("user_info")val userInfo: LiveUserInfo,
+    val mute: Int? = 0,
 )

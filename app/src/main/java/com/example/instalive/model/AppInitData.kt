@@ -9,6 +9,7 @@ data class AppInitData(
     @SerializedName("search_default_tab") val searchDefaultTab: Int,
     @SerializedName("profile_share_enabled") val profileShareEnabled: Int,
     @SerializedName("profile_share_prefix") val profileSharePrefix: String,
+    @SerializedName("socket_link") val socketLink: SocketLinkData,
     @SerializedName("app_init_data") val appInitData: Any,
     @SerializedName("cache_configs") val cacheConfig: CacheConfig,
     @SerializedName("apips") val apips: APIPSData,
@@ -23,6 +24,11 @@ data class AppFeature(
     @SerializedName("app_update_description") val appUpdateDescription: String,
     @SerializedName("app_update_buttons") val appUpdateButtons: List<String>,
     @SerializedName("app_update_type") val appUpdateType: Int,// 0:not update; 1:update; 2:power update
+)
+
+data class SocketLinkData(
+    val app: String,
+    val live: String
 )
 
 data class APIPSData(

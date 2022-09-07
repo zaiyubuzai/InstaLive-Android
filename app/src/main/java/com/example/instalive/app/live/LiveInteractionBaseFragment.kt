@@ -241,8 +241,8 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(avatar)
                 ownerLiveUserInfo = info.liveWithUserInfos.find {
-                    it.userId == info.owner.userId
-                }
+                    it.userInfo.userId == info.owner.userId
+                }?.userInfo
 //            val count = VenusNumberFormatter.format(info.onlineNumber)
                 onlineCount.text = info.onlineStr
                 val n = info.owner.nickname

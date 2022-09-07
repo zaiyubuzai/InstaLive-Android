@@ -68,4 +68,29 @@ interface ILiveDataRepository {
         liveData: MutableLiveData<TokenInfo>,
         remoteEventEmitter: RemoteEventEmitter
     )
+
+    suspend fun leaveLive(
+        liveId: String,
+        liveData: MutableLiveData<Any>,
+        remoteEventEmitter: RemoteEventEmitter?
+    )
+
+    suspend fun agreeLiveWith(
+        liveId: String,
+        liveData: MutableLiveData<Any>,
+        remoteEventEmitter: RemoteEventEmitter
+    )
+
+    suspend fun rejectLiveWith(
+        liveId: String,
+        liveData: MutableLiveData<Any>,
+        remoteEventEmitter: RemoteEventEmitter
+    )
+
+    suspend fun goLiveWith(
+        userId: String,
+        liveId: String,
+        liveData: MutableLiveData<Any>,
+        remoteEventEmitter: RemoteEventEmitter
+    )
 }

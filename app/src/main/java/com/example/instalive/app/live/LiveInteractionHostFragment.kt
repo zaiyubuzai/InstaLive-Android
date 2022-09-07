@@ -27,7 +27,6 @@ import com.example.instalive.app.Constants.EVENT_BUS_KEY_LIVE_HOST_ACTIONS
 import com.example.instalive.app.Constants.ITRCT_TYPE_LIVE_OFF
 import com.example.instalive.app.live.ui.GoLiveWithDialog
 import com.example.instalive.model.LiveRaiseHandEvent
-import com.example.instalive.model.LiveWithCallEvent
 import com.example.instalive.utils.VenusNumberFormatter
 import splitties.dimensions.dp
 import splitties.views.onClick
@@ -163,8 +162,8 @@ class LiveInteractionHostFragment :
             startLiveWith()
         }
 
-        startLoop.isVisible =
-            BuildConfig.DEBUG
+//        startLoop.isVisible =
+//            BuildConfig.DEBUG
         startLoop.onClick {
             if (viewModel.messageLoopJob == null) {
                 viewModel.startSendMessageLoop(liveId)
@@ -241,51 +240,51 @@ class LiveInteractionHostFragment :
 
         LiveEventBus.get(EVENT_BUS_KEY_LIVE).observe(this) { event ->
             when (event) {
-                is LiveWithCallEvent -> {
-                    when (event.event) {
-                        1 -> {
-                            //邀请上麦
-                            lifecycleScope.launch {
-                                startGoLiveWithCounting(
-                                    event.endTime,
-                                    event.userInfo.nickname,
-                                    event.id
-                                )
-                            }
-                        }
-                        2 -> {
-                            //自己取消
-                            goLiveWithWaitingContainer.isVisible = false
-                            goLiveWithTicker?.cancel()
-                        }
-                        3 -> {
-                            //对方接受，开始连麦，ui变化
-                            viewModel.isMicrophone.value = true
-                            goLiveWithWaitingContainer.isVisible = false
-                            goLiveWithTicker?.cancel()
-
-                            icMute.setImageResource(if (mute == 0) R.mipmap.live_mute_open else R.mipmap.live_mute_close)
-                        }
-                        4 -> {
-                            //对方拒绝，停止等待
-                            goLiveWithWaitingContainer.isVisible = false
-                            goLiveWithTicker?.cancel()
-                            userDeclined.text = context?.getString(
-                                R.string.lbl_live_with_user_declined,
-                                event.userInfo.nickname
-                            )
-                            userDeclined.isVisible = true
-                            lifecycleScope.launch {
-                                delay(3000)
-                                userDeclined.isVisible = false
-                            }
-                        }
-                        5 -> {
-                            //对方挂断，停止连麦，ui变化
-//                            currentLiveWithUser = null
-                        }
-                    }
-                }
+//                is LiveWithCallEvent -> {
+//                    when (event.event) {
+//                        1 -> {
+//                            //邀请上麦
+//                            lifecycleScope.launch {
+//                                startGoLiveWithCounting(
+//                                    event.endTime,
+//                                    event.userInfo.nickname,
+//                                    event.id
+//                                )
+//                            }
+//                        }
+//                        2 -> {
+//                            //自己取消
+//                            goLiveWithWaitingContainer.isVisible = false
+//                            goLiveWithTicker?.cancel()
+//                        }
+//                        3 -> {
+//                            //对方接受，开始连麦，ui变化
+//                            viewModel.isMicrophone.value = true
+//                            goLiveWithWaitingContainer.isVisible = false
+//                            goLiveWithTicker?.cancel()
+//
+//                            icMute.setImageResource(if (mute == 0) R.mipmap.live_mute_open else R.mipmap.live_mute_close)
+//                        }
+//                        4 -> {
+//                            //对方拒绝，停止等待
+//                            goLiveWithWaitingContainer.isVisible = false
+//                            goLiveWithTicker?.cancel()
+//                            userDeclined.text = context?.getString(
+//                                R.string.lbl_live_with_user_declined,
+//                                event.userInfo.nickname
+//                            )
+//                            userDeclined.isVisible = true
+//                            lifecycleScope.launch {
+//                                delay(3000)
+//                                userDeclined.isVisible = false
+//                            }
+//                        }
+//                        5 -> {
+//                            //对方挂断，停止连麦，ui变化
+////                            currentLiveWithUser = null
+//                        }
+//                    }
+//                }
                 is LiveRaiseHandEvent -> {
                     val count = event.raiseHandCount
                     raisedHandCount.isVisible = count > 0
@@ -403,7 +402,7 @@ class LiveInteractionHostFragment :
     override fun onLiveStateInfoInJoined(data: LiveStateInfo) {
         currentDiamonds = data.diamonds
         updateCurrentDiamonds(currentDiamonds)
-        hostDiamond?.isVisible = data.liveGiftShowEnable
+
         val count = data.raiseHandCount
         raisedHandCount?.isVisible = count > 0
         raisedHandCount?.text = if (count > 99) "99+" else count.toString()
@@ -412,13 +411,13 @@ class LiveInteractionHostFragment :
             hostGiftLiveTip?.text =
                 "${getString(R.string.fb_host_gift_live_tip1)} ${it.name} (${it.coins}${getString(R.string.fb_host_gift_live_tip2)}"
         }
-        if (data.isPaidLive) {
-            giftLiveImage?.isVisible = true
-            giftLiveImage?.setImageResource(R.mipmap.icon_pay_live_on)
-            showHostGiftLiveTip()
-        }
+//        if (data.isPaidLive) {
+//            giftLiveImage?.isVisible = true
+//            giftLiveImage?.setImageResource(R.mipmap.icon_pay_live_on)
+//            showHostGiftLiveTip()
+//        }
 
-        icDiamondView?.setImageResource(if (data.liveDiamondsPublic) R.mipmap.icon_diamond_view_unlock else R.mipmap.icon_diamond_view_lock)
+        icDiamondView?.setImageResource(if (data.liveDiamondsPublic == 1) R.mipmap.icon_diamond_view_unlock else R.mipmap.icon_diamond_view_lock)
 
 //        You set {{gift_name}}({{count}} coins) to unlock this Live.q
 //        privateSwitch.isVisible = data.privateInfo.visible

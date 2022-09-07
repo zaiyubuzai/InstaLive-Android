@@ -25,6 +25,7 @@ import com.example.instalive.app.SessionPreferences
 import com.example.instalive.app.live.LiveHostActivity
 import com.example.instalive.databinding.FragmentHostBinding
 import com.example.instalive.utils.GlideEngine
+import com.example.instalive.utils.requestLivePermission
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionDeniedResponse
@@ -73,10 +74,12 @@ class HostFragment : BaseFragment<HomeViewModel, FragmentHostBinding>() {
 
         }
         btnStartLive.onClick{
-            start(LiveHostActivity) { _, spec ->
-                spec.isCanLive = true
-                spec.isLiveNeedResume = false
-            }
+            context?.requestLivePermission(go={
+                start(LiveHostActivity) { _, spec ->
+                    spec.isCanLive = true
+                    spec.isLiveNeedResume = false
+                }
+            })
         }
         btnScheduleLive.onClick{
             start<CreateEventActivity> {  }

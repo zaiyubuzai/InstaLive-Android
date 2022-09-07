@@ -20,6 +20,7 @@ import com.example.instalive.InstaLiveApp
 import com.example.instalive.InstaLiveApp.Companion.appInstance
 import com.example.instalive.api.ConversationDataRepository
 import com.example.instalive.api.DataRepository
+import com.example.instalive.api.LiveDataRepository
 import com.example.instalive.app.SessionPreferences
 import com.example.instalive.db.InstaLiveDBProvider
 import com.example.instalive.db.MessageComposer
@@ -54,6 +55,14 @@ class SharedViewModel : BaseViewModel() {
     val videoMessageDoingQueue = ConcurrentLinkedQueue<MessageEntity>()
 
     val cloudinaryUploadJob = mutableMapOf<String, Job>()
+
+    val liveLeaveData = MutableLiveData<Any>()
+
+    fun leaveLive(liveId: String) {
+        viewModelScope.launch {
+            LiveDataRepository.leaveLive(liveId, liveLeaveData, this@SharedViewModel)
+        }
+    }
 
     fun updateConversationLastLeaveTimeToken(conId: String) {
         GlobalScope.launch(Dispatchers.IO) {
@@ -531,5 +540,10 @@ class SharedViewModel : BaseViewModel() {
     var liveUsersSizeData = MutableLiveData<Int>()
     var liveOnlineCount = MutableLiveData<String>()
     //endregion
-
+    fun liveReset(){
+        liveStateInfoLiveData = MutableLiveData<Pair<LiveStateInfo?, JoinLiveError?>>()
+        liveJoinData = MutableLiveData<Pair<LiveStateInfo?, JoinLiveError?>>()
+        liveUsersSizeData = MutableLiveData<Int>()
+        liveOnlineCount = MutableLiveData<String>()
+    }
 }

@@ -111,6 +111,10 @@ class AgoraManager : ILiveManager {
             )
         )
 
+        if (isAnchor){
+            mRtcEngine?.enableLocalVideo(true)
+            mRtcEngine?.enableLocalAudio(true)
+        }
         mRtcEngine?.setBeautyEffectOptions(
             true,
             DEFAULT_BEAUTY_OPTIONS

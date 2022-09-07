@@ -10,6 +10,8 @@ import com.example.instalive.R
 import com.example.instalive.app.Constants
 import com.example.instalive.app.live.LiveAudienceActivity
 import com.example.instalive.databinding.FragmentViewerBinding
+import com.example.instalive.utils.requestLivePermission
+import com.example.instalive.utils.requestMicrophonePermission
 import kotlinx.android.synthetic.main.fragment_viewer.*
 import splitties.activities.start
 import timber.log.Timber
@@ -32,9 +34,13 @@ class ViewerFragment : BaseFragment<HomeViewModel, FragmentViewerBinding>() {
 
     private fun initList() {
         liveAdapter = LiveAdapter(listOf()) {
-            context?.start<LiveAudienceActivity> {
-                putExtra(Constants.EXTRA_LIVE_ID, it)
-            }
+            context?.requestMicrophonePermission (go = {
+                context?.start<LiveAudienceActivity> {
+                    putExtra(Constants.EXTRA_LIVE_ID, it)
+                }
+            }, no = {
+
+            })
         }
         liveRecyclerView.layoutManager = LinearLayoutManager(context)
         liveRecyclerView.itemAnimator = null

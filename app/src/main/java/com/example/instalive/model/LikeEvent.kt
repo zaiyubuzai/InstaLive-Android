@@ -34,6 +34,6 @@ data class LiveUserInfo(
     @JsonAdapter(BooleanTypeAdapter::class) @SerializedName("is_verified") val verified: Boolean? = false,
     val bio: String? = null,
     @SerializedName("portrait_icon") val portraitIc: String?,
-    val uid:Int?,
+    var uid:Int?,
     var mute:Int?,
 ) : Serializable

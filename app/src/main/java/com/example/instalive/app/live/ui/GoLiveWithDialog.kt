@@ -1,5 +1,6 @@
 package com.example.instalive.app.live.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -12,13 +13,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.baselibrary.utils.marsToast
 import com.example.baselibrary.views.BaseBottomPopup
+import com.example.instalive.InstaLiveApp.Companion.appInstance
 import com.example.instalive.R
 import com.example.instalive.app.Constants
 import com.example.instalive.app.ui.FooterLoadStateAdapter
 import com.example.instalive.databinding.ItemGoLiveWithFeedBinding
 import com.example.instalive.model.LiveActivityEvent
 import com.example.instalive.model.LiveViewerData
-import com.example.instalive.model.LiveWithInviteEvent
 import com.jeremyliao.liveeventbus.LiveEventBus
 import kotlinx.android.synthetic.main.dialog_go_live_with.view.*
 import kotlinx.android.synthetic.main.item_go_live_with_feed.view.*
@@ -26,7 +27,9 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import splitties.systemservices.layoutInflater
 import splitties.views.onClick
+import timber.log.Timber
 
+@SuppressLint("ViewConstructor")
 class GoLiveWithDialog(
     context: Context,
     val liveId: String,
@@ -88,6 +91,7 @@ class GoLiveWithDialog(
 //                }?.show()
 //            } else {
                 if (listAdapter.selectedId != null) {
+                    Timber.d("userId:${listAdapter.selectedId} liveId:$liveId")
 //                    MarsEventLogger.logFirebaseEvent("send_live_request", "live_view")
                     viewModel.goLiveWith(listAdapter.selectedId ?: "")
                 }
@@ -106,7 +110,7 @@ class GoLiveWithDialog(
     override fun getImplLayoutId(): Int = R.layout.dialog_go_live_with
 
     override fun initViewModel(): GoLiveWithViewModel =
-        GoLiveWithViewModel()
+        appInstance.getAppViewModelProvider()[GoLiveWithViewModel::class.java]
 
     class GoLiveWithListAdapter(
         diffCallback: ViewerListComparator,
@@ -118,9 +122,9 @@ class GoLiveWithDialog(
             holder: ViewerListViewHolder,
             position: Int,
         ) {
-            val data = getItem(position) ?: return
+            val data = getItem(position)?.userInfo?: return
             holder.binding.userData = data
-            holder.binding.level = data.level
+//            holder.binding.level = data.level
             holder.binding.executePendingBindings()
             holder.itemView.checkbox.isChecked = data.userId == selectedId
 
@@ -163,7 +167,7 @@ class GoLiveWithDialog(
         RecyclerView.ViewHolder(binding.root)
 
     override fun onDismiss() {
-        viewModel.inviteData = MutableLiveData<LiveWithInviteEvent>()
+        viewModel.inviteData = MutableLiveData<Any>()
         viewModel.errorMessageLiveData = MutableLiveData()
     }
 }

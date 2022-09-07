@@ -1,5 +1,6 @@
 package com.example.instalive.utils
 
+import com.example.instalive.InstaLiveApp
 import com.example.instalive.app.Constants.EVENT_BUS_KEY_LIVE
 import com.example.instalive.app.SessionPreferences
 import com.example.instalive.model.*
@@ -13,11 +14,19 @@ import timber.log.Timber
 
 object LiveSocketIO {
     private val liveOpts = IO.Options()
-    private val liveSocket = IO.socket("https://sk-app-test.halley.link", liveOpts)
+    private val liveSocket by lazy {
+        var uri = InstaLiveApp.appInstance.appInitData.value?.socketLink?.live?:""
+        val path = "/${uri.split("/").last()}"
+        uri = uri.replace(path, "")
+        Timber.d("uri: $uri")
+        IO.socket(uri, liveOpts)
+    }
     private var liveSocketJob: Job? = null
     init{
-
-        liveOpts.path = "/halley_socket_live"
+        val uri = InstaLiveApp.appInstance.appInitData.value?.socketLink?.live?:""
+        Timber.d("uri: $uri")
+        liveOpts.path = "/${uri.split("/").last()}"
+//        liveOpts.path = uri
         liveOpts.transports = arrayOf("websocket", "polling")
 
         liveSocket.io().reconnectionAttempts(3)
@@ -94,6 +103,16 @@ object LiveSocketIO {
                 LiveEventBus.get(EVENT_BUS_KEY_LIVE).post(message)
             } catch (e: Exception) {
             }
+        }.on("raise_hand") { objects ->//sdfs
+            try {
+                val json = objects[0].toString()
+                Timber.d("live raise_hand = $json")
+                val message =
+                    Gson().fromJson(json, LiveRaiseHandEvent::class.java)
+//                reportSocketReceived(message.reportUUID)
+                LiveEventBus.get(EVENT_BUS_KEY_LIVE).post(message)
+            } catch (e: Exception) {
+            }
         }.on("live_with_invite") { objects ->//上麦-邀请
             try {
                 val json = objects[0].toString()
@@ -114,7 +133,7 @@ object LiveSocketIO {
                 LiveEventBus.get(EVENT_BUS_KEY_LIVE).postDelay(message, 1000)
             } catch (e: Exception) {
             }
-        }.on("live_with_reject") { objects ->//sdfsd
+        }.on("live_with_reject") { objects ->//上麦-拒绝
             try {
                 val json = objects[0].toString()
                 Timber.d("live live_with_reject: $json")
@@ -124,7 +143,7 @@ object LiveSocketIO {
                 LiveEventBus.get(EVENT_BUS_KEY_LIVE).postDelay(message, 1000)
             } catch (e: Exception) {
             }
-        }.on("live_with_agree") { objects ->//sdfsd
+        }.on("live_with_agree") { objects ->//上麦-同意
             try {
                 val json = objects[0].toString()
                 Timber.d("live live_with_agree: $json")
@@ -134,7 +153,7 @@ object LiveSocketIO {
                 LiveEventBus.get(EVENT_BUS_KEY_LIVE).postDelay(message, 1000)
             } catch (e: Exception) {
             }
-        }.on("live_with_hang_up") { objects ->//sdfsd
+        }.on("live_with_hang_up") { objects ->//下麦
             try {
                 val json = objects[0].toString()
                 Timber.d("live live_with_hang_up: $json")
@@ -157,7 +176,7 @@ object LiveSocketIO {
 
     fun initLiveSocket(liveId: String) {
         Timber.d("initLiveSocket conversationId: $liveId")
-        if (liveId.isEmpty()) return
+        if (liveId.isEmpty() || liveSocket.connected()) return
         liveOpts.query =
             "ui=${SessionPreferences.id}&ut=${SessionPreferences.token}&di=${SessionPreferences.deviceId}&ch=$liveId"
         liveSocket.connect()
