@@ -7,7 +7,7 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <RelativeLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -68,37 +68,6 @@
                 android:textSize="15sp" />
         </LinearLayout>
 
-        <RelativeLayout
-            android:id="@+id/loading"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone">
-
-            <ImageView
-                android:id="@+id/loadingCover"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/black"
-                android:scaleType="centerCrop" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#a6000000" />
-
-            <com.airbnb.lottie.LottieAnimationView
-                android:id="@+id/loadingAnim"
-                android:layout_width="70dp"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="@dimen/dimen_100dp"
-                app:lottie_autoPlay="true"
-                app:lottie_fileName="lotLoading.json"
-                app:lottie_loop="true" />
-
-        </RelativeLayout>
-
-
         <LinearLayout
             android:id="@+id/networkQualityContainer"
             android:layout_width="wrap_content"
@@ -109,9 +78,7 @@
             android:layout_marginEnd="@dimen/dimen_16dp"
             android:background="@drawable/bg_15_tra_white_6c"
             android:orientation="horizontal"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:visibility="gone">
 
             <View
                 android:id="@+id/networkQualityIcon"
@@ -424,6 +391,60 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/giftContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <FrameLayout
+                android:id="@+id/giftFirstContainer"
+                android:layout_width="214dp"
+                android:layout_height="52dp"
+                android:layout_marginBottom="@dimen/dimen_16dp"
+                app:layout_constraintBottom_toTopOf="@+id/giftSecondContainer"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <FrameLayout
+                android:id="@+id/giftSecondContainer"
+                android:layout_width="214dp"
+                android:layout_height="52dp"
+                android:layout_marginBottom="308dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <com.example.instalive.view.KsgLikeView
+                android:id="@+id/liveLikesAnimView"
+                android:layout_width="@dimen/dimen_96dp"
+                android:layout_height="300dp"
+                android:layout_marginBottom="76dp"
+                app:ksg_curve_duration="2000"
+                app:ksg_enter_duration="500"
+                app:ksg_image_width="@dimen/dimen_32dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <com.opensource.svgaplayer.SVGAImageView
+                android:id="@+id/giftAnim"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                app:loopCount="1"
+                tools:visibility="gone" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <FrameLayout
+            android:id="@+id/touchFl"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <!--直播结束提示ui-->
         <RelativeLayout
             android:id="@+id/closeLivePrompt"
@@ -485,55 +506,6 @@
                 android:text="@string/fb_cancel"
                 android:textColor="@color/white" />
         </RelativeLayout>
-
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/pager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/giftContainer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone">
-
-            <FrameLayout
-                android:id="@+id/giftFirstContainer"
-                android:layout_width="214dp"
-                android:layout_height="52dp"
-                android:layout_marginBottom="@dimen/dimen_16dp"
-                app:layout_constraintBottom_toTopOf="@+id/giftSecondContainer"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <FrameLayout
-                android:id="@+id/giftSecondContainer"
-                android:layout_width="214dp"
-                android:layout_height="52dp"
-                android:layout_marginBottom="308dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <com.example.instalive.view.KsgLikeView
-                android:id="@+id/liveLikesAnimView"
-                android:layout_width="@dimen/dimen_96dp"
-                android:layout_height="300dp"
-                android:layout_marginBottom="76dp"
-                app:ksg_curve_duration="2000"
-                app:ksg_enter_duration="500"
-                app:ksg_image_width="@dimen/dimen_32dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-
-            <com.opensource.svgaplayer.SVGAImageView
-                android:id="@+id/giftAnim"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                app:loopCount="1"
-                tools:visibility="gone" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!--设置直播结束后展示时长和观看人数ui-->
         <RelativeLayout
@@ -885,10 +857,35 @@
 
         </RelativeLayout>
 
-        <FrameLayout
-            android:id="@+id/touchFl"
+        <RelativeLayout
+            android:id="@+id/loading"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:visibility="gone">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageView
+                android:id="@+id/loadingCover"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/black"
+                android:scaleType="centerCrop" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#a6000000" />
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/loadingAnim"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/dimen_100dp"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="lotLoading.json"
+                app:lottie_loop="true" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
 </layout>

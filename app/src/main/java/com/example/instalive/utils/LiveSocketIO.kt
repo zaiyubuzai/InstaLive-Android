@@ -99,7 +99,7 @@ object LiveSocketIO {
                 Timber.d("live live_state = $json")
                 val message =
                     Gson().fromJson(json, LiveStateEvent::class.java)
-                reportSocketReceived(message.reportUUID)
+//                reportSocketReceived(message.reportUUID)
                 LiveEventBus.get(EVENT_BUS_KEY_LIVE).post(message)
             } catch (e: Exception) {
             }

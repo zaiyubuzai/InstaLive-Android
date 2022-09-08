@@ -2,7 +2,6 @@ package com.example.instalive.app.live.ui
 
 import android.content.Context
 import android.graphics.Rect
-import android.net.Uri
 import android.util.AttributeSet
 import android.view.SurfaceView
 import android.widget.RelativeLayout
@@ -17,6 +16,7 @@ import jp.wasabeef.glide.transformations.BlurTransformation
 import kotlinx.android.synthetic.main.layout_live_video.view.*
 import kotlinx.coroutines.*
 import splitties.dimensions.dp
+import timber.log.Timber
 
 /**
  * 多人连麦的单个直播流布局
@@ -195,6 +195,7 @@ class LiveRelativeLayout : RelativeLayout {
 
     fun loading(isVisible: Boolean){
         loadingUserUI?.isVisible = isVisible
+        Timber.d("loadingUserUI $isVisible")
         MAPortrait?.isVisible = isVisible
     }
 
@@ -207,6 +208,7 @@ class LiveRelativeLayout : RelativeLayout {
         pauseMAContainer?.isVisible = false
         MAPortrait?.isVisible = false
         loadingUserUI?.isVisible = false//loading视图目前先根据第一次关闭暂停视图进行隐藏
+        Timber.d("loadingUserUI false 1")
         pauseJob?.cancel()
         pauseJob = null
     }

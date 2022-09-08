@@ -18,7 +18,7 @@ import kotlinx.coroutines.*
 import org.json.JSONObject
 import kotlin.random.Random
 
-class LiveViewModel : MessageBaseViewModel() {
+abstract class LiveViewModel : MessageBaseViewModel() {
     val commentLiveData = MutableLiveData<Any>()
     val liveTokenInfo = MutableLiveData<TokenInfo>()
     var inviteData = MutableLiveData<LiveWithInviteEvent>()
@@ -27,10 +27,6 @@ class LiveViewModel : MessageBaseViewModel() {
     val liveEndDetailData = MutableLiveData<LiveEndDetailData>()
     val liveInfoLiveData = MutableLiveData<LiveDataInfo>()
     val liveCloseLiveData = MutableLiveData<LiveCloseData>()
-
-
-    val isMicrophoneUser = MutableLiveData<Boolean>()//本人是否连麦中
-    val isMicrophone = MutableLiveData<Boolean>()//直播是否为连麦直播
 
     fun joinLive(userId: String,
                  liveId: String,

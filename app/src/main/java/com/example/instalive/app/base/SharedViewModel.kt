@@ -1,7 +1,6 @@
 package com.example.instalive.app.base
 
 import android.annotation.SuppressLint
-import android.app.people.ConversationStatus
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -26,6 +25,7 @@ import com.example.instalive.db.InstaLiveDBProvider
 import com.example.instalive.db.MessageComposer
 import com.example.instalive.model.JoinLiveError
 import com.example.instalive.model.LiveStateInfo
+import com.example.instalive.model.TokenInfo
 import com.google.gson.Gson
 import com.hw.videoprocessor.VideoProcessor
 import com.venus.dm.db.entity.ConversationsEntity
@@ -539,11 +539,41 @@ class SharedViewModel : BaseViewModel() {
     var liveJoinData = MutableLiveData<Pair<LiveStateInfo?, JoinLiveError?>>()
     var liveUsersSizeData = MutableLiveData<Int>()
     var liveOnlineCount = MutableLiveData<String>()
+    var isMicrophoneUser = false//本人是否连麦中
+    var isMicrophone = false//直播是否为连麦直播
+    var liveTokenInfo = MutableLiveData<TokenInfo>()
+    fun getLiveToken(liveId: String) {
+        viewModelScope.launch {
+            LiveDataRepository.getLiveToken(liveId, liveTokenInfo, this@SharedViewModel)
+        }
+    }
+    fun liveRefresh(
+        liveId: String,
+        liveStateInfoLiveData: MutableLiveData<Pair<LiveStateInfo?, JoinLiveError?>>,
+        onError: (code: Int, msg: String) -> Unit,
+        onStatusEvent: (event: StatusEvent) -> Unit
+    ) {
+        viewModelScope.launch {
+            LiveDataRepository.liveRefresh(liveId, liveStateInfoLiveData, object : RemoteEventEmitter {
+                override fun onError(code: Int, msg: String, errorType: ErrorType) {
+                    onError.invoke(code, msg)
+                }
+
+                override fun onEvent(event: StatusEvent) {
+                    onStatusEvent.invoke(event)
+                }
+
+            })
+        }
+    }
     //endregion
     fun liveReset(){
         liveStateInfoLiveData = MutableLiveData<Pair<LiveStateInfo?, JoinLiveError?>>()
         liveJoinData = MutableLiveData<Pair<LiveStateInfo?, JoinLiveError?>>()
+        liveTokenInfo = MutableLiveData<TokenInfo>()
         liveUsersSizeData = MutableLiveData<Int>()
         liveOnlineCount = MutableLiveData<String>()
+        isMicrophoneUser = false//本人是否连麦中
+        isMicrophone = false//直播是否为连麦直播
     }
 }

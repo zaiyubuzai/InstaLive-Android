@@ -4,12 +4,12 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.SurfaceView
 import android.view.WindowManager
+import android.widget.RelativeLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.bumptech.glide.Glide
@@ -17,6 +17,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.baselibrary.api.ErrorType
 import com.example.baselibrary.utils.BarUtils
 import com.example.baselibrary.utils.marsToast
+import com.example.baselibrary.views.DataBindingConfig
 import com.example.instalive.R
 import com.example.instalive.app.Constants.ITRCT_TYPE_MAKEUP_OFF
 import com.example.instalive.app.Constants.ITRCT_TYPE_MAKEUP_ON
@@ -60,13 +61,12 @@ import timber.log.Timber
 import java.util.*
 
 @ExperimentalStdlibApi
-class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
+class LiveHostActivity : LiveBaseActivity<LiveHostViewModel, ActivityLiveHostBinding>() {
     //live end detail请求次数
     private val MAX_LOOP_COUNT = 20
     private var loopCount = 0
 
     //查看uid对应的surfaceView是否创建
-    private var currentFragmentTag: String? = null
     private lateinit var hostFragment: LiveInteractionHostFragment
     lateinit var conversationsEntity: ConversationsEntity
     private var uuid: UUID? = null
@@ -90,7 +90,6 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
     var isClickCancel = false
     var isLockedLive = false
     var isStarted = false
-
 
     //用户是否可以直播，如果用户没有直播权限则不显示
     private var isCanLive = true
@@ -235,7 +234,7 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
     }
 
     override fun changeNetworkUIPosition(isSingleLive: Boolean) {
-        val layoutParams = networkQualityContainer.layoutParams as ConstraintLayout.LayoutParams
+        val layoutParams = networkQualityContainer.layoutParams as RelativeLayout.LayoutParams
         layoutParams.setMargins(
             0,
             if (!isSingleLive) dp(47) + BarUtils.statusBarHeight else dp(68) + BarUtils.statusBarHeight,
@@ -324,8 +323,6 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
     ) {
         mToken = token
 //        this.mUid = mUid
-
-        isLiving = true
         val clientRoleOptions = ClientRoleOptions()
 //        if (MarsApp.appInstance.appInitData.value?.appFeature?.liveLatencyLevel == 0) {
         clientRoleOptions.audienceLatencyLevel = Constants.AUDIENCE_LATENCY_LEVEL_LOW_LATENCY
@@ -344,6 +341,7 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
         )
         agoraManager.enableLocalAudio = true
         agoraManager.joinChannel(this, true, AgoraTokenInfo(token, liveId ?: "", null, mUid))
+        isLiving = true
     }
 
     private fun initObserver() {
@@ -403,6 +401,7 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
         viewModel.liveCloseLiveData.observe(this, {
 
             if (isCountTimeOver) {
+                isLiving = false
                 closeLiveContainer?.isVisible = true
 
                 hideInteractionContainer()
@@ -541,7 +540,7 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
                     isOpenBeauty = false
                 }
                 ITRCT_TYPE_LIVE_OFF -> { //直播结束
-                    if (viewModel.isMicrophone.value == true && liveUserWithUids.size > 1) {
+                    if (sharedViewModel.isMicrophone && liveUserWithUids.size > 1) {
                         marsToast(R.string.please_hang_up_your_invited_user_live_video)
                     } else {
                         hideInteractionContainer()
@@ -570,6 +569,20 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
                             R.string.you_are_Live_now_can_go_to_another_live_or_radio
                         okButton()
                     }.show()
+                }
+                is LiveWithAgreeEvent -> {
+                    sharedViewModel.isMicrophone = true
+                    liveUIController(it.liveUserWithUidInfos)
+                }
+                is LiveWithHangupEvent -> {
+//                    viewModel.isMicrophone.value = it.liveUserWithUidInfos.size > 1
+//                    liveUIController(it.liveUserWithUidInfos)
+                    val user = liveUserWithUids.firstOrNull() { it1 ->
+                        it1.userInfo.userId == it.targetUserId
+                    }
+                    if (user != null) {
+                        hungUpLiveWithUI(user)
+                    }
                 }
                 is LivePublisherStateEvent -> {
                     if (liveUserWithUids.size > 1) {
@@ -620,17 +633,16 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
                         anchorUid = info.liveWithUserInfos[0].uid.toString()
                         //说明连麦（默认是不连麦模式）
                         if (info.liveWithUserInfos.size > 1) {
-                            viewModel.isMicrophoneUser.postValue(false)
+                            sharedViewModel.isMicrophoneUser = false
                             info.liveWithUserInfos.toList().forEach { liveUsers ->
                                 if (liveUsers.userInfo.userId == SessionPreferences.id) {
-                                    viewModel.isMicrophoneUser.postValue(true)
+                                    sharedViewModel.isMicrophoneUser=true
                                 }
                             }
-
+                            sharedViewModel.isMicrophone=true
                             liveUIController(info.liveWithUserInfos)
-                            viewModel.isMicrophone.postValue(true)
                         } else {
-                            viewModel.isMicrophone.postValue(false)
+                            sharedViewModel.isMicrophone=false
                             liveUIController(info.liveWithUserInfos)
                         }
 
@@ -720,7 +732,7 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
             }
             if (!contains) {
                 liveUserWithUids.add(it)
-                liveWithController(it, liveUserWithUids.size)
+                liveWithController(it)
             }
         }
     }
@@ -731,16 +743,14 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
                 it1.userInfo.userId == it.userInfo.userId
             }
             if (!have) {
-                hungUpLiveWithUI(it.userInfo)
+                hungUpLiveWithUI(it)
             }
         }
     }
 
     private fun liveWithController(
         liveWithInfoWithUid: LiveUserWithUidData,
-        number: Int,
     ) {
-        viewModel.isMicrophone.postValue(liveUserWithUids.size > 1)
         setLiveResolution()
         //主播端连麦ui
         if (liveWithInfoWithUid.userInfo.userId == SessionPreferences.id) {
@@ -770,32 +780,23 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
                 liveContainers[addedUidSet.size - 1].liveUserInfo?.uid = userWithUidInfo.uid
                 liveContainers[addedUidSet.size - 1].onLiveVideoViewListener = this
                 liveContainers[addedUidSet.size - 1].initUserView(true)
-                liveContainers[addedUidSet.size - 1].loading(true)
+//                liveContainers[addedUidSet.size - 1].loading(true)
                 liveContainers[addedUidSet.size - 1].changeMuteState(userWithUidInfo.userInfo.mute ?: 0)
             }
         }
     }
 
-    private fun hungUpLiveWithUI(userInfo: LiveUserInfo) {
-        if (viewModel.isMicrophoneUser.value == true && userInfo.userId == SessionPreferences.id) {
-            //设置为观众角色
-            agoraManager.setClientRole(false)
-            agoraManager.mRtcEngine?.enableLocalAudio(false)
-            agoraManager.mRtcEngine?.enableLocalVideo(false)
-            localVideo?.isVisible = false
-            setLocalVideo(0)
-            viewModel.isMicrophoneUser.postValue(false)
-        }
+    private fun hungUpLiveWithUI(userWithUidInfo: LiveUserWithUidData) {
         liveUserWithUids.toMutableList().forEach {
-            if (it.userInfo.userId == userInfo.userId) {
+            if (it.userInfo.userId == userWithUidInfo.userInfo.userId) {
                 val b = addedUidSet.remove(it.uid)
-                Timber.d("$b ${it.uid} ${userInfo.uid}")
+                Timber.d("$b ${it.uid} ${userWithUidInfo.uid}")
                 liveUserWithUids.remove(it)
                 removeRemoteView(it.userInfo.userId)
             }
         }
 
-        viewModel.isMicrophone.postValue(liveUserWithUids.size > 1)
+        sharedViewModel.isMicrophone = liveUserWithUids.size > 1
 
         //连麦结束设置分辨率
         setLiveResolution()
@@ -851,7 +852,7 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
     }
 
     override fun onBackPressed() {
-        if (currentFragmentTag != null) {
+        if (isLiving) {
 //            val fragment = supportFragmentManager.findFragmentByTag(currentFragmentTag)
         } else {
             super.onBackPressed()
@@ -888,19 +889,16 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (viewModel.isMicrophoneUser.value == true) {
+        if (sharedViewModel.isMicrophoneUser) {
             liveId?.let {
                 liveUserWithUids.toMutableList().forEach { userInfo ->
-//                        sharedViewModel.hangUpLiveWith(it, userInfo.userId)
+                    viewModel.hangUpLiveWith(it, userInfo.userInfo.userId, {}, {})
                 }
             }
         }
         LiveSocketIO.releaseLiveSocket()
         startLiveLaunch?.cancel()
         liveEndJob?.cancel()
-        sharedViewModel.liveStateInfoLiveData = MutableLiveData()
-        sharedViewModel.liveUsersSizeData = MutableLiveData()
-        sharedViewModel.liveOnlineCount = MutableLiveData()
     }
 
     private inner class LiveHostPagerAdapter(
@@ -925,10 +923,6 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
         }
     }
 
-    override fun getImplLayoutId(): Int {
-        return R.layout.activity_live_host
-    }
-
     override fun initLocalVideoView(surfaceView: SurfaceView) {
         localVideo.hideAllChildView()
         liveContainers.add(localVideo)
@@ -951,6 +945,9 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
             message = getString(R.string.hang_up_live_video, liveUserInfo.userName)
             positiveButton(R.string.fb_confirm) {
                 // FIXME: 2022/9/2 断开连麦接口
+                viewModel.hangUpLiveWith(liveId?:"", liveUserInfo.userId, {
+
+                }, {})
                 it.dismiss()
             }
             neutralButton(R.string.fb_cancel) {
@@ -997,5 +994,13 @@ class LiveHostActivity : LiveBaseActivity<ActivityLiveHostBinding>() {
     }
 
     override fun showPause() {
+    }
+
+    override fun initViewModel(): LiveHostViewModel {
+        return getActivityViewModel(LiveHostViewModel::class.java)
+    }
+
+    override fun getDataBindingConfig(): DataBindingConfig {
+        return DataBindingConfig(R.layout.activity_live_host, viewModel)
     }
 }

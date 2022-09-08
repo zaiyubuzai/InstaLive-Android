@@ -36,7 +36,8 @@ class AgoraManager : ILiveManager {
         BeautyOptions.LIGHTENING_CONTRAST_NORMAL,
         0.7f,
         0.5f,
-        0.1f
+        0.1f,
+        0.3f
     )
 
     /**
@@ -93,9 +94,12 @@ class AgoraManager : ILiveManager {
         mRtcEngine?.setParameters("{\"che.audio.keep.audiosession\":true}")
         mRtcEngine?.enableDualStreamMode(enableDualStreamMode)
         mRtcEngine?.setChannelProfile(Constants.CHANNEL_PROFILE_COMMUNICATION)
+        setClientRole(isAnchor)
         mRtcEngine?.enableVideo()
         mRtcEngine?.enableAudioVolumeIndication(300, 3, false)
-        mRtcEngine?.enableAudio()
+//        if (isAnchor) {
+            mRtcEngine?.enableAudio()
+//        }
         mRtcEngine?.startPreview()
         mRtcEngine?.setEnableSpeakerphone(true)
         mRtcEngine?.adjustPlaybackSignalVolume(
@@ -110,23 +114,17 @@ class AgoraManager : ILiveManager {
                 CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT
             )
         )
-
-        if (isAnchor){
-            mRtcEngine?.enableLocalVideo(true)
-            mRtcEngine?.enableLocalAudio(true)
-        }
         mRtcEngine?.setBeautyEffectOptions(
             true,
             DEFAULT_BEAUTY_OPTIONS
         )
-        setClientRole(isAnchor)
         //获取直播view：getVideoSurfaceView
     }
 
     override fun joinChannel(context: Context, isAnchor: Boolean, any: Any): Boolean {
-        mRtcEngine?.leaveChannel()
         mRtcEngine?.enableLocalAudio(enableLocalAudio)
         if (any is AgoraTokenInfo) {
+            mRtcEngine?.leaveChannel()
             mRtcEngine?.joinChannel(any.token, any.channelName, any.optionalInfo, any.optionalUid)
             return true
         }

@@ -18,7 +18,7 @@ data class LiveActivityEvent(
     @SerializedName("target_user_ids") val targetUserIds: List<String>?,
     val event: Int,
     val content: String,
-    @SerializedName("members_num") val membersNum: Long?,
+    @SerializedName("members_num") val membersNum: String?,
     @SerializedName("online_str") val onlineNumStr: String,
     @SerializedName("entry_beep") val entryBeep: Int?, // 0 表示没有声音  1，2，3，4 代表不同的声音
     @SerializedName("user_info") val userInfo: LiveUserInfo?,

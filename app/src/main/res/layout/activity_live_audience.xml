@@ -7,12 +7,11 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <RelativeLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@mipmap/bg_live"
-        android:clipChildren="false"
         android:keepScreenOn="true"
         tools:context=".app.live.LiveAudienceActivity">
 
@@ -93,8 +92,8 @@
             android:background="@drawable/bg_15_tra_white_6c"
             android:orientation="horizontal"
             android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
             tools:visibility="visible">
 
             <View
@@ -174,10 +173,14 @@
         <!-- 观众端直播结束 -->
         <RelativeLayout
             android:id="@+id/leavePrompt"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"
-            tools:visibility="gone">
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@mipmap/bg_live"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/leaveBgCover"
@@ -270,5 +273,5 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </RelativeLayout>
 </layout>

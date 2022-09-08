@@ -100,7 +100,7 @@ object RetrofitProvider: BaseProvider() {
         if (pagePath.isNotEmpty()) {
             ua = "${ua}rf_pag:$pagePath,"
         }
-        ua = "${ua}network:${getNetwork()},"
+        ua = "${ua}network:${getNetwork()}"
         Timber.d("getAgent cost: ${System.currentTimeMillis() - begin} milliseconds")
         return ua
     }
@@ -134,7 +134,7 @@ object RetrofitProvider: BaseProvider() {
             .append("carrier:${SysUtils.encodeUrl(SysUtils.getSimOperatorName())},")
             .append("pp:${getNotificationImportance()},")
             .append("nu:${calcUserRegisteredDays()},")
-            .append("wua:$webViewUA")
+            .append("wua:$webViewUA,")
 
         //时区，屏幕，运营商信息，launcher，region，locale信息
         if (Build.VERSION.SDK_INT > 26) {

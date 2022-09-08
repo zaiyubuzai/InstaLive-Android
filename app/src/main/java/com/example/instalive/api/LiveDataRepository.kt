@@ -228,4 +228,33 @@ object LiveDataRepository : ILiveDataRepository, BaseRemoteRepository() {
             liveData.postValue(response.data)
         }
     }
+
+    override suspend fun liveRefresh(
+        liveId: String,
+        liveData: MutableLiveData<Pair<LiveStateInfo?, JoinLiveError?>>,
+        remoteEventEmitter: RemoteEventEmitter
+    ) {
+        try {
+            val response = safeApiCall(remoteEventEmitter) {
+                instaApi.liveRefresh(liveId)
+            }
+            if (response != null && response.resultOk()) {
+                liveData.postValue(Pair(response.data, null))
+            }
+        } catch (e: Exception) {
+            when (e) {
+                is HttpException -> {
+                    val body = e.response()?.errorBody()?.string()
+                    if (body != null) {
+                        val marsError = try {
+                            Gson().fromJson(body, JoinLiveError::class.java)
+                        } catch (e: java.lang.Exception) {
+                            null
+                        }
+                        liveData.postValue(Pair(null, marsError))
+                    }
+                }
+            }
+        }
+    }
 }

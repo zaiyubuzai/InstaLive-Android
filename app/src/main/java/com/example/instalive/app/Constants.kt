@@ -5,13 +5,6 @@ import io.agora.rtc.video.BeautyOptions
 
 object Constants {
 
-    val DEFAULT_BEAUTY_OPTIONS = BeautyOptions(
-        BeautyOptions.LIGHTENING_CONTRAST_NORMAL,
-        0.7f,
-        0.5f,
-        0.1f
-    )
-
     const val EXTRA_USERNAME = "username"
     const val EXTRA_LOGIN_SOURCE = "login_source"
     const val EXTRA_LIVE_ID = "live_id"

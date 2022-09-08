@@ -79,7 +79,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 @ExperimentalStdlibApi
 abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
-    BaseFragment<LiveViewModel, VDB>() {
+    BaseFragment<LiveInteractionViewModel, VDB>() {
 
     protected val sharedViewModel by lazy {
         InstaLiveApp.appInstance.getAppViewModelProvider().get(SharedViewModel::class.java)
@@ -206,7 +206,7 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
                         //gift类型的activity event扔掉
                         return@observe
                     }
-                    updateTotalViewerCount(it)
+                    sharedViewModel.liveOnlineCount.postValue(it.membersNum)
                     if (it.content.isNotEmpty()) {
                         handleActivityEvent(it)
                     }
@@ -222,10 +222,6 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
                     }
                 }
             }
-        })
-
-        sharedViewModel.liveOnlineCount.observe(this, {
-            onlineCount?.text = it
         })
 
         sharedViewModel.liveUsersSizeData.observe(this, {
@@ -244,7 +240,7 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
                     it.userInfo.userId == info.owner.userId
                 }?.userInfo
 //            val count = VenusNumberFormatter.format(info.onlineNumber)
-                onlineCount.text = info.onlineStr
+                sharedViewModel.liveOnlineCount.postValue(info.onlineStr)
                 val n = info.owner.nickname
                 if (n.length > 12) {
                     name.text = n.substring(0, 10).plus("...")
@@ -437,7 +433,7 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
     private suspend fun insertMessages() {
         if (liveMessageAdapter.originalMessages.size < 1) return
         val currentTimestamp = System.currentTimeMillis()
-        if (viewModel.isMicrophone.value == true || isHost) {
+        if (sharedViewModel.isMicrophone || isHost) {
             if (currentTimestamp - newMessagePushTimeToken > 1000) {
                 newMessagePushTimeToken = currentTimestamp
                 when (liveMessageAdapter.originalMessages.size) {
@@ -610,7 +606,7 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
                 override fun onURLMessageClick(url: String) {
                     if (isHost) {
                         marsToast(R.string.fb_host_cant_leave)
-                    } else if (viewModel.isMicrophoneUser.value == true) {
+                    } else if (sharedViewModel.isMicrophoneUser) {
                         marsToast(R.string.fb_microphone_user_cant_leave)
                     } else {
                         val c = context ?: return
@@ -1160,7 +1156,7 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
         if (isHost) {
             marsToast(R.string.fb_host_cant_leave)
             return false
-        } else if (viewModel.isMicrophoneUser.value == true) {
+        } else if (sharedViewModel.isMicrophoneUser) {
             marsToast(R.string.fb_microphone_user_cant_leave)
             return false
         } else {
@@ -1357,11 +1353,6 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
         newMessagesCount?.isVisible = false
     }
 
-    private fun updateTotalViewerCount(event: LiveActivityEvent) {
-        val num = event.onlineNumStr
-        onlineCount.text = num
-    }
-
     protected abstract fun init()
 
     protected abstract fun onLiveStateInfoInJoined(data: LiveStateInfo)
@@ -1504,8 +1495,8 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
         super.onDestroy()
     }
 
-    override fun initViewModel(): LiveViewModel {
-        return getActivityViewModel(LiveViewModel::class.java)
+    override fun initViewModel(): LiveInteractionViewModel {
+        return getActivityViewModel(LiveInteractionViewModel::class.java)
     }
 
     override fun getDataBindingConfig(): DataBindingConfig {

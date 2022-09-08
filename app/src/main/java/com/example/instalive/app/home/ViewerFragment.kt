@@ -34,13 +34,9 @@ class ViewerFragment : BaseFragment<HomeViewModel, FragmentViewerBinding>() {
 
     private fun initList() {
         liveAdapter = LiveAdapter(listOf()) {
-            context?.requestMicrophonePermission (go = {
-                context?.start<LiveAudienceActivity> {
-                    putExtra(Constants.EXTRA_LIVE_ID, it)
-                }
-            }, no = {
-
-            })
+            context?.start<LiveAudienceActivity> {
+                putExtra(Constants.EXTRA_LIVE_ID, it)
+            }
         }
         liveRecyclerView.layoutManager = LinearLayoutManager(context)
         liveRecyclerView.itemAnimator = null
@@ -48,16 +44,16 @@ class ViewerFragment : BaseFragment<HomeViewModel, FragmentViewerBinding>() {
         liveRecyclerView.adapter = liveAdapter
 
         viewModel.liveList.observe(this) {
+            val list = it ?: listOf()
             swipeRefreshLayout.isRefreshing = false
-            if (it == null) return@observe
-            it.forEach { mm ->
+            list.forEach { mm ->
                 Timber.d("${mm.liveOwner.nickname}")
             }
 
-            liveAdapter.liveList = it
+            liveAdapter.liveList = list
             liveAdapter.notifyDataSetChanged()
 
-            noLiveYet.isVisible = it.isEmpty()
+            noLiveYet.isVisible = list.isEmpty()
         }
 
         swipeRefreshLayout.setOnRefreshListener {

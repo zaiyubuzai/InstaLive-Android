@@ -1,8 +1,10 @@
 package com.example.instalive.app.home
 
+import android.annotation.SuppressLint
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.baselibrary.utils.debounceClick
 import com.example.instalive.R
 import com.example.instalive.databinding.ItemLiveListLayoutBinding
@@ -29,6 +31,8 @@ class LiveAdapter(
         if (holder is LiveViewHolder) {
             holder.binding.title.text =
                 holder.itemView.context.getString(R.string.fb_is_live, data.liveOwner.nickname)
+
+            Glide.with(holder.itemView.context).load(data.liveOwner.portrait).into(holder.binding.avatar)
 
             holder.itemView.debounceClick {
                 onLiveClicked.invoke(data.id)

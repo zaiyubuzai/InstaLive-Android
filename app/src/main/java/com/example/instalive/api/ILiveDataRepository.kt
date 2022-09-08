@@ -93,4 +93,10 @@ interface ILiveDataRepository {
         liveData: MutableLiveData<Any>,
         remoteEventEmitter: RemoteEventEmitter
     )
+
+    suspend fun liveRefresh(
+        liveId: String,
+        liveData: MutableLiveData<Pair<LiveStateInfo?, JoinLiveError?>>,
+        remoteEventEmitter: RemoteEventEmitter
+    )
 }

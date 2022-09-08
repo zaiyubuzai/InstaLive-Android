@@ -10,4 +10,5 @@ data class LiveOwnerData(
     @SerializedName("user_id")val userId: String,
     @SerializedName("user_name")val username: String,
     @SerializedName("nickname")val nickname: String,
+    val portrait: String?
 )

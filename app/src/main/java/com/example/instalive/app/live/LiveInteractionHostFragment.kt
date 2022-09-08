@@ -8,12 +8,9 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.example.baselibrary.utils.alphaClick
-import com.example.instalive.BuildConfig
 import com.example.instalive.InstaLiveApp
 import com.example.instalive.app.SessionPreferences
 import com.example.instalive.databinding.FragmentLiveInteractionHostBinding
-import com.example.instalive.model.LiveGiftEvent
-import com.example.instalive.model.LiveStateInfo
 import com.jeremyliao.liveeventbus.LiveEventBus
 import com.lxj.xpopup.XPopup
 import kotlinx.android.synthetic.main.fragment_live_interaction_host.*
@@ -26,8 +23,14 @@ import com.example.instalive.app.Constants.EVENT_BUS_KEY_LIVE
 import com.example.instalive.app.Constants.EVENT_BUS_KEY_LIVE_HOST_ACTIONS
 import com.example.instalive.app.Constants.ITRCT_TYPE_LIVE_OFF
 import com.example.instalive.app.live.ui.GoLiveWithDialog
-import com.example.instalive.model.LiveRaiseHandEvent
+import com.example.instalive.model.*
 import com.example.instalive.utils.VenusNumberFormatter
+import kotlinx.android.synthetic.main.fragment_live_interaction_host.avatar
+import kotlinx.android.synthetic.main.fragment_live_interaction_host.hostDiamond
+import kotlinx.android.synthetic.main.fragment_live_interaction_host.name
+import kotlinx.android.synthetic.main.fragment_live_interaction_host.nameContainer
+import kotlinx.android.synthetic.main.fragment_live_interaction_host.onlineCountContainer
+import kotlinx.android.synthetic.main.fragment_live_interaction_host.startLoop
 import splitties.dimensions.dp
 import splitties.views.onClick
 
@@ -37,7 +40,8 @@ class LiveInteractionHostFragment :
 
     var goLiveWithTicker: ReceiveChannel<Unit>? = null
     var currentDiamonds: Long = 0L
-//    private var liveViewersHostDialog: LiveViewersHostDialog? = null
+
+    //    private var liveViewersHostDialog: LiveViewersHostDialog? = null
 //    private var moreDialog: LiveMoreDialog? = null
     private var mute = 0
     private var hostGiftLiveTipJob: Job? = null
@@ -45,7 +49,7 @@ class LiveInteractionHostFragment :
     @SuppressLint("SetTextI18n")
     @OptIn(ExperimentalStdlibApi::class)
     override fun init() {
-        val options = RequestOptions.bitmapTransform(RoundedCorners(context?.dp(12)?:36))
+        val options = RequestOptions.bitmapTransform(RoundedCorners(context?.dp(12) ?: 36))
         Glide.with(activity)
             .load(SessionPreferences.portrait)
             .apply(options)
@@ -128,7 +132,7 @@ class LiveInteractionHostFragment :
             showMoreDialog()
         }
 
-        nameContainer.onClick{
+        nameContainer.onClick {
             ownerLiveUserInfo?.let { it1 -> showPersonBottomDialog(it1, 1) }
         }
 
@@ -229,6 +233,11 @@ class LiveInteractionHostFragment :
             icDiamondView.setImageResource(if (diamondPublicEnabled) R.mipmap.icon_diamond_view_unlock else R.mipmap.icon_diamond_view_lock)
         })
 
+        sharedViewModel.liveOnlineCount.observe(this, {
+            if (it == null) return@observe
+            onlineCount?.text = it
+        })
+
 //        LiveEventBus.get(EVENT_BUS_KEY_PAY_LIVE).observe(this) {
 //            (activity as RecordActivity).justNowGiftTicketData?.let { liveGiftData ->
 //                (activity as RecordActivity).giftTicketData = liveGiftData
@@ -240,6 +249,24 @@ class LiveInteractionHostFragment :
 
         LiveEventBus.get(EVENT_BUS_KEY_LIVE).observe(this) { event ->
             when (event) {
+                is LiveWithInviteEvent -> {
+                        startGoLiveWithCounting(
+                            event.timeoutTS,
+                            event.targetUserInfo.userName,
+                        )
+                }
+                is LiveWithAgreeEvent -> {
+                    goLiveWithWaitingContainer.isVisible = false
+                    goLiveWithTicker?.cancel()
+                }
+                is LiveWithRejectEvent -> {
+                    goLiveWithWaitingContainer.isVisible = false
+                    goLiveWithTicker?.cancel()
+                }
+                is LiveWithCancelEvent -> {
+                    goLiveWithWaitingContainer.isVisible = false
+                    goLiveWithTicker?.cancel()
+                }
 //                is LiveWithCallEvent -> {
 //                    when (event.event) {
 //                        1 -> {
@@ -336,7 +363,7 @@ class LiveInteractionHostFragment :
         updateCurrentDiamonds(currentDiamonds)
     }
 
-    private suspend fun startGoLiveWithCounting(endTime: Long, targetUsername: String, id: String) {
+    private fun startGoLiveWithCounting(endTime: Long, targetUsername: String) {
 //        liveViewersHostDialog?.dismiss()
         goLiveWithWaitingContainer.isVisible = true
         txtGoLiveWithWaiting.text = getString(R.string.lbl_live_with_waiting_for, targetUsername)
@@ -344,17 +371,23 @@ class LiveInteractionHostFragment :
 //            viewModel.cancelLiveWith(id)
         }
         goLiveWithWaitingContainer.onClick {}
-        goLiveWithTicker = ticker(1000, 0)
-        val ticker = goLiveWithTicker
-        if (ticker != null) {
-            for (event in ticker) {
-                if ((System.currentTimeMillis() - InstaLiveApp.appInstance.timeDiscrepancy) / 1000 > endTime) {
-                    goLiveWithWaitingContainer.isVisible = false
-                    break
+
+        lifecycleScope.launch(Dispatchers.IO){
+            goLiveWithTicker = ticker(1000, 0)
+            val ticker = goLiveWithTicker
+            if (ticker != null) {
+                for (event in ticker) {
+                    if ((System.currentTimeMillis() - InstaLiveApp.appInstance.timeDiscrepancy) / 1000 > endTime) {
+                        withContext(Dispatchers.Main){
+                            goLiveWithWaitingContainer.isVisible = false
+                        }
+                        break
+                    }
                 }
+                goLiveWithTicker?.cancel()
             }
-            goLiveWithTicker?.cancel()
         }
+
     }
 
     private fun showMoreDialog() {
@@ -393,7 +426,8 @@ class LiveInteractionHostFragment :
                 GoLiveWithDialog(
                     c,
                     liveId,
-                    viewModel.isMicrophone.value?:false)
+                    sharedViewModel.isMicrophone
+                )
             )
             .show()
     }

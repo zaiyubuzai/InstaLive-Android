@@ -70,7 +70,7 @@ class GoLiveWithDialog(
 
         LiveEventBus.get(Constants.EVENT_BUS_KEY_LIVE).observeForever {
             if (it is LiveActivityEvent) {
-                val membersCount = it.membersNum ?: 0
+                val membersCount = it.membersNum?.toLong()?:0
                 if (membersCount > 0 && listAdapter.itemCount == 0) {
                     //如果进人了，就刷新一下子
                     listAdapter.refresh()

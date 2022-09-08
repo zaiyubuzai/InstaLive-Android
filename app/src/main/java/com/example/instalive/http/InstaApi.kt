@@ -307,4 +307,9 @@ interface InstaApi : BaseApi {
         @Field("live_id") liveId: String,
         @Field("target_user_id") userId: String
     ): BaseResponse<Any>
+
+    @GET("api/live/live/detail/refresh/")
+    suspend fun liveRefresh(
+        @Query("live_id")liveId: String,
+    ): BaseResponse<LiveStateInfo>
 }

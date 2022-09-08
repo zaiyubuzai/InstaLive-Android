@@ -14,7 +14,6 @@ import com.example.baselibrary.utils.alphaClick
 import com.example.baselibrary.utils.debounceClick
 import com.example.baselibrary.utils.marsToast
 import com.example.baselibrary.utils.tinyMoveClickListener
-import com.example.instalive.BuildConfig
 import com.example.instalive.InstaLiveApp
 import com.example.instalive.InstaLiveApp.Companion.appInstance
 import com.example.instalive.R
@@ -43,6 +42,11 @@ import com.luck.picture.lib.listener.OnResultCallbackListener
 import com.lxj.xpopup.XPopup
 import kotlinx.android.synthetic.main.activity_live_audience.*
 import kotlinx.android.synthetic.main.fragment_live_interaction.*
+import kotlinx.android.synthetic.main.fragment_live_interaction.hostDiamond
+import kotlinx.android.synthetic.main.fragment_live_interaction.nameContainer
+import kotlinx.android.synthetic.main.fragment_live_interaction.onlineCount
+import kotlinx.android.synthetic.main.fragment_live_interaction.onlineCountContainer
+import kotlinx.android.synthetic.main.fragment_live_interaction.startLoop
 import kotlinx.coroutines.*
 import splitties.views.onClick
 import timber.log.Timber
@@ -64,8 +68,8 @@ class LiveInteractionFragment :
     private var likeCount = 0
     private var mute = 0
 
-    private var isHandClicking = false
-    private var isHandsUp = false
+    private var isRaiseClicking = false
+    private var isRaiseHanded = false
 
     @SuppressLint("SetTextI18n", "ClickableViewAccessibility")
     @OptIn(ExperimentalStdlibApi::class)
@@ -92,7 +96,7 @@ class LiveInteractionFragment :
 //            popupOpenGift()
         }
 
-        nameContainer.onClick{
+        nameContainer.onClick {
             ownerLiveUserInfo?.let { it1 -> showPersonBottomDialog(it1, 1) }
         }
 
@@ -193,7 +197,7 @@ class LiveInteractionFragment :
                                         result[0].size,
                                         3,
                                         liveId,
-                                       -1
+                                        -1
                                     )
                                 }
                                 "image/jpeg", "image/jpg", "image/png" -> {
@@ -225,13 +229,15 @@ class LiveInteractionFragment :
         LiveEventBus.get(EVENT_BUS_KEY_LIVE).observe(this) { event ->
             when (event) {
                 is LiveWithInviteEvent -> {
-                    if (event.targetUserId == SessionPreferences.id){
+                    if (event.targetUserId == SessionPreferences.id) {
                         showLiveWithInvite(liveId, event.timeoutTS)
                     }
                 }
                 is LiveWithCancelEvent -> {
-                    hideLiveWithInvite()
-                    onHandsDown()
+                    if (event.targetUserId == SessionPreferences.id) {
+                        hideLiveWithInvite()
+                        onHandsDown()
+                    }
                 }
                 is LiveWithAgreeEvent -> {
                     val have = event.liveUserWithUidInfos.any {
@@ -244,9 +250,9 @@ class LiveInteractionFragment :
                         onHaveMicrophone()
                     }
                 }
-                is LiveWithRejectEvent ->{
-                        isShowLiveWithContainer(false)
-                        onHandsDown()
+                is LiveWithRejectEvent -> {
+                    isShowLiveWithContainer(false)
+                    onHandsDown()
                 }
                 is LiveWithHangupEvent -> {
                     if (event.targetUserId == SessionPreferences.id) {
@@ -299,20 +305,27 @@ class LiveInteractionFragment :
         }
 
         viewModel.raiseHandData.observe(this) {
+            isRaiseClicking = false
             onRaiseHand()
         }
         viewModel.handsDownData.observe(this) {
+            isRaiseClicking = false
             onHandsDown()
         }
 
+        sharedViewModel.liveOnlineCount.observe(this, {
+            if (it == null) return@observe
+            onlineCount?.text = it
+        })
+
     }
 
-    fun refreshHostMute(isMute: Boolean){
+    fun refreshHostMute(isMute: Boolean) {
         hostMute?.isVisible = isMute
     }
 
     private fun showMoreDialog() {
-        val c = context?:return
+        val c = context ?: return
 //        if (moreDialog == null || moreDialog?.isShow == false) {
 //            moreDialog = LiveMoreDialog(activity, activity, liveId = liveId, 2, false,
 //                showMessage = {
@@ -443,18 +456,18 @@ class LiveInteractionFragment :
     }
 
     fun onRaiseHandClick() {
-        if (viewModel.isMicrophoneUser.value == true) {
+        if (sharedViewModel.isMicrophoneUser) {
             marsToast(R.string.fb_live_you_on_live_now)
             return
         }
 
-        if (!isHandClicking){
-            isHandClicking = true
-            if (isHandsUp) {
+        if (!isRaiseClicking) {
+            isRaiseClicking = true
+            if (isRaiseHanded) {
 //                logFirebaseEvent("hands_down")
                 viewModel.handsDown(liveId, {
-                    isHandClicking = false
-                }){
+                    isRaiseClicking = false
+                }) {
                     loadingAnim?.isVisible = it == StatusEvent.LOADING
                 }
             } else {
@@ -471,7 +484,7 @@ class LiveInteractionFragment :
     override fun onRaiseHand() {
         super.onRaiseHand()
         if (!isAdded) return
-        isHandsUp = true
+        isRaiseHanded = true
         icRaiseHand.setImageResource(R.mipmap.live_raise_hand_upping)
         (activity as LiveAudienceActivity).onHandCanDownOrUp(LiveRelativeLayout.Raise_Hand_Doing)
     }
@@ -483,22 +496,22 @@ class LiveInteractionFragment :
      */
     override fun onHandsDown() {
         if (!isAdded) return
-        isHandsUp = false
+        isRaiseHanded = false
         close?.isVisible = true
         icRaiseHand?.setImageResource(R.mipmap.live_raise_hand_can)
         try {
             (activity as LiveAudienceActivity).onHandCanDownOrUp(LiveRelativeLayout.Raise_Hand_Can)
-        } catch (e: Exception){
+        } catch (e: Exception) {
         }
     }
 
     private fun onHaveMicrophone() {
-        isHandsUp = false
+        isRaiseHanded = false
         icRaiseHand?.setImageResource(R.mipmap.live_raise_hand_no)
         close?.isVisible = false
         try {
             (activity as LiveAudienceActivity).onHandCanDownOrUp(LiveRelativeLayout.Raise_Hand_Cannot)
-        } catch (e: Exception){
+        } catch (e: Exception) {
         }
     }
 
@@ -508,17 +521,15 @@ class LiveInteractionFragment :
             XPopup.Builder(c)
                 .asCustom(LiveRaiseYourHandDialog(c) {
 //                    logFirebaseEvent("raised_hand")
-                    viewModel.raiseHand(liveId, {}){
-                        isHandClicking = false
-                        loadingAnim?.isVisible =  it == StatusEvent.LOADING
+                    viewModel.raiseHand(liveId, { isRaiseClicking = false }) {
+                        loadingAnim?.isVisible = it == StatusEvent.LOADING
                     }
                 })
                 .show()
             InstaLivePreferences.liveRaiseHandDialogShowed = true
         } else {
 //            logFirebaseEvent("raised_hand")
-            viewModel.raiseHand(liveId, {}){
-                isHandClicking = false
+            viewModel.raiseHand(liveId, { isRaiseClicking = false }) {
                 loadingAnim?.isVisible = it == StatusEvent.LOADING
             }
         }
@@ -555,22 +566,27 @@ class LiveInteractionFragment :
 //        icLiveWithGift?.isVisible = data.liveGiftShowEnable
 //        icGift?.isVisible = data.liveGiftShowEnable && viewModel.isMicrophoneUser.value != true
 //        icGiftReddot?.isVisible = data.liveGiftShowEnable && viewModel.isMicrophoneUser.value != true
-        showDiamonds(LiveDiamondsPublicEvent(if (data.liveDiamondsPublic == 1) 1 else 0, data.diamonds))
-        if (data.liveWithUserInfos.size in 1..1){
+        showDiamonds(
+            LiveDiamondsPublicEvent(
+                if (data.liveDiamondsPublic == 1) 1 else 0,
+                data.diamonds
+            )
+        )
+        if (data.liveWithUserInfos.size in 1..1) {
             hostMute?.isVisible = data.liveWithUserInfos[0].mute == 1
         }
 
         when (data.state) {
             LIVE_START -> {
                 if (data.liveWithUserInfos.size > 1) {
-                    viewModel.isMicrophone.value = true
+                    sharedViewModel.isMicrophone = true
                 } else {
                     onHandsDown()
-                    viewModel.isMicrophone.value = false
+                    sharedViewModel.isMicrophone = false
                 }
             }
-            LIVE_END->{
-                viewModel.isMicrophone.value = false
+            LIVE_END -> {
+                sharedViewModel.isMicrophone = false
                 onHandsDown()
             }
         }
