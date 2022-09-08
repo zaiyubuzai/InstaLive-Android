@@ -99,4 +99,11 @@ interface ILiveDataRepository {
         liveData: MutableLiveData<Pair<LiveStateInfo?, JoinLiveError?>>,
         remoteEventEmitter: RemoteEventEmitter
     )
+
+    suspend fun sendLiveComment(
+        liveId: String,
+        msg: String,
+        uuid: String,
+        remoteEventEmitter: RemoteEventEmitter
+    )
 }

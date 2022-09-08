@@ -232,6 +232,7 @@
             android:paddingVertical="@dimen/dimen_4dp"
             android:paddingEnd="@dimen/dimen_8dp"
             android:src="@mipmap/live_picture"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/txtComment"
             app:layout_constraintEnd_toStartOf="@id/sendGif"
             app:layout_constraintTop_toTopOf="@+id/txtComment" />
@@ -243,6 +244,7 @@
             android:paddingVertical="@dimen/dimen_4dp"
             android:paddingHorizontal="@dimen/dimen_8dp"
             android:src="@mipmap/live_gif"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/txtComment"
             app:layout_constraintEnd_toStartOf="@id/icGift"
             app:layout_constraintTop_toTopOf="@+id/txtComment" />

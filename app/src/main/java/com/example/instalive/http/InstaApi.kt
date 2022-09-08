@@ -312,4 +312,12 @@ interface InstaApi : BaseApi {
     suspend fun liveRefresh(
         @Query("live_id")liveId: String,
     ): BaseResponse<LiveStateInfo>
+
+    @FormUrlEncoded
+    @POST("api/live/live/comment/")
+    suspend fun sendLiveComment(
+        @Field("live_id") liveId: String,
+        @Field("content") content: String,
+        @Field("uuid") uuid:String
+    ): BaseResponse<Any>
 }

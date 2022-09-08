@@ -6,15 +6,23 @@ import com.example.baselibrary.api.BaseRemoteRepository
 import com.example.baselibrary.api.Meta
 import com.example.baselibrary.api.RemoteEventEmitter
 import com.example.baselibrary.api.StatusEvent
+import com.example.instalive.app.Constants
+import com.example.instalive.app.SessionPreferences
 import com.example.instalive.app.live.ui.GoLiveWithViewModel
+import com.example.instalive.db.InstaLiveDBProvider
 import com.example.instalive.http.InstaApi
 import com.example.instalive.model.*
 import com.google.gson.Gson
+import com.jeremyliao.liveeventbus.LiveEventBus
+import com.venus.dm.db.entity.MessageEntity
+import kotlinx.coroutines.*
 import retrofit2.HttpException
 
 object LiveDataRepository : ILiveDataRepository, BaseRemoteRepository() {
 
     private val instaApi = RetrofitProvider.baseApi as InstaApi
+    private val dao = InstaLiveDBProvider.db.directMessagingDao()
+    private val pendingMessageJobsMap = mutableMapOf<String, Job>()
 
     override suspend fun liveWithViewerPagingList(
         liveId: String,
@@ -255,6 +263,31 @@ object LiveDataRepository : ILiveDataRepository, BaseRemoteRepository() {
                     }
                 }
             }
+        }
+    }
+
+    override suspend fun sendLiveComment(
+        liveId: String,
+        msg: String,
+        uuid: String,
+        remoteEventEmitter: RemoteEventEmitter
+    ) {
+        //以下为发送30秒失败的逻辑
+        //给发出去的消息开个job，如果消息发送成功或失败，直接cancel掉job，
+        //如果job没有被cancel掉，30秒后查询数据库看发送状态，如果还是正在发送，就置为失败
+        val job = CoroutineScope(Dispatchers.IO).launch {
+            delay(30000)
+            LiveEventBus.get(Constants.EVENT_BUS_KEY_LIVE_MESSAGE).post(LiveMsgEvent(uuid, liveId, MessageEntity.SEND_STATUS_FAILED))
+        }
+        pendingMessageJobsMap[uuid] = job
+        val response = safeApiCall(remoteEventEmitter) {
+            instaApi.sendLiveComment(liveId, msg, uuid)
+        }
+        if (response != null) {
+            LiveEventBus.get(Constants.EVENT_BUS_KEY_LIVE_MESSAGE).post(LiveMsgEvent(uuid, liveId, MessageEntity.SEND_STATUS_SUCCESS))
+        } else {
+            LiveEventBus.get(Constants.EVENT_BUS_KEY_LIVE_MESSAGE).post(LiveMsgEvent(uuid, liveId, MessageEntity.SEND_STATUS_FAILED))
+            pendingMessageJobsMap.remove(uuid)?.cancel()
         }
     }
 }

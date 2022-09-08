@@ -21,8 +21,12 @@ import splitties.alertdialog.appcompat.*
 import com.example.instalive.R
 import com.example.instalive.app.Constants.EVENT_BUS_KEY_LIVE
 import com.example.instalive.app.Constants.EVENT_BUS_KEY_LIVE_HOST_ACTIONS
+import com.example.instalive.app.Constants.ITRCT_TYPE_FLIP
 import com.example.instalive.app.Constants.ITRCT_TYPE_LIVE_OFF
+import com.example.instalive.app.Constants.ITRCT_TYPE_MAKEUP_OFF
+import com.example.instalive.app.Constants.ITRCT_TYPE_MAKEUP_ON
 import com.example.instalive.app.live.ui.GoLiveWithDialog
+import com.example.instalive.app.live.ui.LiveMoreDialog
 import com.example.instalive.model.*
 import com.example.instalive.utils.VenusNumberFormatter
 import kotlinx.android.synthetic.main.fragment_live_interaction_host.avatar
@@ -42,7 +46,7 @@ class LiveInteractionHostFragment :
     var currentDiamonds: Long = 0L
 
     //    private var liveViewersHostDialog: LiveViewersHostDialog? = null
-//    private var moreDialog: LiveMoreDialog? = null
+    private var moreDialog: LiveMoreDialog? = null
     private var mute = 0
     private var hostGiftLiveTipJob: Job? = null
 
@@ -250,10 +254,10 @@ class LiveInteractionHostFragment :
         LiveEventBus.get(EVENT_BUS_KEY_LIVE).observe(this) { event ->
             when (event) {
                 is LiveWithInviteEvent -> {
-                        startGoLiveWithCounting(
-                            event.timeoutTS,
-                            event.targetUserInfo.userName,
-                        )
+                    startGoLiveWithCounting(
+                        event.timeoutTS,
+                        event.targetUserInfo.userName,
+                    )
                 }
                 is LiveWithAgreeEvent -> {
                     goLiveWithWaitingContainer.isVisible = false
@@ -372,13 +376,13 @@ class LiveInteractionHostFragment :
         }
         goLiveWithWaitingContainer.onClick {}
 
-        lifecycleScope.launch(Dispatchers.IO){
+        lifecycleScope.launch(Dispatchers.IO) {
             goLiveWithTicker = ticker(1000, 0)
             val ticker = goLiveWithTicker
             if (ticker != null) {
                 for (event in ticker) {
                     if ((System.currentTimeMillis() - InstaLiveApp.appInstance.timeDiscrepancy) / 1000 > endTime) {
-                        withContext(Dispatchers.Main){
+                        withContext(Dispatchers.Main) {
                             goLiveWithWaitingContainer.isVisible = false
                         }
                         break
@@ -391,29 +395,31 @@ class LiveInteractionHostFragment :
     }
 
     private fun showMoreDialog() {
-//        if (moreDialog == null || moreDialog?.isShow == false) {
-//            moreDialog = LiveMoreDialog(activity, activity, liveId = liveId,
-//                mode = 1, makeupEnable = makeUpEnabled,
-//                showMessage = {
-//                    openComment()
-//                }, onMakeupClick = {
-//                    makeUpEnabled = !makeUpEnabled
-//                    LiveEventBus.get(EVENT_BUS_KEY_LIVE_HOST_ACTIONS)
-//                        .post(if (!makeUpEnabled) ITRCT_TYPE_MAKEUP_OFF else ITRCT_TYPE_MAKEUP_ON)
+        if (!isAdded) return
+        val c = context ?: return
+        if (moreDialog == null || moreDialog?.isShow == false) {
+            moreDialog = LiveMoreDialog(c, activity, liveId = liveId,
+                mode = 1, makeupEnable = makeUpEnabled,
+                showMessage = {
+                    openComment()
+                }, onMakeupClick = {
+                    makeUpEnabled = !makeUpEnabled
+                    LiveEventBus.get(EVENT_BUS_KEY_LIVE_HOST_ACTIONS)
+                        .post(if (!makeUpEnabled) ITRCT_TYPE_MAKEUP_OFF else ITRCT_TYPE_MAKEUP_ON)
 //                    logFirebaseEvent(if (makeUpEnabled) "open_beauty" else "close_beauty")
-//                }, showFlip = {
-//                    LiveEventBus.get(EVENT_BUS_KEY_LIVE_HOST_ACTIONS)
-//                        .post(ITRCT_TYPE_FLIP)
-//                }, showGifSelector = {
+                }, showFlip = {
+                    LiveEventBus.get(EVENT_BUS_KEY_LIVE_HOST_ACTIONS)
+                        .post(ITRCT_TYPE_FLIP)
+                }, showGifSelector = {
 //                    showGifDialog()
-//                }
-//            )
-//
-//            XPopup.Builder(activity)
-//                .isDestroyOnDismiss(true)
-//                .asCustom(moreDialog)
-//                .show()
-//        }
+                }
+            )
+
+            XPopup.Builder(c)
+                .isDestroyOnDismiss(true)
+                .asCustom(moreDialog)
+                .show()
+        }
     }
 
     @ExperimentalStdlibApi

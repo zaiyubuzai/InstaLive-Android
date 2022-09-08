@@ -19,6 +19,7 @@ import com.example.instalive.InstaLiveApp.Companion.appInstance
 import com.example.instalive.R
 import com.example.instalive.app.Constants.EVENT_BUS_KEY_LIVE
 import com.example.instalive.app.Constants.EVENT_BUS_KEY_LIVE_HOST_ACTIONS
+import com.example.instalive.app.Constants.ITRCT_TYPE_FLIP
 import com.example.instalive.app.Constants.ITRCT_TYPE_MAKEUP_OFF
 import com.example.instalive.app.Constants.ITRCT_TYPE_MAKEUP_ON
 import com.example.instalive.app.Constants.LIVE_END
@@ -26,6 +27,7 @@ import com.example.instalive.app.Constants.LIVE_START
 import com.example.instalive.app.InstaLivePreferences
 import com.example.instalive.app.SessionPreferences
 import com.example.instalive.app.live.ui.GoLiveWithInviteDialog
+import com.example.instalive.app.live.ui.LiveMoreDialog
 import com.example.instalive.app.live.ui.LiveRaiseYourHandDialog
 import com.example.instalive.app.live.ui.LiveRelativeLayout
 import com.example.instalive.databinding.FragmentLiveInteractionBinding
@@ -62,7 +64,7 @@ class LiveInteractionFragment :
     private var likeJob: Job? = null
 
     private var goWithInviteDialog: GoLiveWithInviteDialog? = null
-//    private var moreDialog: LiveMoreDialog? = null
+    private var moreDialog: LiveMoreDialog? = null
 
     private var lastLikeTimeStamp = 0L
     private var likeCount = 0
@@ -326,25 +328,25 @@ class LiveInteractionFragment :
 
     private fun showMoreDialog() {
         val c = context ?: return
-//        if (moreDialog == null || moreDialog?.isShow == false) {
-//            moreDialog = LiveMoreDialog(activity, activity, liveId = liveId, 2, false,
-//                showMessage = {
-//                    openComment()
-//                }, onMakeupClick = {
-//
-//                }, showFlip = {
-//                    LiveEventBus.get(EVENT_BUS_KEY_LIVE_HOST_ACTIONS)
-//                        .post(ITRCT_TYPE_FLIP)
-//                }, showGifSelector = {
+        if (moreDialog == null || moreDialog?.isShow == false) {
+            moreDialog = LiveMoreDialog(activity, activity, liveId = liveId, 2, false,
+                showMessage = {
+                    openComment()
+                }, onMakeupClick = {
+
+                }, showFlip = {
+                    LiveEventBus.get(EVENT_BUS_KEY_LIVE_HOST_ACTIONS)
+                        .post(ITRCT_TYPE_FLIP)
+                }, showGifSelector = {
 //                    showGifDialog()
-//                }
-//            )
-//
-//            XPopup.Builder(c)
-//                .isDestroyOnDismiss(true)
-//                .asCustom(moreDialog)
-//                .show()
-//        }
+                }
+            )
+
+            XPopup.Builder(c)
+                .isDestroyOnDismiss(true)
+                .asCustom(moreDialog)
+                .show()
+        }
     }
 
     fun showOtherProfile(
@@ -369,8 +371,8 @@ class LiveInteractionFragment :
         sendPicture.isVisible = !isShowLiveWith
         txtComment.isVisible = !isShowLiveWith
         liveThumb.isVisible = !isShowLiveWith
-        sendGif.isVisible = !isShowLiveWith
-        icGift.isVisible = !isShowLiveWith
+//        sendGif.isVisible = !isShowLiveWith
+//        icGift.isVisible = !isShowLiveWith
     }
 
     override fun doLikeFavor() {

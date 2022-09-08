@@ -14,6 +14,7 @@ object Constants {
 
     //event cat
     const val EVENT_BUS_KEY_LIVE_HOST_ACTIONS = "event_bus_live_host_actions"
+    const val EVENT_BUS_KEY_LIVE_MESSAGE = "event_bus_key_live_message"
     const val EVENT_BUS_KEY_NOT_GO_BACK = "event_bus_key_not_go_back"
     const val EVENT_BUS_KEY_TELEPHONY = "event_bus_key_telephony"
     const val EVENT_BUS_KEY_APP_STOP = "event_bus_key_app_stop"

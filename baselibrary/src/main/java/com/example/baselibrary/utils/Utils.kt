@@ -23,6 +23,19 @@ import java.util.regex.Pattern
 
 object Utils {
 
+    private const val MIN_CLICK_DELAY_TIME = 750
+    private var lastClickTime: Long = 0
+
+    fun isFastClick(): Boolean {
+        var flag = false
+        val curClickTime = System.currentTimeMillis()
+        if (curClickTime - lastClickTime >= MIN_CLICK_DELAY_TIME) {
+            flag = true
+        }
+        lastClickTime = curClickTime
+        return flag
+    }
+
     val PASSWORD_PATTERN = Pattern.compile("^(?=.*[0-9])(?=.*[a-zA-Z])(?=\\S+\$).{8,20}$")
     val HASHTAG_PATTERN = Pattern.compile("(?:|^)#(?=.*[a-zA-Z0-9])[A-Za-z0-9]+(?:|\$)")
     val USERNAME_PATTERN = Pattern.compile("@[A-Za-z0-9_.]{1,23}[A-Za-z0-9_]\\b")

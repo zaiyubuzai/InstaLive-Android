@@ -112,7 +112,7 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
         super.initData(savedInstanceState)
 //        conversationsEntity =
 //            intent.getSerializableExtra(Constants.EXTRA_CONVERSATION_ENTITY) as ConversationsEntity
-        RecentConversation.conversationsEntity?:finish()
+        RecentConversation.conversationsEntity ?: finish()
         conId = RecentConversation.conversationsEntity?.conversationId.toString()
         screenName = "message_view"
         viewModel.disappearMessage()
@@ -166,10 +166,10 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
 //                logFirebaseEvent("send_message")
                 if (message != null) {
                     if (targetMessage == null) {
-                    viewModel.sendMessage(
-                        conId,
-                        message,
-                    )
+                        viewModel.sendMessage(
+                            conId,
+                            message,
+                        )
                     } else {
                         viewModel.sendMessage(
                             conId,
@@ -191,7 +191,7 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
                 scrollToBottom()
                 requestStoragePermission({
                     openImageAndVideo()
-                },{
+                }, {
 
                 })
             }
@@ -213,7 +213,7 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
 
         })
 
-        deleteReply.onClick{
+        deleteReply.onClick {
             targetMessage = null
             reply.text = ""
             replyContainer.isVisible = false
@@ -335,7 +335,15 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
                 Timber.d("time test 下拉刷新: time = $time")
                 if (time == 0L) return@onLinearMarsLoadMore
                 LiveEventBus.get(ChatConstants.EVENT_BUS_KEY_MESSAGE_EVENT)
-                    .post(MessageEvent(6, null, null, System.currentTimeMillis(), timestampStart = time))
+                    .post(
+                        MessageEvent(
+                            6,
+                            null,
+                            null,
+                            System.currentTimeMillis(),
+                            timestampStart = time
+                        )
+                    )
             }
         }
 
@@ -399,7 +407,13 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
         }
         messageAdapter.registerAdapterDataObserver(messageAdapterDataObserver)
         messageEventSyncList.add(
-            MessageEvent(6, null, null, System.currentTimeMillis(), timestampStart = System.currentTimeMillis())
+            MessageEvent(
+                6,
+                null,
+                null,
+                System.currentTimeMillis(),
+                timestampStart = System.currentTimeMillis()
+            )
         )
         KeyboardVisibilityEvent.setEventListener(this, this,
             { isOpen ->
@@ -467,7 +481,7 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
     }
 
     private fun checkNewMessage() {
-        val lastLeaveTimetoken = RecentConversation.conversationsEntity?.lastLeaveTimetoken?:0L
+        val lastLeaveTimetoken = RecentConversation.conversationsEntity?.lastLeaveTimetoken ?: 0L
         val lastPosition = layoutManager.findLastVisibleItemPosition()
         Timber.d("checkNewMessage lastPosition:$lastPosition")
 
@@ -557,8 +571,8 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
                     Collections.sort(list, messageAdapter.comparator)
                     list.first().sendTime
                 }
-            Timber.d("checkNewMessage time token2:${timeToken2 - (RecentConversation.conversationsEntity?.lastRead?:0L)}")
-            if (timeToken2 - (RecentConversation.conversationsEntity?.lastRead?:0L) > 0) {
+            Timber.d("checkNewMessage time token2:${timeToken2 - (RecentConversation.conversationsEntity?.lastRead ?: 0L)}")
+            if (timeToken2 - (RecentConversation.conversationsEntity?.lastRead ?: 0L) > 0) {
                 haveRead(2)
             }
         }
@@ -784,18 +798,18 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
         }
         val strings = when (messageEntity.type) {
             1, 32, 21 -> {//text
-                    if (messageEntity.senderId == SessionPreferences.id) {
-                        arrayOf(
-                            getString(R.string.fb_message_bubbles_copy),
-                            getString(R.string.fb_message_bubbles_reply),
-                            getString(R.string.delete)
-                        )
-                    } else {
-                        arrayOf(
-                            getString(R.string.fb_message_bubbles_copy),
-                            getString(R.string.fb_message_bubbles_reply)
-                        )
-                    }
+                if (messageEntity.senderId == SessionPreferences.id) {
+                    arrayOf(
+                        getString(R.string.fb_message_bubbles_copy),
+                        getString(R.string.fb_message_bubbles_reply),
+                        getString(R.string.delete)
+                    )
+                } else {
+                    arrayOf(
+                        getString(R.string.fb_message_bubbles_copy),
+                        getString(R.string.fb_message_bubbles_reply)
+                    )
+                }
             }
             3 -> {//image
                 if (messageEntity.senderId == SessionPreferences.id) {
