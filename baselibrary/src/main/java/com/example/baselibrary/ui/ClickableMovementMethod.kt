@@ -37,7 +37,7 @@ class ClickableMovementMethod : BaseMovementMethod() {
             val line = layout.getLineForVertical(y)
             val off = layout.getOffsetForHorizontal(line, x.toFloat())
             val link = buffer.getSpans(off, off, ClickableSpan::class.java)
-            if (link.size > 0) {
+            if (link.isNotEmpty()) {
                 if (action == MotionEvent.ACTION_UP) {
                     link[0].onClick(widget)
                 } else {
@@ -50,16 +50,14 @@ class ClickableMovementMethod : BaseMovementMethod() {
             } else {
                 Selection.removeSelection(buffer)
                 if (action == MotionEvent.ACTION_UP) {
-//                    widget.performClick()
-
-//                    widget.performClick();
                     if (System.currentTimeMillis() - firstTouchTime > DOUBLE_TAP_TIMEOUT) {
                         firstTouchTime = System.currentTimeMillis()
                     } else {
                         firstTouchTime = 0L
                         if (mOnHashTagClickListener != null) {
-                            val name = widget.getTag(R.id.message_tag_first) as String
-                            val content = name + ": " + widget.text.toString()
+                            val name = widget.getTag(R.id.message_tag_first)
+                            val str = if (name == null) "" else name as String
+                            val content = str + ": " + widget.text.toString()
                             mOnHashTagClickListener!!.onHashTagClicked(content)
                         }
                     }

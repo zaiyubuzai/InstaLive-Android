@@ -334,7 +334,7 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
             MessageEntity.SEND_STATUS_SENDING -> {
                 val message = messageEvent.messageEntity ?: return
                 val isContains = liveMessageAdapter.messageUUIDList.contains(messageEvent.uuid)
-                if (message.liveId == liveId && !isContains) {
+                if (messageEvent.liveId == liveId && !isContains) {
                     liveMessageAdapter.messageUUIDList.add(message.uuid)
                     withContext(Dispatchers.Main) {
                         liveMessageAdapter.messages.add(0, message)
@@ -347,10 +347,10 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
                 val index = liveMessageAdapter.messages.indexOfFirst {
                     it.uuid == messageEvent.uuid
                 }
-                if (index >= 0){
+                if (index >= 0) {
                     withContext(Dispatchers.Main) {
                         liveMessageAdapter.messages[index].sendStatus = messageEvent.type
-                        liveMessageAdapter.notifyItemInserted(index)
+                        liveMessageAdapter.notifyItemChanged(index)
                     }
                 }
             }

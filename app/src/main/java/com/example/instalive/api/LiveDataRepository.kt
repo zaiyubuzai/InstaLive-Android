@@ -285,6 +285,7 @@ object LiveDataRepository : ILiveDataRepository, BaseRemoteRepository() {
         }
         if (response != null) {
             LiveEventBus.get(Constants.EVENT_BUS_KEY_LIVE_MESSAGE).post(LiveMsgEvent(uuid, liveId, MessageEntity.SEND_STATUS_SUCCESS))
+            pendingMessageJobsMap.remove(uuid)?.cancel()
         } else {
             LiveEventBus.get(Constants.EVENT_BUS_KEY_LIVE_MESSAGE).post(LiveMsgEvent(uuid, liveId, MessageEntity.SEND_STATUS_FAILED))
             pendingMessageJobsMap.remove(uuid)?.cancel()

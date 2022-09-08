@@ -47,6 +47,7 @@ object MessageComposer {
             read = 1,
             userRole = 9,
             state = 1,
+            liveId = liveId
         )
     }
 
