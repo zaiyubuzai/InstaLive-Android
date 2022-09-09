@@ -89,4 +89,13 @@ interface IRemoteRequest {
         remoteEventEmitter: RemoteEventEmitter,
         onSuccess: (String) -> Unit
     )
+
+    suspend fun updateProfile(
+        username: String?,
+        nickname: String?,
+        portrait: String?,
+        bio: String?,
+        liveData: MutableLiveData<UserData>,
+        remoteEventEmitter: RemoteEventEmitter
+    )
 }

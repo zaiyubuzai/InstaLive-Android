@@ -40,7 +40,7 @@ class PhonePasscodeFragment :
     }
 
     override fun initViewModel(): PhonePasscodeViewModel {
-        return getActivityViewModel(PhonePasscodeViewModel::class.java)
+        return getFragmentViewModel(PhonePasscodeViewModel::class.java)
     }
 
     override fun getDataBindingConfig(): DataBindingConfig {

@@ -191,22 +191,31 @@ class LiveMoreDialog(
 
     private val MODE_GROUP_HOST_IMAGE = listOf(
         R.mipmap.live_comments,
-        R.mipmap.live_picture,
-        R.mipmap.live_gif,
+//        R.mipmap.live_picture,
+//        R.mipmap.live_gif,
         R.mipmap.live_beauty_yes,
         R.mipmap.live_flip
     )
     private val MODE_GROUP_HOST_CLICK =
-        listOf(messageOnClick, mediaOnClick, gifOnClick, makeupOnClick, flipOnClick)
+        listOf(
+            messageOnClick,
+//            mediaOnClick,
+//            gifOnClick,
+            makeupOnClick,
+            flipOnClick)
 
     private val MODE_GROUP_MICROPHONE_IMAGE = listOf(
         R.mipmap.live_comments,
-        R.mipmap.live_picture,
-        R.mipmap.live_gif,
+//        R.mipmap.live_picture,
+//        R.mipmap.live_gif,
         R.mipmap.live_flip
     )
     private val MODE_GROUP_MICROPHONE_CLICK =
-        listOf(messageOnClick, mediaOnClick, gifOnClick, flipOnClick)
+        listOf(
+            messageOnClick,
+//            mediaOnClick,
+//            gifOnClick,
+            flipOnClick)
 
     private val MODE_CALL_HOST_IMAGE = listOf(
         R.mipmap.live_comments,

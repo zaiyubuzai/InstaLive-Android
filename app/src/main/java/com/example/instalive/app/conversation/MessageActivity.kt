@@ -18,32 +18,20 @@ import com.venus.dm.db.entity.MessageEntity
 import kotlinx.android.synthetic.main.activity_message.*
 import timber.log.Timber
 import java.util.*
-import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.os.Handler
 import android.os.Message
 import android.view.inputmethod.InputMethodManager
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
-import com.example.baselibrary.utils.Utils
 import com.example.baselibrary.utils.debounceClick
 import com.example.baselibrary.utils.onLinearMarsLoadMore
-import com.example.instalive.BuildConfig
 import com.example.instalive.InstaLiveApp
 import com.example.instalive.app.SessionPreferences
 import com.example.instalive.app.base.SharedViewModel
 import com.example.instalive.app.base.TextPopupWindow
-import com.example.instalive.utils.GlideEngine
-import com.example.instalive.utils.aAnimatorSet
-import com.example.instalive.utils.marsToast
-import com.example.instalive.utils.requestStoragePermission
+import com.example.instalive.utils.*
 import com.jeremyliao.liveeventbus.LiveEventBus
-import com.luck.picture.lib.PictureSelector
-import com.luck.picture.lib.config.PictureConfig
-import com.luck.picture.lib.config.PictureMimeType
-import com.luck.picture.lib.entity.LocalMedia
-import com.luck.picture.lib.language.LanguageConfig
-import com.luck.picture.lib.listener.OnResultCallbackListener
 import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.enums.PopupPosition
 import com.venus.dm.app.ChatConstants
@@ -65,9 +53,6 @@ import java.util.concurrent.ConcurrentLinkedQueue
 
 @ExperimentalStdlibApi
 class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
-
-//    private lateinit var conversationsEntity: ConversationsEntity
-//    private lateinit var screenName: String
 
     private lateinit var messageAdapter: MessageAdapter
     private lateinit var layoutManager: LinearLayoutManager
@@ -662,78 +647,40 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
     }
 
     private fun openImageAndVideo() {
-//        if (RecentConversation.conversationsEntity.disableSend == 1) {
-//            marsToast(R.string.fb_disable_send_message_warning)
-//            return
-//        }
-//        logFirebaseEvent("click_img")
-
-        val filterMimeType = ArrayList<String>()
-        filterMimeType.add("video/mp4")
-        filterMimeType.add("video/quicktime")
-        filterMimeType.add("image/jpeg")
-        filterMimeType.add("image/jpg")
-        filterMimeType.add("image/png")
-        PictureSelector.create(this)
-            .openGallery(PictureMimeType.ofVideo())
-            .isMaxSelectEnabledMask(true)
-            .isCanPreView(false)
-            .isWeChatStyle(true)
-            .theme(R.style.picture_WeChat_style)
-            .imageEngine(GlideEngine.createGlideEngine())
-            .isPreviewVideo(false)
-            .selectionMode(PictureConfig.SINGLE)
-            .maxSelectNum(1)
-            .maxVideoSelectNum(1)
-            .selectCountText(getString(R.string.fb_send))
-            .setLanguage(LanguageConfig.ENGLISH)
-            .isOnlyVideo(false)
-            .isWithVideoImage(true)
-            .isSelectedLocalMedia(false)
-            .selectMaxPrompt(resources.getString(R.string.fb_send))
-            .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
-            .isCamera(false)
-            .isShowPreView(false)
-            .setFilterMimeType(filterMimeType)
-            .forResult(object : OnResultCallbackListener<LocalMedia> {
-                override fun onResult(result: MutableList<LocalMedia>?) {
-                    if (result != null) {
-                        when ((result[0].mimeType).lowercase(Locale.getDefault())) {
-                            "video/mp4", "video/quicktime" -> {
-                                scrollToBottom()
-                                sharedViewModel.sendVideoMessage(
-                                    result[0].realPath,
-                                    conId,
-                                    result[0].width,
-                                    result[0].height,
-                                    result[0].duration,
-                                    result[0].size,
-                                    1,
-                                    "-1",
-                                    -1
-                                )
-                            }
-                            "image/jpeg", "image/jpg", "image/png" -> {
-                                scrollToBottom()
-                                sharedViewModel.sendImageMessage(
-                                    "-1",
-                                    1,
-                                    result[0].realPath,
-                                    conId,
-                                    result[0].width,
-                                    result[0].height,
-                                    -1
-                                )
-                            }
-                            else -> {
-                            }
-                        }
+        openPictureAndVideoSelector(go = {result ->
+            if (result != null) {
+                when ((result[0].mimeType).lowercase(Locale.getDefault())) {
+                    "video/mp4", "video/quicktime" -> {
+                        scrollToBottom()
+                        sharedViewModel.sendVideoMessage(
+                            result[0].realPath,
+                            conId,
+                            result[0].width,
+                            result[0].height,
+                            result[0].duration,
+                            result[0].size,
+                            1,
+                            "-1",
+                            -1
+                        )
+                    }
+                    "image/jpeg", "image/jpg", "image/png" -> {
+                        scrollToBottom()
+                        sharedViewModel.sendImageMessage(
+                            "-1",
+                            1,
+                            result[0].realPath,
+                            conId,
+                            result[0].width,
+                            result[0].height,
+                            -1
+                        )
+                    }
+                    else -> {
                     }
                 }
-
-                override fun onCancel() {}
-
-            })
+            }
+        })
     }
 
     private fun startMessageEventJob() {

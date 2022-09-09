@@ -3,16 +3,20 @@ package com.example.instalive.app.conversation
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ArrayAdapter
+import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.baselibrary.api.StatusEvent
 import com.example.baselibrary.utils.BarUtils
-import com.example.baselibrary.views.BaseActivity
 import com.example.baselibrary.views.DataBindingConfig
 import com.example.instalive.BuildConfig
 import com.example.instalive.R
-import com.example.instalive.app.Constants
+import com.example.instalive.app.base.InstaBaseActivity
 import com.example.instalive.databinding.ActivityConversationListBinding
+import com.example.instalive.utils.marsToast
 import com.venus.dm.db.entity.ConversationsEntity
 import kotlinx.android.synthetic.main.activity_conversation_list.*
 import kotlinx.coroutines.Dispatchers
@@ -22,10 +26,14 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import splitties.activities.start
+import splitties.alertdialog.appcompat.alertDialog
+import splitties.alertdialog.appcompat.cancelButton
+import splitties.alertdialog.appcompat.positiveButton
+import splitties.alertdialog.appcompat.titleResource
 import timber.log.Timber
 
 @ExperimentalStdlibApi
-class ConversationListActivity : BaseActivity<ConversationListViewModel, ActivityConversationListBinding>() {
+class ConversationListActivity : InstaBaseActivity<ConversationListViewModel, ActivityConversationListBinding>() {
 
     private lateinit var messagesListAdapter: ConversationListAdapter
 
@@ -39,6 +47,12 @@ class ConversationListActivity : BaseActivity<ConversationListViewModel, Activit
         supportActionBar?.title = getString(R.string.fb_direct_messages)
         viewModel.getConversationList()
         initList()
+        viewModel.errorInfo.observe(this, {
+            marsToast(it.second.toString())
+        })
+        viewModel.loadingStatsLiveData.observe(this, {
+            loadingAnimContainer?.isVisible = it == StatusEvent.LOADING
+        })
     }
 
     private fun initList() {
@@ -55,7 +69,7 @@ class ConversationListActivity : BaseActivity<ConversationListViewModel, Activit
                 }
 
                 override fun onConversationLongClicked(conversationsEntity: ConversationsEntity) {
-
+                    conversationLongClick(conversationsEntity)
                 }
 
                 override fun onAvatarClicked(
@@ -99,6 +113,83 @@ class ConversationListActivity : BaseActivity<ConversationListViewModel, Activit
                 }
             }
         }
+    }
+
+    private fun conversationLongClick(conversationsEntity: ConversationsEntity) {
+        val builder = AlertDialog.Builder(this@ConversationListActivity)
+        val adapter =
+            ArrayAdapter<String>(
+                this@ConversationListActivity,
+                android.R.layout.simple_list_item_1
+            )
+        adapter.add(
+            if (conversationsEntity.isPin == 0) getString(R.string.fb_pin) else getString(
+                R.string.fb_unpin
+            )
+        )
+        adapter.add(
+            if (conversationsEntity.mute == 0) getString(R.string.fb_mute) else getString(
+                R.string.fb_unmute
+            )
+        )
+        adapter.add(getString(R.string.fb_delete))
+        adapter.add(getString(R.string.fb_cancel))
+        builder.setAdapter(adapter) { dialog, witch ->
+            Timber.d("witch:$witch")
+            when (witch) {
+                0 -> {
+                    if (conversationsEntity.isPin == 0) {
+                        viewModel.pinConversation(
+                            conversationsEntity.conversationId,
+                            result = {})
+                    } else {
+                        viewModel.unpinConversation(
+                            conversationsEntity.conversationId,
+                            result = {})
+                    }
+                }
+                1 -> {
+                    if (conversationsEntity.mute == 0) {
+                        viewModel.muteOrUnmute(conversationsEntity.conversationId, 1, {
+
+                        }, null)
+                    } else {
+                        viewModel.muteOrUnmute(conversationsEntity.conversationId, 0, null, {
+
+                        })
+                    }
+                }
+                2 -> {
+                    alertDialog {
+                        titleResource = R.string.title_delete_conversation
+                        cancelButton()
+                        positiveButton(R.string.delete) {
+                            if (conversationsEntity.isPin == 1) {
+                                viewModel.unpinConversation(
+                                    conversationsEntity.conversationId,
+                                    result = {
+                                        deleteConversation(conversationsEntity.conversationId)
+                                        if (messagesListAdapter.currentID == conversationsEntity.conversationId) {
+                                            messagesListAdapter.currentID = ""
+                                        }
+                                    })
+                            } else {
+                                deleteConversation(conversationsEntity.conversationId)
+                                if (messagesListAdapter.currentID == conversationsEntity.conversationId) {
+                                    messagesListAdapter.currentID = ""
+                                }
+                            }
+                        }
+                    }.show()
+                }
+            }
+            dialog.dismiss()
+        }
+        builder.show()
+    }
+
+    private fun deleteConversation(conId: String) {
+        viewModel.deleteConversation(conId, false)
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {

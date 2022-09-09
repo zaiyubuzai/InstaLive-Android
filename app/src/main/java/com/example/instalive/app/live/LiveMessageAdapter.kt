@@ -184,7 +184,7 @@ class LiveMessageAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return when (messages[position].type) {
-            0 -> R.layout.item_live_message_me_layout
+            1 -> R.layout.item_live_message_me_layout
 //            3 -> R.layout.item_live_message_image_me_layout
 //            4 -> R.layout.item_live_message_video_me_layout
 //            8, 9, 10 -> {

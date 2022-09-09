@@ -95,12 +95,16 @@ class AgoraManager : ILiveManager {
         mRtcEngine?.enableDualStreamMode(enableDualStreamMode)
         mRtcEngine?.setChannelProfile(Constants.CHANNEL_PROFILE_COMMUNICATION)
         setClientRole(isAnchor)
-        mRtcEngine?.enableVideo()
+//        if (isAnchor){
+            mRtcEngine?.enableVideo()
+//        }
         mRtcEngine?.enableAudioVolumeIndication(300, 3, false)
 //        if (isAnchor) {
             mRtcEngine?.enableAudio()
 //        }
-        mRtcEngine?.startPreview()
+        if (isAnchor) {
+            mRtcEngine?.startPreview()
+        }
         mRtcEngine?.setEnableSpeakerphone(true)
         mRtcEngine?.adjustPlaybackSignalVolume(
             volume

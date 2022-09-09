@@ -16,7 +16,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.example.baselibrary.utils.BarUtils
-import com.example.baselibrary.utils.marsToast
+import com.example.baselibrary.utils.baseToast
 import com.example.baselibrary.views.DataBindingConfig
 import com.example.instalive.InstaLiveApp.Companion.appInstance
 import com.example.instalive.R
@@ -146,7 +146,7 @@ class LiveAudienceActivity : LiveBaseActivity<LiveAudienceViewModel, ActivityLiv
     private fun initObserver() {
 
         viewModel.errorCodeLiveData.observe(this) {
-            marsToast(viewModel.errorMessageLiveData.value.toString())
+            baseToast(viewModel.errorMessageLiveData.value.toString())
         }
 
         sharedViewModel.liveUsersSizeData.observe(this, {
@@ -645,10 +645,9 @@ class LiveAudienceActivity : LiveBaseActivity<LiveAudienceViewModel, ActivityLiv
     }
 
     private fun showLeavePrompt() {
-        leavePrompt?.visibility = View.VISIBLE
-        leavePrompt?.invalidate()
+        leavePrompt?.isVisible = true
         hideLoadingCover()
-        agoraManager.leaveLiveRoom()
+        destroyAppRTCEngine()
         sharedViewModel.isMicrophoneUser = false
         LiveSocketIO.releaseLiveSocket()
         liveInteractionFragment.hideLiveWithInvite()

@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.baselibrary.api.BaseRemoteRepository
 import com.example.baselibrary.api.RemoteEventEmitter
 import com.example.instalive.app.SessionPreferences
+import com.example.instalive.app.conversation.RecentConversation
 import com.example.instalive.db.InstaLiveDBProvider
 import com.example.instalive.http.InstaApi
 import com.example.instalive.model.ConversationInfo
@@ -267,7 +268,7 @@ object ConversationDataRepository : BaseRemoteRepository(), IConversationRequest
                                 recipientPortrait = recipient.portrait,
                                 recipientUsername = recipient.nickname,
                                 living = 0,
-                                chatState = response.data.chatState?:1,
+                                chatState = response.data.chatState ?: 1,
                                 relationship = recipient.relationship,
                                 type = 1,
                                 ownerId = recipient.id,
@@ -294,4 +295,90 @@ object ConversationDataRepository : BaseRemoteRepository(), IConversationRequest
         }
     }
 
+    override suspend fun pinConversation(
+        conversationId: String,
+        result: () -> Unit,
+        remoteEventEmitter: RemoteEventEmitter
+    ) {
+        val response = safeApiCall(remoteEventEmitter) {
+            instaApi.pinConversation(conversationId)
+        }
+        if (response != null) {
+            GlobalScope.launch {
+                val con =
+                    dao.getConversationByConId(conversationId, SessionPreferences.id)
+                if (con != null && con.isPin != 1) {
+                    con.isPin = 1
+                    dao.updateConversation(con)
+                    if (RecentConversation.conversationsEntity?.conversationId == conversationId) RecentConversation.conversationsEntity?.isPin =
+                        1
+                }
+                withContext(Dispatchers.Main) {
+                    result.invoke()
+                }
+            }
+        }
+    }
+
+    override suspend fun unpinConversation(
+        conversationId: String,
+        result: () -> Unit,
+        remoteEventEmitter: RemoteEventEmitter
+    ) {
+        val response = safeApiCall(remoteEventEmitter) {
+            instaApi.unpinConversation(conversationId)
+        }
+        if (response != null) {
+            GlobalScope.launch {
+                val con =
+                    dao.getConversationByConId(conversationId, SessionPreferences.id)
+                if (con != null && con.isPin != 0) {
+                    con.isPin = 0
+                    dao.updateConversation(con)
+                    if (RecentConversation.conversationsEntity?.conversationId == conversationId) RecentConversation.conversationsEntity?.isPin =
+                        0
+                }
+                withContext(Dispatchers.Main) {
+                    result.invoke()
+                }
+            }
+        }
+    }
+
+
+    override suspend fun muteOrUnmute(
+        conversationId: String,
+        mute: Int,
+        muted: (() -> Unit)?,
+        unMuted: (() -> Unit)?,
+        remoteEventEmitter: RemoteEventEmitter,
+    ) {
+        val response = safeApiCall(remoteEventEmitter) {
+            if (mute == 0) {
+                instaApi.unMuteConversation(conversationId)
+            } else {
+                instaApi.muteConversation(conversationId)
+            }
+        }
+
+        if (response?.resultOk() == true) {
+            GlobalScope.launch {
+                val conversationsEntity =
+                    dao.getConversationByConId(conversationId, SessionPreferences.id)
+                withContext(Dispatchers.Main) {
+                    if (mute == 0) {
+                        unMuted?.invoke()
+                    } else {
+                        muted?.invoke()
+                    }
+                }
+                conversationsEntity?.let {
+                    it.mute = mute
+                    dao.updateConversation(it)
+                    if (RecentConversation.conversationsEntity?.conversationId == conversationId) RecentConversation.conversationsEntity?.mute =
+                        mute
+                }
+            }
+        }
+    }
 }

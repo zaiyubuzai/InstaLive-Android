@@ -7,7 +7,6 @@ import android.view.WindowManager
 import android.widget.RelativeLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -16,7 +15,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.baselibrary.api.ErrorType
 import com.example.baselibrary.utils.BarUtils
-import com.example.baselibrary.utils.marsToast
+import com.example.baselibrary.utils.TimeUtils
+import com.example.baselibrary.utils.baseToast
 import com.example.baselibrary.views.DataBindingConfig
 import com.example.instalive.R
 import com.example.instalive.app.Constants.ITRCT_TYPE_MAKEUP_OFF
@@ -408,7 +408,7 @@ class LiveHostActivity : LiveBaseActivity<LiveHostViewModel, ActivityLiveHostBin
 
                 if (it != null) {
                     youGotDiamonds.text = VenusNumberFormatter.format(it.gotDiamonds)
-                    liveDuration.text = it.liveDuration.toString()
+                    liveDuration.text = TimeUtils.secToTime(it.liveDuration.toInt())
                     diamonds.text = VenusNumberFormatter.format(it.diamonds)
                     viewers.text = VenusNumberFormatter.format(it.viewerCount.toLong())
                     likes.text = VenusNumberFormatter.format(it.likeCount.toLong())
@@ -433,8 +433,7 @@ class LiveHostActivity : LiveBaseActivity<LiveHostViewModel, ActivityLiveHostBin
                 }
 
                 closeLivePrompt?.isVisible = false
-                agoraManager.leaveLiveRoom()
-                agoraManager.mRtcEngine = null
+                destroyAppRTCEngine()
             } else {
                 agoraManager.mRtcEngine?.enableVideo()
                 agoraManager.mRtcEngine?.enableAudio()
@@ -443,7 +442,7 @@ class LiveHostActivity : LiveBaseActivity<LiveHostViewModel, ActivityLiveHostBin
 
         viewModel.errorMessageLiveData.observe(this, {
             startLive?.isEnabled = true
-            marsToast(it)
+            baseToast(it)
         })
 
         viewModel.errorTypeLiveData.observe(this, {
@@ -456,7 +455,7 @@ class LiveHostActivity : LiveBaseActivity<LiveHostViewModel, ActivityLiveHostBin
             if (it.first == 7998 || it.first == 1215) {
                 showErrorPrompt(it.second)
             } else if (it.first == 6208) {
-                marsToast(it.second)
+                baseToast(it.second)
             }
         })
 
@@ -541,7 +540,7 @@ class LiveHostActivity : LiveBaseActivity<LiveHostViewModel, ActivityLiveHostBin
                 }
                 ITRCT_TYPE_LIVE_OFF -> { //直播结束
                     if (sharedViewModel.isMicrophone && liveUserWithUids.size > 1) {
-                        marsToast(R.string.please_hang_up_your_invited_user_live_video)
+                        baseToast(R.string.please_hang_up_your_invited_user_live_video)
                     } else {
                         hideInteractionContainer()
                         isClickCancel = false
@@ -659,10 +658,7 @@ class LiveHostActivity : LiveBaseActivity<LiveHostViewModel, ActivityLiveHostBin
                             viewers.text = info.onlineStr
                             diamonds.text = info.diamonds.toString()
                             closeLiveContainer?.isVisible = true
-                            agoraManager.mRtcEngine?.disableAudio()
-                            agoraManager.mRtcEngine?.disableVideo()
-                            agoraManager.mRtcEngine?.leaveChannel()
-                            agoraManager.mRtcEngine = null
+                            destroyAppRTCEngine()
                         } else {
                             agoraManager.mRtcEngine?.enableVideo()
                             agoraManager.mRtcEngine?.enableAudio()

@@ -116,7 +116,7 @@ fun String.appendZero(): String {
 }
 
 
-fun Activity.marsToast(msg: String) {
+fun Activity.baseToast(msg: String) {
     if (msg.isEmpty()) {
         return
     }
@@ -142,7 +142,7 @@ fun Activity.marsLongToast(msg: String) {
     toast.show()
 }
 
-fun Fragment.marsToast(msg: String, duration: Int = 0) {
+fun Fragment.baseToast(msg: String, duration: Int = 0) {
     try {
         if (msg.isEmpty()) {
             return
@@ -158,7 +158,7 @@ fun Fragment.marsToast(msg: String, duration: Int = 0) {
     }
 }
 
-fun Context.marsToast(msg: String) {
+fun Context.baseToast(msg: String) {
     if (msg.isEmpty()) {
         return
     }
@@ -184,7 +184,7 @@ fun Context.marsLongToast(msg: String) {
     toast.show()
 }
 
-fun View.marsToast(msg: String) {
+fun View.baseToast(msg: String) {
     if (msg.isEmpty()) {
         return
     }
@@ -197,20 +197,20 @@ fun View.marsToast(msg: String) {
     toast.show()
 }
 
-fun Activity.marsToast(res: Int) {
-    marsToast(getString(res))
+fun Activity.baseToast(res: Int) {
+    baseToast(getString(res))
 }
 
-fun Fragment.marsToast(res: Int) {
-    marsToast(getString(res))
+fun Fragment.baseToast(res: Int) {
+    baseToast(getString(res))
 }
 
-fun Context.marsToast(res: Int) {
-    marsToast(getString(res))
+fun Context.baseToast(res: Int) {
+    baseToast(getString(res))
 }
 
-fun View.marsToast(res: Int) {
-    marsToast(context?.getString(res) ?: "")
+fun View.baseToast(res: Int) {
+    baseToast(context?.getString(res) ?: "")
 }
 
 fun AssetManager.readAssetsFile(fileName: String): String =

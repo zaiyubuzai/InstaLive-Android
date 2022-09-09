@@ -10,7 +10,7 @@ import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import com.example.baselibrary.utils.alphaClick
 import com.example.baselibrary.utils.hideKeyboard
-import com.example.baselibrary.utils.marsToast
+import com.example.baselibrary.utils.baseToast
 import com.example.instalive.R
 import com.venus.dm.db.entity.ConversationsEntity
 import kotlinx.android.synthetic.main.message_bottom_layout.*
@@ -66,7 +66,7 @@ class MessageBottomLayout @JvmOverloads constructor(
                 ll_btn.isVisible = false
             }
             if (it.toString().length >= MAX_TEXT_SIZE) {
-                marsToast(context.getString(R.string.fb_up_to_any_chars, MAX_TEXT_SIZE.toString()))
+                baseToast(context.getString(R.string.fb_up_to_any_chars, MAX_TEXT_SIZE.toString()))
             }
         }
 

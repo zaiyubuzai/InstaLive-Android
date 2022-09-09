@@ -74,6 +74,15 @@ class LoginActivity : AppCompatActivity() {
                 )
                 .addToBackStack("login_fragment")
                 .commit()
+        } else {
+            supportFragmentManager.beginTransaction()
+                .add(R.id.fragmentContainer, addProfileInfoFragment.apply {
+                    this.phone = SessionPreferences.phone ?: ""
+                    this.passcode = ""
+                    this.source = intent.getStringExtra(EXTRA_LOGIN_SOURCE) ?: ""
+                }, "addProfileInfoFragment")
+                .addToBackStack("addProfileInfoFragment")
+                .commit()
         }
         ProcessLifecycleOwner.get()
             .lifecycle
@@ -151,8 +160,8 @@ class LoginActivity : AppCompatActivity() {
                     .show(addProfileInfoFragment.apply {
                         this.phone = phone
                         this.passcode = passcode
+                        this.portrait = this@LoginActivity.portrait
                         this.source = intent.getStringExtra(EXTRA_LOGIN_SOURCE) ?: ""
-                        this.title = this@LoginActivity.getString(R.string.fb_login)
                     }).commit()
             } else {
                 supportFragmentManager.beginTransaction()
@@ -160,8 +169,8 @@ class LoginActivity : AppCompatActivity() {
                     .add(R.id.fragmentContainer, addProfileInfoFragment.apply {
                         this.phone = phone
                         this.passcode = passcode
+                        this.portrait = this@LoginActivity.portrait
                         this.source = intent.getStringExtra(EXTRA_LOGIN_SOURCE) ?: ""
-                        this.title = this@LoginActivity.getString(R.string.fb_login)
                     }, "addProfileInfoFragment")
                     .addToBackStack("addProfileInfoFragment")
                     .commit()

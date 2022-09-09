@@ -50,6 +50,7 @@ object LiveSocketIO {
                 val comment =
                     Gson().fromJson(json, LiveCommentEvent::class.java)
                 comment.sendStatus = MessageEntity.SEND_STATUS_SUCCESS
+                comment.type = 1
                 onLiveSocketListener?.onLiveComment(comment)
             } catch (e: Exception) {
             }

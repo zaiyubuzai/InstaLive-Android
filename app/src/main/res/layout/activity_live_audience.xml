@@ -173,8 +173,8 @@
         <!-- 观众端直播结束 -->
         <RelativeLayout
             android:id="@+id/leavePrompt"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:background="@mipmap/bg_live"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -187,9 +187,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:tintMode="src_over"
-                android:visibility="visible"
-                app:tint="#a6000000" />
+                android:visibility="visible" />
+
+            <View
+                android:background="#a6000000"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
 
             <TextView
                 android:id="@+id/liveEndPromote"

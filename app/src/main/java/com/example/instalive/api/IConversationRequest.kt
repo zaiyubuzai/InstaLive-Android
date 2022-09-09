@@ -45,4 +45,24 @@ interface IConversationRequest {
         remoteEventEmitter: RemoteEventEmitter?,
         pendingNotificationMessages: List<MessageEntity>?
     )
+
+    suspend fun pinConversation(
+        conversationId: String,
+        result: () -> Unit,
+        remoteEventEmitter: RemoteEventEmitter
+    )
+
+    suspend fun unpinConversation(
+        conversationId: String,
+        result: () -> Unit,
+        remoteEventEmitter: RemoteEventEmitter
+    )
+
+    suspend fun muteOrUnmute(
+        conversationId: String,
+        mute: Int,
+        muted: (() -> Unit)?,
+        unMuted: (() -> Unit)?,
+        remoteEventEmitter: RemoteEventEmitter
+    )
 }

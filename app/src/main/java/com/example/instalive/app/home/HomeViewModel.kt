@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel : BaseViewModel() {
 
+    val userDataLiveData = MutableLiveData<UserData>()
     val liveList = MutableLiveData<List<LiveData>>()
     val meta = MutableLiveData<Meta>()
 
@@ -67,6 +68,21 @@ class HomeViewModel : BaseViewModel() {
                 override fun onEvent(event: StatusEvent) {
                     this@HomeViewModel.onEvent(event)
                     isLoading.invoke(event == StatusEvent.LOADING)
+                }
+
+            })
+        }
+    }
+
+    fun updateProfile(portrait: String){
+        viewModelScope.launch(Dispatchers.IO) {
+            DataRepository.updateProfile(null, null, portrait, null, userDataLiveData, object : RemoteEventEmitter {
+                override fun onError(code: Int, msg: String, errorType: ErrorType) {
+                    this@HomeViewModel.onError(code, msg, errorType)
+                }
+
+                override fun onEvent(event: StatusEvent) {
+                    this@HomeViewModel.onEvent(event)
                 }
 
             })

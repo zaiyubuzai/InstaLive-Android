@@ -49,7 +49,7 @@ class CreateEventActivity : BaseActivity<CreateEventViewModel, ActivityCreateEve
         }
         publish.onClick {
             if (dateCalendar.timeInMillis < System.currentTimeMillis()) {
-                marsToast(R.string.fb_new_event_in_the_past)
+                baseToast(R.string.fb_new_event_in_the_past)
             } else {
 //                viewModel.createEvent(
 //                    SessionPreferences.recentConversationID,
@@ -67,10 +67,10 @@ class CreateEventActivity : BaseActivity<CreateEventViewModel, ActivityCreateEve
             showTimeDialog()
         }
         edtEventName.filters = arrayOf(mInputFilter, MyLengthFilter(50) {
-            marsToast(getString(R.string.fb_up_to_any_chars, it.toString()))
+            baseToast(getString(R.string.fb_up_to_any_chars, it.toString()))
         })
         edtEventDescription.filters = arrayOf(MyLengthFilter(200) {
-            marsToast(getString(R.string.fb_up_to_any_chars, it.toString()))
+            baseToast(getString(R.string.fb_up_to_any_chars, it.toString()))
         })
         dateCalendar = Calendar.getInstance()
         val date = Date()
@@ -84,7 +84,7 @@ class CreateEventActivity : BaseActivity<CreateEventViewModel, ActivityCreateEve
 //            finish()
 //        })
         viewModel.errorCodeLiveData.observe(this, {
-            if (it != 0) marsToast(viewModel.errorMessageLiveData.value.toString())
+            if (it != 0) baseToast(viewModel.errorMessageLiveData.value.toString())
         })
     }
 
@@ -146,7 +146,7 @@ class CreateEventActivity : BaseActivity<CreateEventViewModel, ActivityCreateEve
                         ccMin[Calendar.MONTH],
                         ccMin[Calendar.DAY_OF_MONTH]
                     )
-                    marsToast(R.string.fb_new_event_in_the_past)
+                    baseToast(R.string.fb_new_event_in_the_past)
                 } else {
                     dateCalendar.set(Calendar.YEAR, year)
                     dateCalendar.set(Calendar.MONTH, month)

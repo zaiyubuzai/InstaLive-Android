@@ -85,14 +85,14 @@ object TimeUtils {
         }
     }
 
-    fun checkAdult(date: Date?): Boolean {
+    fun checkAdult(date: Date?, ageLimit: Int): Boolean {
         val current = Calendar.getInstance()
         val birthDay = Calendar.getInstance()
         birthDay.time = date
         val year = current[Calendar.YEAR] - birthDay[Calendar.YEAR]
-        if (year > 12) {
+        if (year > ageLimit) {
             return true
-        } else if (year < 12) {
+        } else if (year < ageLimit) {
             return false
         }
         // 如果年相等，就比较月份

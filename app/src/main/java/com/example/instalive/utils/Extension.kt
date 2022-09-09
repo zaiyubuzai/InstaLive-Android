@@ -4,12 +4,14 @@ import android.Manifest
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.animation.addListener
 import com.example.baselibrary.utils.Utils
-import com.example.baselibrary.utils.marsToast
+import com.example.baselibrary.utils.baseToast
 import com.example.instalive.BuildConfig
 import com.example.instalive.InstaLiveApp
 import com.karumi.dexter.Dexter
@@ -20,16 +22,24 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
 import splitties.alertdialog.appcompat.*
 import com.example.instalive.R
+import com.example.instalive.app.base.InstaBaseActivity
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import com.luck.picture.lib.PictureSelector
+import com.luck.picture.lib.config.PictureConfig
+import com.luck.picture.lib.config.PictureMimeType
+import com.luck.picture.lib.entity.LocalMedia
+import com.luck.picture.lib.language.LanguageConfig
+import com.luck.picture.lib.listener.OnResultCallbackListener
 import timber.log.Timber
+import java.util.*
 
 fun marsToast(res: Int) {
-    InstaLiveApp.appInstance.marsToast(res)
+    InstaLiveApp.appInstance.baseToast(res)
 }
 
 fun marsToast(msg: String) {
-    InstaLiveApp.appInstance.marsToast(msg)
+    InstaLiveApp.appInstance.baseToast(msg)
 }
 
 fun View.aAnimatorSet(view: ImageView) {
@@ -190,4 +200,44 @@ fun Context.requestMicrophonePermission(go: () -> Unit, no: (()->Unit)? = null){
             Timber.d("DexterError: $it")
         }
         .check()
+}
+
+fun AppCompatActivity.openPictureAndVideoSelector(go: (result: MutableList<LocalMedia>?) -> Unit, no: (()->Unit)? = null){
+    val filterMimeType = ArrayList<String>()
+    filterMimeType.add("video/mp4")
+    filterMimeType.add("video/quicktime")
+    filterMimeType.add("image/jpeg")
+    filterMimeType.add("image/jpg")
+    filterMimeType.add("image/png")
+    PictureSelector.create(this)
+        .openGallery(PictureMimeType.ofVideo())
+        .isMaxSelectEnabledMask(true)
+        .isCanPreView(false)
+        .isWeChatStyle(true)
+        .theme(R.style.picture_WeChat_style)
+        .imageEngine(GlideEngine.createGlideEngine())
+        .isPreviewVideo(false)
+        .selectionMode(PictureConfig.SINGLE)
+        .maxSelectNum(1)
+        .maxVideoSelectNum(1)
+        .selectCountText(getString(R.string.fb_send))
+        .setLanguage(LanguageConfig.ENGLISH)
+        .isOnlyVideo(false)
+        .isWithVideoImage(true)
+        .isSelectedLocalMedia(false)
+        .selectMaxPrompt(resources.getString(R.string.fb_send))
+        .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
+        .isCamera(false)
+        .isShowPreView(false)
+        .setFilterMimeType(filterMimeType)
+        .forResult(object : OnResultCallbackListener<LocalMedia> {
+            override fun onResult(result: MutableList<LocalMedia>?) {
+                go.invoke(result)
+            }
+
+            override fun onCancel() {
+                no?.invoke()
+            }
+
+        })
 }

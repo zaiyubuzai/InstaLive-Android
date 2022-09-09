@@ -12,7 +12,7 @@ import com.bumptech.glide.request.transition.Transition
 import com.example.baselibrary.api.StatusEvent
 import com.example.baselibrary.utils.alphaClick
 import com.example.baselibrary.utils.debounceClick
-import com.example.baselibrary.utils.marsToast
+import com.example.baselibrary.utils.baseToast
 import com.example.baselibrary.utils.tinyMoveClickListener
 import com.example.instalive.InstaLiveApp
 import com.example.instalive.InstaLiveApp.Companion.appInstance
@@ -368,11 +368,11 @@ class LiveInteractionFragment :
     private fun isShowLiveWithContainer(isShowLiveWith: Boolean) {
         if (liveWithInteractions == null) return
         liveWithInteractions.isVisible = isShowLiveWith
-        sendPicture.isVisible = !isShowLiveWith
+//        sendPicture.isVisible = !isShowLiveWith
         txtComment.isVisible = !isShowLiveWith
         liveThumb.isVisible = !isShowLiveWith
 //        sendGif.isVisible = !isShowLiveWith
-//        icGift.isVisible = !isShowLiveWith
+        icGift.isVisible = !isShowLiveWith
     }
 
     override fun doLikeFavor() {
@@ -459,7 +459,7 @@ class LiveInteractionFragment :
 
     fun onRaiseHandClick() {
         if (sharedViewModel.isMicrophoneUser) {
-            marsToast(R.string.fb_live_you_on_live_now)
+            baseToast(R.string.fb_live_you_on_live_now)
             return
         }
 

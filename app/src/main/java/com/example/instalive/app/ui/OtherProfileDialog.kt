@@ -13,7 +13,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
-import com.example.baselibrary.utils.marsToast
+import com.example.baselibrary.utils.baseToast
 import com.example.baselibrary.views.BaseBottomPopup
 import com.example.instalive.InstaLiveApp
 import com.venus.framework.util.isNeitherNullNorEmpty
@@ -87,7 +87,7 @@ class OtherProfileDialog(
         }
 
         viewModel.errorMessageLiveData.observe(this, {
-            marsToast(it)
+            baseToast(it)
         })
 
     }

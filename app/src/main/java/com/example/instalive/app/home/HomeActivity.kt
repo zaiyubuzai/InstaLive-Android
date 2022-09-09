@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.activity_home.*
 import splitties.views.onClick
 import timber.log.Timber
 
-import com.example.baselibrary.utils.marsToast
+import com.example.baselibrary.utils.baseToast
 
 import android.net.Uri
 
@@ -108,7 +108,7 @@ class HomeActivity : InstaBaseActivity<HomeViewModel, ActivityHomeBinding>() {
                     showOtherProfileDialog(null, it)
                 }
             }
-            marsToast(sign)
+            baseToast(sign)
         }
         builder.show()
     }

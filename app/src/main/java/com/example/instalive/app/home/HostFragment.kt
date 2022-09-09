@@ -16,7 +16,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.example.baselibrary.utils.Utils
 import com.example.baselibrary.utils.dip
-import com.example.baselibrary.utils.marsToast
+import com.example.baselibrary.utils.baseToast
 import com.example.baselibrary.views.BaseFragment
 import com.example.baselibrary.views.DataBindingConfig
 import com.example.instalive.BuildConfig
@@ -94,12 +94,14 @@ class HostFragment : BaseFragment<HomeViewModel, FragmentHostBinding>() {
             Glide.with(activity).load(it)
                 .apply(options)
                 .into(avatar)
-            marsToast("Upload Success")
+            baseToast(R.string.fb_upload_success)
+            viewModel.updateProfile(it)
         })
     }
 
     private fun selectImageDialog() {
-        val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
+        val c = context?:return
+        val builder: AlertDialog.Builder = AlertDialog.Builder(c)
         //设置标题
         //  builder.setTitle(getString(R.string.image_source))
         //底部的取消按钮

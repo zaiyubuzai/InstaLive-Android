@@ -19,6 +19,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.HttpException
+import retrofit2.http.Field
 import timber.log.Timber
 import java.io.File
 import java.io.FileNotFoundException
@@ -112,6 +113,24 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
         if (response?.resultOk() == true) {
             Timber.d("response: ${response.result}")
             liveData.postValue(Any())
+        }
+    }
+
+    override suspend fun updateProfile(
+        username: String?,
+        nickname: String?,
+        portrait: String?,
+        bio: String?,
+        liveData: MutableLiveData<UserData>,
+        remoteEventEmitter: RemoteEventEmitter
+    ){
+        val response = safeApiCall(remoteEventEmitter) {
+            baseApi.updateProfile(username, nickname, portrait, bio)
+        }
+        Timber.d("response: ${response?.result}1")
+        if (response?.resultOk() == true) {
+            Timber.d("response: ${response.result}")
+            liveData.postValue(response.data)
         }
     }
 

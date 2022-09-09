@@ -9,8 +9,8 @@ import com.google.gson.annotations.SerializedName
 //        "viewer_count": 1
 data class LiveCloseData(
     val diamonds: Long,
-    @SerializedName("host_got_diamonds")val gotDiamonds: Long,
-    @SerializedName("like_count")val likeCount: Int,
-    @SerializedName("live_duration")val liveDuration: Long,
-    @SerializedName("viewer_count")val viewerCount: Int,
+    @SerializedName("host_got_diamonds") val gotDiamonds: Long,
+    @SerializedName("like_count") val likeCount: Int,
+    @SerializedName("live_duration") val liveDuration: Long,
+    @SerializedName("viewer_count") val viewerCount: Int,
 )

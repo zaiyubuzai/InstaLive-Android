@@ -18,7 +18,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -62,10 +61,11 @@ class AddProfileInfoFragment :
     BaseFragment<AddProfileInfoViewModel, FragmentAddProfileInfoBinding>() {
     var phone: String? by argOrNull()
     var passcode: String? by argOrNull()
+    var portrait: String? by argOrNull()
     var source: String by arg()
-    var title: String by arg()
 
     private var gender = 1
+    private val ageLimit = 18//age limit
 
     private var currentDate: Calendar? = null
 
@@ -85,8 +85,6 @@ class AddProfileInfoFragment :
 
     override fun initData(savedInstanceState: Bundle?) {
         screenName = "login_view"
-        fullNameInput.requestFocus()
-        fullNameInput.showKeyboard()
         toolbar.setNavigationOnClickListener {
             if (SessionPreferences.birthdayError) {
                 activity.finish()
@@ -96,8 +94,17 @@ class AddProfileInfoFragment :
             }
         }
 
+        portrait?.let {
+            val options = RequestOptions.bitmapTransform(RoundedCorners(activity.dip(20)))
+            Glide.with(activity).load(it)
+                .apply(options)
+                .into(portraitIV)
+        }
         if (SessionPreferences.birthdayError) {
             showBirthdayError()
+        } else {
+            fullNameInput.requestFocus()
+            fullNameInput.showKeyboard()
         }
 
         if (SessionPreferences.birthday.isNotEmpty()){
@@ -106,23 +113,26 @@ class AddProfileInfoFragment :
         genderText.textResource = R.string.fb_man
         next.onClick {
             currentDate?.let { calendar ->
-                if (TimeUtils.checkAdult(calendar.time)) {
+                if (TimeUtils.checkAdult(calendar.time, ageLimit)) {
                     SessionPreferences.birthdayError = false
                     SessionPreferences.birthday = birthdayText.text.toString()
                     if (fullNameInput.text.toString().endsWith(" ")) {
-                        marsToast(getString(R.string.fb_fullname_not_end_with_space))
+                        baseToast(getString(R.string.fb_fullname_not_end_with_space))
                     } else if (fullNameInput.text.toString().startsWith(" ")) {
-                        marsToast(getString(R.string.fb_fullname_not_start_with_space))
+                        baseToast(getString(R.string.fb_fullname_not_start_with_space))
                     } else {
                         fullNameInput.hideKeyboard()
                         viewModel.checkUsernameAvailability(fullNameInput.text.toString())
                         next.isEnabled = false
                     }
+                } else {
+                    SessionPreferences.birthday = birthdayText.text.toString()
+                    showBirthdayError()
                 }
             }
         }
 
-        portrait.onClick {
+        portraitIV.onClick {
             selectImageDialog()
         }
         imageSelector.onClick {
@@ -132,12 +142,10 @@ class AddProfileInfoFragment :
             showList()
         }
         birthdayText.onClick{
+            fullNameInput.clearFocus()
+            fullNameInput.hideKeyboard()
             if (!SessionPreferences.birthdayError) showBirthdayDialog()
         }
-
-        viewModel.loadingStatsLiveData.observe(this, {
-            progress.isVisible = it == StatusEvent.LOADING
-        })
 
         fullNameInput.filters = arrayOf(InputFilter { source, start, end, dest, dstart, dend ->
 
@@ -146,7 +154,7 @@ class AddProfileInfoFragment :
             }
 
             if (source.contains(" ") && dest.contains(" ")) {
-                marsToast(getString(R.string.fb_fullname_only_one_space))
+                baseToast(getString(R.string.fb_fullname_only_one_space))
                 return@InputFilter ""
             }
 
@@ -156,7 +164,7 @@ class AddProfileInfoFragment :
 
             return@InputFilter source
         }, MyLengthFilter(20) {
-            marsToast(getString(R.string.fb_up_to_any_chars, it.toString()))
+            baseToast(getString(R.string.fb_up_to_any_chars, it.toString()))
         })
 
         fullNameInput.doAfterTextChanged {
@@ -176,20 +184,24 @@ class AddProfileInfoFragment :
 
         viewModel.resultData.observe(this, {
             (activity as LoginActivity).portrait = it
-            if (portrait == null) return@observe
+            if (portraitIV == null) return@observe
             val options = RequestOptions.bitmapTransform(RoundedCorners(activity.dip(20)))
             Glide.with(activity).load(it)
                 .apply(options)
-                .into(portrait)
-            marsToast("Upload Success")
+                .into(portraitIV)
+            baseToast(R.string.fb_upload_success)
         })
-
+        viewModel.loadingStatsLiveData.observe(this, {
+            progress.isVisible = it == StatusEvent.LOADING
+        })
         viewModel.errorCodeLiveData.observe(this, {
             if (it == 1161) {
                 //Sorry, looks like you are Noy eligible for Fambase.
 //                marsToast("Sorry, looks like you are Noy eligible for Fambase.")
                 SessionPreferences.birthday = birthdayText.text.toString()
                 showBirthdayError()
+            } else {
+                baseToast(viewModel.errorMessageLiveData.value.toString())
             }
         })
     }
@@ -287,7 +299,7 @@ class AddProfileInfoFragment :
                     }
 
                     override fun onTimeConfirm(date: Date, view: View?) {
-                        if (TimeUtils.checkAdult(date)) hideBirthdayError()
+                        if (TimeUtils.checkAdult(date, ageLimit)) hideBirthdayError()
                         val calendar = Calendar.getInstance()
                         calendar.time = date
                         currentDate = calendar
@@ -452,21 +464,18 @@ class AddProfileInfoFragment :
 
     override fun onResume() {
         super.onResume()
-        if (isShowToUser) fullNameInput.requestFocus()
+//        if (isShowToUser) fullNameInput.requestFocus()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         isShowToUser = !hidden
         if (!hidden){
-            mainHandler.postDelayed({
-                fullNameInput?.requestFocus()
-                fullNameInput?.showKeyboard()
-                inputMethodManager.toggleSoftInput(
-                    InputMethodManager.SHOW_FORCED,
-                    InputMethodManager.HIDE_IMPLICIT_ONLY
-                )
-            }, 300)
+//            mainHandler.postDelayed({
+//                fullNameInput?.requestFocus()
+//                fullNameInput?.showKeyboard()
+
+//            }, 300)
         }
     }
 

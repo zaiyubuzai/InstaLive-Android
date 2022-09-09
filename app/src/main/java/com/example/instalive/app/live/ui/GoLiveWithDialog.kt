@@ -11,7 +11,7 @@ import androidx.paging.LoadState
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.baselibrary.utils.marsToast
+import com.example.baselibrary.utils.baseToast
 import com.example.baselibrary.views.BaseBottomPopup
 import com.example.instalive.InstaLiveApp.Companion.appInstance
 import com.example.instalive.R
@@ -103,7 +103,7 @@ class GoLiveWithDialog(
             dismiss()
         }
         viewModel.errorMessageLiveData.observeForever {
-            marsToast(it)
+            baseToast(it)
         }
     }
 

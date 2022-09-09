@@ -17,7 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.baselibrary.BuildConfig
 import com.example.baselibrary.R
 import com.example.baselibrary.api.ErrorType
-import com.example.baselibrary.utils.marsToast
+import com.example.baselibrary.utils.baseToast
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.github.pwittchen.reactivenetwork.library.rx2.internet.observing.InternetObservingSettings
 import com.github.pwittchen.reactivenetwork.library.rx2.internet.observing.strategy.SocketInternetObservingStrategy
@@ -86,7 +86,7 @@ abstract class BaseFragment<VMD : ViewModel, VDB : ViewDataBinding> : Fragment()
         if (viewModel is BaseViewModel) {
             (viewModel as BaseViewModel).errorTypeLiveData.observe(this) {
                 if (it == ErrorType.NETWORK) {
-                    marsToast(R.string.no_network_connection_base)
+                    baseToast(R.string.no_network_connection_base)
                 }
             }
         }

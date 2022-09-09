@@ -28,13 +28,13 @@ import com.example.instalive.app.base.SharedViewModel
 import com.example.instalive.app.live.ui.LiveRelativeLayout
 import com.example.instalive.model.LiveUserWithUidData
 import com.example.instalive.model.Resolution
+import com.example.instalive.utils.BlurTransformation
 import com.jeremyliao.liveeventbus.LiveEventBus
 import com.venus.livesdk.rtc.AgoraManager
 import com.venus.livesdk.rtc.EventHandler
 import io.agora.rtc.Constants
 import io.agora.rtc.IRtcEngineEventHandler
 import io.agora.rtc.video.VideoEncoderConfiguration
-import jp.wasabeef.glide.transformations.BlurTransformation
 import kotlinx.coroutines.*
 import splitties.dimensions.dp
 import timber.log.Timber
@@ -468,8 +468,7 @@ abstract class LiveBaseActivity<VMD : ViewModel, VDB : ViewDataBinding> : InstaB
             .load(portrait)
             .skipMemoryCache(false)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .placeholder(R.mipmap.bg_live)
-            .apply(RequestOptions.bitmapTransform(BlurTransformation(this, 25, 8)))
+            .apply(RequestOptions.bitmapTransform(BlurTransformation(25, 8)))
             .into(view)
     }
 
@@ -477,6 +476,10 @@ abstract class LiveBaseActivity<VMD : ViewModel, VDB : ViewDataBinding> : InstaB
         super.onDestroy()
         removeEventHandler(this)
         sharedViewModel.liveReset()
+        destroyAppRTCEngine()
+    }
+
+    protected fun destroyAppRTCEngine(){
         appInstance.rtcEngine()?.stopPreview()
         appInstance.rtcEngine()?.disableVideo()
         appInstance.rtcEngine()?.disableAudio()
