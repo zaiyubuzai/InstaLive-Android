@@ -5,11 +5,8 @@
 
     <data>
         <variable
-            name="isGroup"
-            type="Boolean" />
-        <variable
-            name="messageEntity"
-            type="com.venus.dm.db.entity.MessageEntity" />
+            name="liveCommentEvent"
+            type="com.example.instalive.model.LiveCommentEvent" />
         <variable
             name="isPerformer"
             type="Boolean" />
@@ -35,7 +32,7 @@
 
         <ImageView
             android:id="@+id/avatar"
-            imageViewAvatar="@{messageEntity.senderPortrait}"
+            imageViewAvatar="@{liveCommentEvent.userInfo.portrait}"
             android:layout_width="@dimen/dimen_36dp"
             android:layout_height="@dimen/dimen_36dp"
             app:layout_constraintStart_toStartOf="parent"
@@ -116,7 +113,7 @@
                     android:layout_marginEnd="@dimen/dimen_28dp"
                     android:lineSpacingExtra="6sp"
                     android:singleLine="true"
-                    android:text="@{messageEntity.senderName}"
+                    android:text="@{liveCommentEvent.userInfo.nickname}"
                     android:textColor="#ffffff"
                     android:textSize="13sp"
                     tools:text="al;ksdjfal;skdjfal;sdkjfasdfasdfasdfasdfasdfasasdfasdfasd" />

@@ -45,6 +45,7 @@ import com.example.instalive.app.conversation.TopSmoothScroller
 import com.example.instalive.app.live.ui.LiveCommentInputDialog
 import com.example.instalive.mentions.Mentionable
 import com.example.instalive.model.*
+import com.example.instalive.utils.LiveSocketIO
 import com.example.instalive.utils.NoUnderlineClickableSpanBuilder
 import com.example.instalive.utils.VenusNumberFormatter
 import com.example.instalive.utils.marsToast
@@ -125,6 +126,7 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
     private var giftListData: GiftListData? = null
 
     private val messageEventSyncList = ConcurrentLinkedQueue<LiveMsgEvent>()
+    private val ownerMessageEventSyncList = ConcurrentLinkedQueue<LiveMsgEvent>()
 
     private var lastActivityEventEmitJob: Job? = null
     private var secondGiftCardViewJob: Job? = null
@@ -161,6 +163,12 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
         initList()
 
         init()
+
+        LiveSocketIO.onLiveSocketListener = object : LiveSocketIO.OnLiveSocketListener {
+            override fun onLiveComment(comment: LiveCommentEvent) {
+                messageEventSyncList.add(LiveMsgEvent(comment.uuid, liveId, 2, 1, comment))
+            }
+        }
 
         LiveEventBus.get(Constants.EVENT_BUS_KEY_USER).observe(this) {
             if (it is UserData) {
@@ -299,28 +307,24 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
 
     }
 
-    private val messageListLoadObserver: (List<MessageEntity>, isRefresh: Boolean) -> Unit =
-        { messages: List<MessageEntity>, isRefresh: Boolean ->
-            val oldCount = liveMessageAdapter.messages.size
-            val messages2 = messages.toList().filter {
-                !liveMessageAdapter.messageUUIDList.toList().contains(it.uuid)
-            }
-            liveMessageAdapter.messages.addAll(messages2)
-            liveMessageAdapter.notifyItemRangeInserted(oldCount, messages2.size)
-            scrollToNewMessage(false)
-        }
-
     private fun startMessageEventJob() {
         messageEventJob?.cancel()
         messageEventJob = CoroutineScope(Dispatchers.IO).launch {
             while (this.isActive) {
                 try {
-                    val messageEvent = messageEventSyncList.poll()
-                    if (messageEvent != null) {
-                        buildMessageChange(messageEvent)
+                    if (ownerMessageEventSyncList.isEmpty()) {
+                        val messageEvent = messageEventSyncList.poll()
+                        if (messageEvent != null) {
+                            buildMessageChange(messageEvent)
+                        } else {
+                            insertMessages()
+                            delay(100)
+                        }
                     } else {
-                        insertMessages()
-                        delay(100)
+                        val messageEvent = ownerMessageEventSyncList.poll()
+                        if (messageEvent != null) {
+                            buildMessageChange(messageEvent)
+                        }
                     }
                 } catch (e: Exception) {
                 }
@@ -331,8 +335,34 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
     @Throws(Exception::class)
     private suspend fun buildMessageChange(messageEvent: LiveMsgEvent) {
         when (messageEvent.type) {
-            MessageEntity.SEND_STATUS_SENDING -> {
-                val message = messageEvent.messageEntity ?: return
+            1 -> {
+                if (MessageEntity.SEND_STATUS_SENDING == messageEvent.sendType) {
+                    val message = messageEvent.comment ?: return
+                    val isContains = liveMessageAdapter.messageUUIDList.contains(messageEvent.uuid)
+                    if (messageEvent.liveId == liveId && !isContains) {
+                        liveMessageAdapter.messageUUIDList.add(message.uuid)
+                        withContext(Dispatchers.Main) {
+                            liveMessageAdapter.messages.add(0, message)
+                            liveMessageAdapter.notifyItemInserted(0)
+                            scrollToNewMessage(false)
+                        }
+                    }
+                } else if (messageEvent.sendType == MessageEntity.SEND_STATUS_FAILED
+                    || messageEvent.sendType == MessageEntity.SEND_STATUS_SUCCESS
+                ) {
+                    val index = liveMessageAdapter.messages.indexOfFirst {
+                        it.uuid == messageEvent.uuid
+                    }
+                    if (index >= 0) {
+                        withContext(Dispatchers.Main) {
+                            liveMessageAdapter.messages[index].sendStatus = messageEvent.sendType
+                            liveMessageAdapter.notifyItemChanged(index)
+                        }
+                    }
+                }
+            }
+            2 -> {
+                val message = messageEvent.comment ?: return
                 val isContains = liveMessageAdapter.messageUUIDList.contains(messageEvent.uuid)
                 if (messageEvent.liveId == liveId && !isContains) {
                     liveMessageAdapter.messageUUIDList.add(message.uuid)
@@ -340,17 +370,6 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
                         liveMessageAdapter.messages.add(0, message)
                         liveMessageAdapter.notifyItemInserted(0)
                         scrollToNewMessage(false)
-                    }
-                }
-            }
-            MessageEntity.SEND_STATUS_FAILED, MessageEntity.SEND_STATUS_SUCCESS -> {
-                val index = liveMessageAdapter.messages.indexOfFirst {
-                    it.uuid == messageEvent.uuid
-                }
-                if (index >= 0) {
-                    withContext(Dispatchers.Main) {
-                        liveMessageAdapter.messages[index].sendStatus = messageEvent.type
-                        liveMessageAdapter.notifyItemChanged(index)
                     }
                 }
             }
@@ -474,8 +493,8 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
             mutableListOf(),
             true,
             object : LiveMessageAdapter.OnLiveMessageActionsListener {
-                override fun onPortraitClicked(senderId: String, senderRole: Int) {
-                    Timber.d("$senderId $senderRole")
+                override fun onPortraitClicked(senderId: String) {
+                    Timber.d("$senderId ")
                     if (senderId == SessionPreferences.id) {
                         val meData = SESSION.retrieveMeInfo()
                         meData?.let { showMeProfileDialog(it) }
@@ -483,50 +502,13 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
                         showOtherProfileDialog(
                             senderId,
                             "",
-                            senderRole
+                            9
                         )
                     }
                 }
 
-                override fun onResendClicked(messageEntity: MessageEntity) {
-                    resendMessage(messageEntity)
-                }
-
-                override fun onPlayVideo(messageEntity: MessageEntity) {
-                    buildMediaData(messageEntity)
-                }
-
-                override fun onViewImage(messageEntity: MessageEntity) {
-                    buildMediaData(messageEntity)
-                }
-
-                override fun onReplyViewImage(messageEntity: MessageEntity) {
-                    buildMediaData(messageEntity)
-                }
-
-                override fun onReplyViewVideo(messageEntity: MessageEntity) {
-                    buildMediaData(messageEntity)
-                }
-
-                override fun onReplyMessage(messageEntity: MessageEntity) {
-                    val payload = MessageEntity.Payload.fromJson(messageEntity.payload)
-                    payload?.targetMessage?.let {
-                        if (it.type == 3) {
-                            getString(R.string.il_name_image, it.senderName)
-                        } else if (it.type == 4) {
-                            getString(R.string.il_name_video, it.senderName)
-                        } else {
-                            "${it.senderName}: ${it.payload.content}"
-                        }
-                    }?.let {
-                        val tokenPopupWindow =
-                            TextPopupWindow(requireActivity(), it)
-                        with(tokenPopupWindow) {
-                            isClippingEnabled = false
-                            animationStyle = R.style.anim_style
-                            show()
-                        }
-                    }
+                override fun onResendClicked(commentEvent: LiveCommentEvent) {
+//                    resendMessage(messageEntity)
                 }
 
                 override fun onUsernameClick(username: String) {
@@ -562,19 +544,6 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
                         openGift(giftId)
                     }
                 }
-
-                override fun onViewGif(url: String?) {
-//                        url?.let {
-//                            val messageSimpleGifViewer = MessageSimpleGifViewer(it)
-//                            messageSimpleGifViewer.show(
-//                                activity.supportFragmentManager,
-//                                null
-//                            )
-//                        }
-                }
-
-                override fun onRecharge() {}
-
             }
         )
         layoutManager = LinearLayoutManager(activity)
@@ -587,7 +556,7 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
         interactionsList.itemAnimator = null
 
         interactionsList.adapter = liveMessageAdapter
-        viewModel.getMessageList(true, liveId, 0L, messageListLoadObserver)
+
         interactionsList.addOnLayoutChangeListener { _, _, top, _, bottom, _, oldTop, _, oldBottom ->
 //            Timber.d("OnLayoutChange $bottom $oldBottom $top $oldTop")
             val firstPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
@@ -624,65 +593,66 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
                 when (messageEntity.type) {
                     1 -> {
                         scrollToBottom()
+
                         viewModel.resendTextMessage(
                             messageEntity,
                         )
                     }
-                    3 -> {
-                        //重发图片
-                        val path = messageEntity.localResPath
-                        val payload =
-                            MessageEntity.Payload.fromJson(messageEntity.payload)
-                        if (path != null) {
-                            val file = File(path)
-                            if (file.exists()) {
-                                scrollToBottom()
-                                sharedViewModel.sendImageMessage(
-                                    payload?.liveId ?: "-1",
-                                    messageEntity.showType,
-                                    path,
-                                    messageEntity.conId,
-                                    payload?.width ?: 0,
-                                    payload?.height ?: 0,
-                                    -1
-                                )
-                                viewModel.deleteMessage(messageEntity)
-                            }
-                        }
-                    }
-                    4 -> {
-                        //重发视频
-                        val path = messageEntity.localResPath
-                        if (path != null) {
-                            val file = File(path)
-                            if (file.exists()) {
-                                val payload =
-                                    MessageEntity.Payload.fromJson(messageEntity.payload)
-                                scrollToBottom()
-                                sharedViewModel.sendVideoMessage(
-                                    path,
-                                    messageEntity.conId,
-                                    payload?.width ?: 100,
-                                    payload?.height ?: 100,
-                                    (payload?.length ?: 100).toLong(),
-                                    (payload?.size ?: 100).toLong(),
-                                    messageEntity.showType,
-                                    payload?.liveId ?: "-1",
-                                    -1
-                                )
-                                viewModel.deleteMessage(messageEntity)
-                            }
-                        }
-                    }
-                    32 -> {
-                        scrollToBottom()
-                        viewModel.resendTextMessage(
-                            messageEntity,
-                        )
-                    }
-                    34 -> {
-                        val payload =
-                            MessageEntity.Payload.fromJson(messageEntity.payload)
+//                    3 -> {
+//                        //重发图片
+//                        val path = messageEntity.localResPath
+//                        val payload =
+//                            MessageEntity.Payload.fromJson(messageEntity.payload)
+//                        if (path != null) {
+//                            val file = File(path)
+//                            if (file.exists()) {
+//                                scrollToBottom()
+//                                sharedViewModel.sendImageMessage(
+//                                    payload?.liveId ?: "-1",
+//                                    messageEntity.showType,
+//                                    path,
+//                                    messageEntity.conId,
+//                                    payload?.width ?: 0,
+//                                    payload?.height ?: 0,
+//                                    -1
+//                                )
+//                                viewModel.deleteMessage(messageEntity)
+//                            }
+//                        }
+//                    }
+//                    4 -> {
+//                        //重发视频
+//                        val path = messageEntity.localResPath
+//                        if (path != null) {
+//                            val file = File(path)
+//                            if (file.exists()) {
+//                                val payload =
+//                                    MessageEntity.Payload.fromJson(messageEntity.payload)
+//                                scrollToBottom()
+//                                sharedViewModel.sendVideoMessage(
+//                                    path,
+//                                    messageEntity.conId,
+//                                    payload?.width ?: 100,
+//                                    payload?.height ?: 100,
+//                                    (payload?.length ?: 100).toLong(),
+//                                    (payload?.size ?: 100).toLong(),
+//                                    messageEntity.showType,
+//                                    payload?.liveId ?: "-1",
+//                                    -1
+//                                )
+//                                viewModel.deleteMessage(messageEntity)
+//                            }
+//                        }
+//                    }
+//                    32 -> {
+//                        scrollToBottom()
+//                        viewModel.resendTextMessage(
+//                            messageEntity,
+//                        )
+//                    }
+//                    34 -> {
+//                        val payload =
+//                            MessageEntity.Payload.fromJson(messageEntity.payload)
 //                        sharedViewModel.sendGifMessage(
 //                            RecentConversation.conversationsEntity.type,
 //                            "-1",
@@ -693,8 +663,8 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
 //                            payload?.height ?: 100,
 //                            RecentConversation.conversationsEntity.level
 //                        )
-                        viewModel.deleteMessage(messageEntity)
-                    }
+//                        viewModel.deleteMessage(messageEntity)
+//                    }
                 }
             }
 
@@ -1224,10 +1194,25 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
 //                            "comment_live",
 //                            bundleOf("type" to if (isHost) "host" else "viewer")
 //                        )
+                    val uuid = UUID.randomUUID().toString()
                     viewModel.sendMessage(
                         liveId,
                         text,
+                        uuid
                     )
+                    SESSION.toLiveUserInfo()?.let {
+                        ownerMessageEventSyncList.add(
+                            LiveMsgEvent(
+                                uuid,
+                                liveId,
+                                1,
+                                MessageEntity.SEND_STATUS_SENDING,
+                                LiveCommentEvent(text, uuid, it).apply {
+                                    sendStatus = MessageEntity.SEND_STATUS_SENDING
+                                }
+                            )
+                        )
+                    }
                 }
 
                 override fun onDismiss(text: String, mentionables: MutableList<Mentionable>?) {
@@ -1247,7 +1232,7 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
         val unreadMessages = liveMessageAdapter.messages.subList(0, newEventCount)
         var count = 0
         unreadMessages.forEach {
-            if (!listOf(8, 9, 31, 201).contains(it.type) || it.renderType > 2) {
+            if (!listOf(8, 9, 31, 201).contains(it.type) ) {
                 count++
             }
         }

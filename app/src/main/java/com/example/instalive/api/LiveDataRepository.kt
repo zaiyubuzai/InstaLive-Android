@@ -277,17 +277,17 @@ object LiveDataRepository : ILiveDataRepository, BaseRemoteRepository() {
         //如果job没有被cancel掉，30秒后查询数据库看发送状态，如果还是正在发送，就置为失败
         val job = CoroutineScope(Dispatchers.IO).launch {
             delay(30000)
-            LiveEventBus.get(Constants.EVENT_BUS_KEY_LIVE_MESSAGE).post(LiveMsgEvent(uuid, liveId, MessageEntity.SEND_STATUS_FAILED))
+            LiveEventBus.get(Constants.EVENT_BUS_KEY_LIVE_MESSAGE).post(LiveMsgEvent(uuid, liveId, 1,MessageEntity.SEND_STATUS_FAILED))
         }
         pendingMessageJobsMap[uuid] = job
         val response = safeApiCall(remoteEventEmitter) {
             instaApi.sendLiveComment(liveId, msg, uuid)
         }
         if (response != null) {
-            LiveEventBus.get(Constants.EVENT_BUS_KEY_LIVE_MESSAGE).post(LiveMsgEvent(uuid, liveId, MessageEntity.SEND_STATUS_SUCCESS))
+            LiveEventBus.get(Constants.EVENT_BUS_KEY_LIVE_MESSAGE).post(LiveMsgEvent(uuid, liveId, 1, MessageEntity.SEND_STATUS_SUCCESS))
             pendingMessageJobsMap.remove(uuid)?.cancel()
         } else {
-            LiveEventBus.get(Constants.EVENT_BUS_KEY_LIVE_MESSAGE).post(LiveMsgEvent(uuid, liveId, MessageEntity.SEND_STATUS_FAILED))
+            LiveEventBus.get(Constants.EVENT_BUS_KEY_LIVE_MESSAGE).post(LiveMsgEvent(uuid, liveId, 1, MessageEntity.SEND_STATUS_FAILED))
             pendingMessageJobsMap.remove(uuid)?.cancel()
         }
     }

@@ -12,26 +12,21 @@ import com.jeremyliao.liveeventbus.LiveEventBus
 import com.venus.dm.db.entity.MessageEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 
 
 class LiveInteractionViewModel : LiveViewModel() {
 
-    fun sendMessage(liveId: String, msg: String) {
+    fun sendMessage(liveId: String, msg: String, uuid: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val message = MessageComposer.composeMessage(msg, "", 1, liveId)
-            LiveEventBus.get(Constants.EVENT_BUS_KEY_LIVE_MESSAGE).post(
-                LiveMsgEvent(
-                    message.uuid, liveId,
-                    MessageEntity.SEND_STATUS_SENDING, message
-                )
-            )
             LiveDataRepository.sendLiveComment(
                 liveId,
                 msg,
-                message.uuid,
+                uuid,
                 object : RemoteEventEmitter {
                     override fun onError(code: Int, msg: String, errorType: ErrorType) {
-                        buildPromptMessage("", msg, 1, liveId, message.sendTime + 1)
+                        this@LiveInteractionViewModel.onError(code, msg, errorType)
+//                        buildPromptMessage("", msg, 1, liveId, message.sendTime + 1)
                     }
 
                     override fun onEvent(event: StatusEvent) {

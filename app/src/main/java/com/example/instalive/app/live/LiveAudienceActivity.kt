@@ -796,7 +796,7 @@ class LiveAudienceActivity : LiveBaseActivity<LiveAudienceViewModel, ActivityLiv
     }
 
     override fun onBackPressed() {
-        if (isLiving) {
+        if (sharedViewModel.isMicrophoneUser) {
 
         } else {
             super.onBackPressed()

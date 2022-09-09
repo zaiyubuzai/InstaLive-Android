@@ -6,12 +6,8 @@
     <data>
 
         <variable
-            name="isGroupChat"
-            type="Boolean" />
-
-        <variable
-            name="messageEntity"
-            type="com.venus.dm.db.entity.MessageEntity" />
+            name="liveCommentEvent"
+            type="com.example.instalive.model.LiveCommentEvent" />
 
         <variable
             name="level"
@@ -33,7 +29,7 @@
 
         <ImageView
             android:id="@+id/avatar"
-            imageViewAvatar="@{messageEntity.senderPortrait}"
+            imageViewAvatar="@{liveCommentEvent.userInfo.portrait}"
             android:layout_width="@dimen/dimen_36dp"
             android:layout_height="@dimen/dimen_36dp"
             app:layout_constraintStart_toStartOf="parent"
@@ -114,7 +110,7 @@
                     android:maxEms="10"
                     android:layout_marginEnd="@dimen/dimen_28dp"
                     android:lineSpacingExtra="6sp"
-                    android:text="@{messageEntity.senderName}"
+                    android:text="@{liveCommentEvent.userInfo.userName}"
                     android:textColor="#ffffff"
                     android:textSize="13sp"
                     tools:text="al;ksdjfal;skdjfal;sdkjfasdfasdfasdfasdfasdfasasdfasdfasd"/>
@@ -130,14 +126,14 @@
                 android:lineSpacingExtra="6sp"
                 android:paddingVertical="@dimen/dimen_4dp"
                 android:paddingEnd="@dimen/dimen_28dp"
-                android:text="@{messageEntity.content}"
+                android:text="@{liveCommentEvent.content}"
                 android:textColor="@color/white"
                 android:textSize="15sp"
                 tools:text="dlfjsdlfkjlssdfsdfksdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfjdflsdkj" />
 
             <ProgressBar
                 android:id="@+id/sendingProgress"
-                isVisible="@{messageEntity.sendStatus == 0}"
+                isVisible="@{liveCommentEvent.sendStatus == 0}"
                 android:layout_width="@dimen/dimen_16dp"
                 android:layout_height="@dimen/dimen_16dp"
                 android:visibility="gone"
@@ -149,36 +145,17 @@
 
             <ImageView
                 android:id="@+id/icSentError"
-                isVisible="@{messageEntity.sendStatus == 2}"
+                isVisible="@{liveCommentEvent.sendStatus == 2}"
                 android:layout_width="@dimen/dimen_16dp"
                 android:layout_height="@dimen/dimen_16dp"
-                android:layout_alignTop="@+id/messageContent"
                 android:layout_alignEnd="@+id/messageContent"
-                android:layout_alignBottom="@+id/messageContent"
+                android:layout_centerVertical="true"
                 android:layout_marginStart="@dimen/dimen_12dp"
                 android:layerType="software"
                 android:src="@drawable/bg_red_dot"
                 android:visibility="gone"
-                tools:visibility="gone" />
+                tools:visibility="visible" />
         </RelativeLayout>
-
-        <TextView
-            android:id="@+id/extraInfo"
-            isVisible="@{!messageEntity.extraInfo.empty}"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:gravity="center"
-            android:paddingStart="@dimen/dimen_32dp"
-            android:paddingEnd="@dimen/dimen_32dp"
-            android:text="@{messageEntity.extraInfo}"
-            android:textColor="@color/white"
-            android:textSize="12sp"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/messageContainer"
-            tools:text="asdfasdfasdfasdfasdfasdfasdfasdfasdfaasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfsdf" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

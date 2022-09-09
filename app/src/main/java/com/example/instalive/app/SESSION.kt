@@ -3,6 +3,7 @@ package com.example.instalive.app
 import android.content.Context
 import com.example.baselibrary.utils.SharedPreferencesUtil
 import com.example.instalive.api.RetrofitProvider
+import com.example.instalive.model.LiveUserInfo
 import com.example.instalive.model.LoginData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -32,7 +33,21 @@ object SESSION {
         data = value
     }
 
-    fun saveLoginData(data: LoginData){
+    fun toLiveUserInfo(): LiveUserInfo? {
+        return if (SessionPreferences.id.isEmpty()) {
+            null
+        } else {
+            LiveUserInfo(
+                SessionPreferences.id,
+                SessionPreferences.userName ?: "",
+                SessionPreferences.nickName ?: "",
+                SessionPreferences.portrait ?: "",
+                null, null, null, null, null,
+            )
+        }
+    }
+
+    fun saveLoginData(data: LoginData) {
         SessionPreferences.apply {
             id = data.id
             userName = data.userName
@@ -85,7 +100,7 @@ object SESSION {
     fun resetLoginInfo(): LoginData {
         val emptyLoginInfo = LoginData.emptyLoginInfo()
         SessionPreferences.edit(true) {
-            id  = ""
+            id = ""
             userName = null
             nickName = null
             firstName = null
@@ -181,12 +196,12 @@ object InstaLivePreferences : Preferences("instaLiveState") {
     var liveGiftCache by StringPref("live_gift_cache", "[]")
 
 
-    fun findGiftCache(imgUrl:String):String?{
+    fun findGiftCache(imgUrl: String): String? {
         var netPath = imgUrl
         val netPathList = netPath.split("/")
         if (netPathList.size < 2) return null
         netPath = netPathList.last()
-        netPath = netPath.replace(".svga", "")+"_"
+        netPath = netPath.replace(".svga", "") + "_"
 
         val list = Gson().fromJson<List<String>>(
             liveGiftCache,

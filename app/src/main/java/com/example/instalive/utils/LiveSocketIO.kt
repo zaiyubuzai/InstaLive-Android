@@ -6,7 +6,7 @@ import com.example.instalive.app.SessionPreferences
 import com.example.instalive.model.*
 import com.google.gson.Gson
 import com.jeremyliao.liveeventbus.LiveEventBus
-import com.venus.dm.model.VenusDirectMessage
+import com.venus.dm.db.entity.MessageEntity
 import io.socket.client.IO
 import io.socket.client.Socket
 import kotlinx.coroutines.*
@@ -21,6 +21,7 @@ object LiveSocketIO {
         Timber.d("uri: $uri")
         IO.socket(uri, liveOpts)
     }
+    var onLiveSocketListener: OnLiveSocketListener? = null
     private var liveSocketJob: Job? = null
     init{
         val uri = InstaLiveApp.appInstance.appInitData.value?.socketLink?.live?:""
@@ -38,7 +39,6 @@ object LiveSocketIO {
                 Timber.d("live activity = $json")
                 val message =
                     Gson().fromJson(json, LiveActivityEvent::class.java)
-                reportSocketReceived(message.reportUUID)
                 LiveEventBus.get(EVENT_BUS_KEY_LIVE).post(message)
             } catch (e: Exception) {
             }
@@ -47,10 +47,10 @@ object LiveSocketIO {
                 val json = objects[0].toString()
                 Timber.d("live comment = $json")
 
-                val message =
-                    Gson().fromJson(json, VenusDirectMessage::class.java)
-
-                reportSocketReceived(message.reportUUID)
+                val comment =
+                    Gson().fromJson(json, LiveCommentEvent::class.java)
+                comment.sendStatus = MessageEntity.SEND_STATUS_SUCCESS
+                onLiveSocketListener?.onLiveComment(comment)
             } catch (e: Exception) {
             }
         }.on("like") { objects ->//sdf
@@ -59,7 +59,6 @@ object LiveSocketIO {
                 Timber.d("live like = $json")
                 val message =
                     Gson().fromJson(json, LikeEvent::class.java)
-                reportSocketReceived(message.reportUUID)
                 LiveEventBus.get(EVENT_BUS_KEY_LIVE).post(message)
             } catch (e: Exception) {
             }
@@ -69,7 +68,6 @@ object LiveSocketIO {
                 Timber.d("live system = $json")
                 val message =
                     Gson().fromJson(json, LiveSystemEvent::class.java)
-                reportSocketReceived(message.reportUUID)
                 LiveEventBus.get(EVENT_BUS_KEY_LIVE).post(message)
             } catch (e: Exception) {
             }
@@ -79,7 +77,6 @@ object LiveSocketIO {
                 Timber.d("live gift = $json")
                 val message =
                     Gson().fromJson(json, LiveGiftEvent::class.java)
-                reportSocketReceived(message.reportUUID)
                 LiveEventBus.get(EVENT_BUS_KEY_LIVE).post(message)
             } catch (e: Exception) {
             }
@@ -89,7 +86,6 @@ object LiveSocketIO {
                 Timber.d("live remove = $json")
                 val message =
                     Gson().fromJson(json, LiveRemoveEvent::class.java)
-                reportSocketReceived(message.reportUUID)
                 LiveEventBus.get(EVENT_BUS_KEY_LIVE).post(message)
             } catch (e: Exception) {
             }
@@ -99,7 +95,6 @@ object LiveSocketIO {
                 Timber.d("live live_state = $json")
                 val message =
                     Gson().fromJson(json, LiveStateEvent::class.java)
-//                reportSocketReceived(message.reportUUID)
                 LiveEventBus.get(EVENT_BUS_KEY_LIVE).post(message)
             } catch (e: Exception) {
             }
@@ -109,7 +104,6 @@ object LiveSocketIO {
                 Timber.d("live raise_hand = $json")
                 val message =
                     Gson().fromJson(json, LiveRaiseHandEvent::class.java)
-//                reportSocketReceived(message.reportUUID)
                 LiveEventBus.get(EVENT_BUS_KEY_LIVE).post(message)
             } catch (e: Exception) {
             }
@@ -119,7 +113,6 @@ object LiveSocketIO {
                 Timber.d("live live_with_invite: $json")
                 val message =
                     Gson().fromJson(json, LiveWithInviteEvent::class.java)
-//                reportSocketReceived(message.reportUUID)
                 LiveEventBus.get(EVENT_BUS_KEY_LIVE).postDelay(message, 1000)
             } catch (e: Exception) {
             }
@@ -129,7 +122,6 @@ object LiveSocketIO {
                 Timber.d("live live_with_cancel: $json")
                 val message =
                     Gson().fromJson(json, LiveWithCancelEvent::class.java)
-//                reportSocketReceived(message.reportUUID)
                 LiveEventBus.get(EVENT_BUS_KEY_LIVE).postDelay(message, 1000)
             } catch (e: Exception) {
             }
@@ -139,7 +131,6 @@ object LiveSocketIO {
                 Timber.d("live live_with_reject: $json")
                 val message =
                     Gson().fromJson(json, LiveWithRejectEvent::class.java)
-//                reportSocketReceived(message.reportUUID)
                 LiveEventBus.get(EVENT_BUS_KEY_LIVE).postDelay(message, 1000)
             } catch (e: Exception) {
             }
@@ -149,7 +140,6 @@ object LiveSocketIO {
                 Timber.d("live live_with_agree: $json")
                 val message =
                     Gson().fromJson(json, LiveWithAgreeEvent::class.java)
-//                reportSocketReceived(message.reportUUID)
                 LiveEventBus.get(EVENT_BUS_KEY_LIVE).postDelay(message, 1000)
             } catch (e: Exception) {
             }
@@ -159,7 +149,6 @@ object LiveSocketIO {
                 Timber.d("live live_with_hang_up: $json")
                 val message =
                     Gson().fromJson(json, LiveWithHangupEvent::class.java)
-//                reportSocketReceived(message.reportUUID)
                 LiveEventBus.get(EVENT_BUS_KEY_LIVE).postDelay(message, 1000)
             } catch (e: Exception) {
             }
@@ -209,7 +198,7 @@ object LiveSocketIO {
         liveSocketJob = null
     }
 
-    private fun reportSocketReceived(uuid: String){
-
+    interface OnLiveSocketListener{
+        fun onLiveComment(comment: LiveCommentEvent)
     }
 }

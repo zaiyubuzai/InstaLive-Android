@@ -6,12 +6,8 @@
     <data>
 
         <variable
-            name="isGroupChat"
-            type="Boolean" />
-
-        <variable
-            name="messageEntity"
-            type="com.venus.dm.db.entity.MessageEntity" />
+            name="liveCommentEvent"
+            type="com.example.instalive.model.LiveCommentEvent" />
 
         <variable
             name="level"
@@ -34,7 +30,7 @@
 
         <ImageView
             android:id="@+id/avatar"
-            imageViewAvatar="@{messageEntity.senderPortrait}"
+            imageViewAvatar="@{liveCommentEvent.userInfo.portrait}"
             android:layout_width="@dimen/dimen_36dp"
             android:layout_height="@dimen/dimen_36dp"
             app:layout_constraintStart_toStartOf="parent"
@@ -109,7 +105,7 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:text="@{messageEntity.senderName}"
+                    android:text="@{liveCommentEvent.userInfo.nickname}"
                     android:textColor="#ffffff"
                     android:textSize="13sp"
                     tools:text="asdfasasdasdlkfjalskdj" />
@@ -118,7 +114,6 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imageCover"
-                messageImageCover="@{messageEntity}"
                 android:layout_width="140dp"
                 android:layout_height="140dp"
                 android:layout_below="@+id/nicknameLL"
@@ -127,7 +122,7 @@
 
             <ProgressBar
                 android:id="@+id/sendingProgress"
-                isVisible="@{messageEntity.sendStatus == 0}"
+                isVisible="@{liveCommentEvent.sendStatus == 0}"
                 android:layout_width="@dimen/dimen_18dp"
                 android:layout_height="@dimen/dimen_18dp"
                 android:layout_alignTop="@+id/imageCover"
@@ -138,7 +133,7 @@
 
             <ImageView
                 android:id="@+id/icSentError"
-                isVisible="@{messageEntity.sendStatus == 2}"
+                isVisible="@{liveCommentEvent.sendStatus == 2}"
                 android:layout_width="@dimen/dimen_18dp"
                 android:layout_height="@dimen/dimen_18dp"
                 android:layout_alignTop="@+id/imageCover"

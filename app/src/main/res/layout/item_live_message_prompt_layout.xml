@@ -6,8 +6,8 @@
     <data>
 
         <variable
-            name="messageEntity"
-            type="com.venus.dm.db.entity.MessageEntity" />
+            name="liveCommentEvent"
+            type="com.example.instalive.model.LiveCommentEvent" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -26,7 +26,7 @@
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="4"
-            android:text="@{messageEntity.content}"
+            android:text="@{liveCommentEvent.content}"
             android:lineSpacingExtra="5sp"
             android:textColor="#ffffff"
             android:textSize="12sp"
