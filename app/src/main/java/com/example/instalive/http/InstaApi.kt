@@ -24,6 +24,9 @@ interface InstaApi : BaseApi {
     @GET
     suspend fun getCountryCode(@Url url: String): BaseResponse<CountryCodeListData>
 
+    @GET
+    suspend fun getGifts(@Url url: String): BaseResponse<List<GiftData>>
+
     @GET("api/core/system/current_time/")
     suspend fun calibrationTime(): BaseResponse<CalibrationTimeData>
 
@@ -320,4 +323,12 @@ interface InstaApi : BaseApi {
         @Field("content") content: String,
         @Field("uuid") uuid:String
     ): BaseResponse<Any>
+
+    @FormUrlEncoded
+    @POST("api/live/live/send_gift/")
+    suspend fun sendLiveGift(
+        @Field("live_id") liveId: String,
+        @Field("gift_id") content: String,
+        @Field("uuid") uuid:String
+    ): BaseResponse<LiveSendGiftResponse>
 }

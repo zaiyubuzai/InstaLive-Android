@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="256dp">
+
+    <LinearLayout
+        android:id="@+id/firstRow"
+        android:layout_width="match_parent"
+        android:layout_height="128dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_16dp"
+            android:layout_weight="1">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/firstContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:paddingBottom="@dimen/dimen_14dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/firstGiftImage"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:layout_marginTop="@dimen/dimen_12dp"
+                    android:layout_marginHorizontal="@dimen/dimen_14dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:src="@mipmap/ic_live_gift_default" />
+
+                <TextView
+                    android:id="@+id/firstGiftName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimen_8dp"
+                    android:gravity="center"
+                    android:textColor="#dddde8"
+                    android:textSize="13sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/firstGiftImage"
+                    tools:text="100000 Coins" />
+
+                <TextView
+                    android:id="@+id/firstRewardsCount"
+                    android:background="@drawable/bg_36cfc9_4c"
+                    android:paddingHorizontal="@dimen/dimen_6dp"
+                    android:layout_width="wrap_content"
+                    android:layout_marginEnd="@dimen/dimen_6dp"
+                    android:layout_marginTop="@dimen/dimen_8dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:gravity="center_horizontal"
+                    android:lineSpacingExtra="2sp"
+                    android:textColor="#ffffff"
+                    android:textSize="12sp"
+                    android:textStyle="italic"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="x 1" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_16dp"
+            android:layout_marginEnd="@dimen/dimen_16dp"
+            android:layout_weight="1">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/secondContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:paddingBottom="@dimen/dimen_14dp">
+
+                <ImageView
+                    android:id="@+id/secondGiftImage"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:layout_marginTop="@dimen/dimen_12dp"
+                    android:layout_marginHorizontal="@dimen/dimen_14dp"
+                    app:layout_constraintBottom_toTopOf="@+id/secondGiftName"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:src="@mipmap/ic_live_gift_default" />
+
+                <TextView
+                    android:id="@+id/secondGiftName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimen_8dp"
+                    android:gravity="center"
+                    android:textColor="#dddde8"
+                    android:textSize="13sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/secondGiftImage"
+                    tools:text="10 coins" />
+
+                <TextView
+                    android:id="@+id/secondRewardsCount"
+                    android:background="@drawable/bg_36cfc9_4c"
+                    android:paddingHorizontal="@dimen/dimen_6dp"
+                    android:layout_width="wrap_content"
+                    android:layout_marginEnd="@dimen/dimen_6dp"
+                    android:layout_marginTop="@dimen/dimen_8dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:gravity="center_horizontal"
+                    android:lineSpacingExtra="2sp"
+                    android:textColor="#ffffff"
+                    android:textSize="12sp"
+                    android:textStyle="italic"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="x 1" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dimen_16dp"
+            android:layout_weight="1">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/thirdContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:paddingBottom="@dimen/dimen_14dp">
+
+                <ImageView
+                    android:id="@+id/thirdGiftImage"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:layout_marginTop="@dimen/dimen_12dp"
+                    android:layout_marginHorizontal="@dimen/dimen_14dp"
+                    app:layout_constraintBottom_toTopOf="@+id/thirdGiftName"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:src="@mipmap/ic_live_gift_default" />
+
+                <TextView
+                    android:id="@+id/thirdGiftName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimen_8dp"
+                    android:gravity="center"
+                    android:textColor="#dddde8"
+                    android:textSize="13sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/thirdGiftImage"
+                    tools:text="10 coins" />
+
+                <TextView
+                    android:id="@+id/thirdRewardsCount"
+                    android:background="@drawable/bg_36cfc9_4c"
+                    android:paddingHorizontal="@dimen/dimen_6dp"
+                    android:layout_width="wrap_content"
+                    android:layout_marginEnd="@dimen/dimen_6dp"
+                    android:layout_marginTop="@dimen/dimen_8dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:gravity="center_horizontal"
+                    android:lineSpacingExtra="2sp"
+                    android:textColor="#ffffff"
+                    android:textSize="12sp"
+                    android:textStyle="italic"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="x 1" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="128dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/firstRow">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_16dp"
+            android:layout_weight="1">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/fourthContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:paddingBottom="@dimen/dimen_14dp">
+
+                <ImageView
+                    android:id="@+id/fourthGiftImage"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:layout_marginTop="@dimen/dimen_12dp"
+                    android:layout_marginHorizontal="@dimen/dimen_14dp"
+                    app:layout_constraintBottom_toTopOf="@+id/fourthGiftName"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:src="@mipmap/ic_live_gift_default" />
+
+                <TextView
+                    android:id="@+id/fourthGiftName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimen_8dp"
+                    android:gravity="center"
+                    android:textColor="#dddde8"
+                    android:textSize="13sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/fourthGiftImage"
+                    tools:text="10 coins" />
+
+                <TextView
+                    android:id="@+id/fourthRewardsCount"
+                    android:background="@drawable/bg_36cfc9_4c"
+                    android:paddingHorizontal="@dimen/dimen_6dp"
+                    android:layout_width="wrap_content"
+                    android:layout_marginEnd="@dimen/dimen_6dp"
+                    android:layout_marginTop="@dimen/dimen_8dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:gravity="center_horizontal"
+                    android:lineSpacingExtra="2sp"
+                    android:textColor="#ffffff"
+                    android:textSize="12sp"
+                    android:textStyle="italic"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="x 1" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_16dp"
+            android:layout_marginEnd="@dimen/dimen_16dp"
+            android:layout_weight="1">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/fifthContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:paddingBottom="@dimen/dimen_14dp">
+
+                <ImageView
+                    android:id="@+id/fifthGiftImage"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:layout_marginTop="@dimen/dimen_12dp"
+                    android:layout_marginHorizontal="@dimen/dimen_14dp"
+                    app:layout_constraintBottom_toTopOf="@+id/fifthGiftName"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:src="@mipmap/ic_live_gift_default" />
+
+                <TextView
+                    android:id="@+id/fifthGiftName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimen_8dp"
+                    android:gravity="center"
+                    android:textColor="#dddde8"
+                    android:textSize="13sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/fifthGiftImage"
+                    tools:text="10 coins" />
+
+                <TextView
+                    android:id="@+id/fifthRewardsCount"
+                    android:background="@drawable/bg_36cfc9_4c"
+                    android:paddingHorizontal="@dimen/dimen_6dp"
+                    android:layout_width="wrap_content"
+                    android:layout_marginEnd="@dimen/dimen_6dp"
+                    android:layout_marginTop="@dimen/dimen_8dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:gravity="center_horizontal"
+                    android:lineSpacingExtra="2sp"
+                    android:textColor="#ffffff"
+                    android:textSize="12sp"
+                    android:textStyle="italic"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="x 1" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dimen_16dp"
+            android:layout_weight="1">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/sixthContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:paddingBottom="@dimen/dimen_14dp">
+
+                <ImageView
+                    android:id="@+id/sixthGiftImage"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:layout_marginTop="@dimen/dimen_12dp"
+                    android:layout_marginHorizontal="@dimen/dimen_14dp"
+                    app:layout_constraintBottom_toTopOf="@+id/sixthGiftName"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:src="@mipmap/ic_live_gift_default" />
+
+                <TextView
+                    android:id="@+id/sixthGiftName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimen_8dp"
+                    android:gravity="center"
+                    android:textColor="#dddde8"
+                    android:textSize="13sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/sixthGiftImage"
+                    tools:text="10 coins" />
+
+                <TextView
+                    android:id="@+id/sixthRewardsCount"
+                    android:background="@drawable/bg_36cfc9_4c"
+                    android:paddingHorizontal="@dimen/dimen_6dp"
+                    android:layout_width="wrap_content"
+                    android:layout_marginEnd="@dimen/dimen_6dp"
+                    android:layout_marginTop="@dimen/dimen_8dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:gravity="center_horizontal"
+                    android:lineSpacingExtra="2sp"
+                    android:textColor="#ffffff"
+                    android:textSize="12sp"
+                    android:textStyle="italic"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="x 1" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

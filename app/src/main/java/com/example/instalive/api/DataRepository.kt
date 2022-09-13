@@ -3,7 +3,6 @@ package com.example.instalive.api
 import androidx.lifecycle.MutableLiveData
 import com.example.baselibrary.api.*
 import com.example.baselibrary.model.CountryCodeData
-import com.example.baselibrary.model.CountryCodeListData
 import com.example.baselibrary.utils.MediaPathUtil
 import com.example.instalive.InstaLiveApp
 import com.example.instalive.app.InstaLivePreferences
@@ -19,7 +18,6 @@ import kotlinx.coroutines.withContext
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.HttpException
-import retrofit2.http.Field
 import timber.log.Timber
 import java.io.File
 import java.io.FileNotFoundException
@@ -62,6 +60,12 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
                     fetchCountryCode(it)
                 }
             }
+
+            response.data.cacheConfig.liveGiftsCache?.let {
+                if (InstaLivePreferences.liveGiftVersion != it.version) {
+                    fetchGifts(it)
+                }
+            }
         }
     }
 
@@ -99,6 +103,21 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
         }
     }
 
+    override suspend fun fetchGifts(giftsCache: CacheConfig.Cache) {
+        val response = safeApiCall(null) {
+            baseApi.getGifts(giftsCache.apiPath)
+        }
+        if (response != null) {
+            val string = Gson().toJson(
+                response.data,
+                object : TypeToken<List<GiftData>>() {}.type
+            )
+            Timber.d("country code: $string")
+            InstaLivePreferences.liveGiftList = string
+            InstaLivePreferences.liveGiftVersion = giftsCache.version
+        }
+    }
+
     override suspend fun sendPasscode(
         phone: String,
         source: String,
@@ -123,7 +142,7 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
         bio: String?,
         liveData: MutableLiveData<UserData>,
         remoteEventEmitter: RemoteEventEmitter
-    ){
+    ) {
         val response = safeApiCall(remoteEventEmitter) {
             baseApi.updateProfile(username, nickname, portrait, bio)
         }
@@ -348,6 +367,19 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
         }
     }
 
+    override suspend fun giftList(
+        apiPath: String,
+        liveData: MutableLiveData<GiftListData>,
+        remoteEventEmitter: RemoteEventEmitter
+    ) {
+        val response = safeApiCall(null) {
+            baseApi.getAnyData<GiftListData>(apiPath)
+        }
+        if (response != null) {
+            liveData.postValue(response.data)
+        }
+    }
+
     suspend fun mentionSearch(
         conId: String,
         keyword: String,
@@ -374,7 +406,7 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
 
     }
 
-    suspend fun cacheGift(imageUrl: String){
+    suspend fun cacheGift(imageUrl: String) {
         if (imageUrl.isEmpty()) return
         val list = Gson().fromJson<List<String>>(
             InstaLivePreferences.liveGiftCache,
@@ -385,7 +417,7 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
         val netPathList = netPath.split("/")
         if (netPathList.size < 2) return
         netPath = netPathList.last().replace(".svga", "")
-        val netPath2 = netPath+"_"
+        val netPath2 = netPath + "_"
 //        netPath += liveGiftDetail.id
 
 
@@ -393,7 +425,7 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
             it.contains(netPath2)
         }
 
-        if (giftImgCachePath!=null) {
+        if (giftImgCachePath != null) {
             if (File(giftImgCachePath).exists()) {
                 return
             } else {
@@ -467,6 +499,5 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
     override fun repositoryIOException() {
 
     }
-
 
 }

@@ -18,3 +18,22 @@ data class MyLevelData(
     @SerializedName("next_level_amount") val nextLevelAmount: Long,
     @SerializedName("level_amount") val levelAmount: Long,
 )
+
+data class LiveSendGiftResponse(
+    val balance: Long,
+    val level: Int,
+    @SerializedName("valid_amount") val validAmount: Long,
+    @SerializedName("next_level_amount") val nextLevelAmount: Long,
+    @SerializedName("level_amount") val levelAmount: Long = 1,
+    @SerializedName("gift_info") val giftInfo: GiftInfo?,
+) {
+    fun toMyLevelData(prevLevel: Int): MyLevelData {
+        return MyLevelData(
+            level,
+            prevLevel,
+            validAmount,
+            nextLevelAmount,
+            levelAmount
+        )
+    }
+}

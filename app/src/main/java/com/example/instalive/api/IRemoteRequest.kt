@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.baselibrary.api.RemoteEventEmitter
 import com.example.instalive.model.AppInitData
 import com.example.instalive.model.CacheConfig
+import com.example.instalive.model.GiftListData
 import com.example.instalive.model.LoginData
 import com.venus.dm.model.UserData
 import retrofit2.http.Field
@@ -96,6 +97,14 @@ interface IRemoteRequest {
         portrait: String?,
         bio: String?,
         liveData: MutableLiveData<UserData>,
+        remoteEventEmitter: RemoteEventEmitter
+    )
+
+    suspend fun fetchGifts(giftsCache: CacheConfig.Cache)
+
+    suspend fun giftList(
+        apiPath: String,
+        liveData: MutableLiveData<GiftListData>,
         remoteEventEmitter: RemoteEventEmitter
     )
 }

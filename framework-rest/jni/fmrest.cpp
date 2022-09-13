@@ -173,10 +173,11 @@ inline char *getCmtWalletPkgPrefix() {
 
 inline char *getMarsPkgPrefix() {
     if (MARS_PKG_PREFIX == NULL) {
-        // bytes of 'com.newsclapper.video'
-        int len = 18;
+        int len = 21;
+        //com.example.instalive
         uint8_t ptrBytes[] = {
-                99,111,109,46,110,101,119,115,99,108,97,112,112,101,114,46,118,105,100,101,111
+                99, 111, 109, 46, 101, 120, 97, 109, 112, 108, 101,
+                46, 105, 110, 115, 116, 97, 108, 105, 118, 101,
         };
         MARS_PKG_PREFIX = (char *) malloc(len + 1);
         memcpy(MARS_PKG_PREFIX, ptrBytes, len);
@@ -188,10 +189,12 @@ inline char *getMarsPkgPrefix() {
 
 inline char *getVenusPkgPrefix() {
     if (MARS_PKG_PREFIX == NULL) {
-        // bytes of 'com.fambase.venus'
-        int len = 17;
+
+        int len = 21;
+        //com.example.instalive
         uint8_t ptrBytes[] = {
-                99,111,109,46,102,97,109,98,97,115,101,46,118,101,110,117,115
+                99, 111, 109, 46, 101, 120, 97, 109, 112, 108, 101,
+                46, 105, 110, 115, 116, 97, 108, 105, 118, 101,
         };
         MARS_PKG_PREFIX = (char *) malloc(len + 1);
         memcpy(MARS_PKG_PREFIX, ptrBytes, len);

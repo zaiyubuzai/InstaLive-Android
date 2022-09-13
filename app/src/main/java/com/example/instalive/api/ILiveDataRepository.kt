@@ -106,4 +106,12 @@ interface ILiveDataRepository {
         uuid: String,
         remoteEventEmitter: RemoteEventEmitter
     )
+
+    suspend fun sendLiveGift(
+        liveId: String,
+        giftId: String,
+        uuid: String,
+        liveData: MutableLiveData<LiveSendGiftResponse>,
+        remoteEventEmitter: RemoteEventEmitter
+    )
 }

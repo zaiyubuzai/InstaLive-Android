@@ -19,6 +19,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.Purchase
 import com.example.baselibrary.utils.BillingHelper
+import com.example.instalive.BuildConfig
 import com.example.instalive.InstaLiveApp.Companion.appInstance
 import com.example.instalive.R
 import com.example.instalive.api.RetrofitProvider
@@ -27,12 +28,15 @@ import com.example.instalive.app.web.bridge.BridgeHandler
 import com.example.instalive.app.web.bridge.BridgeWebViewClient
 import com.example.instalive.app.web.bridge.CallBackFunction
 import com.example.instalive.app.web.bridge.NewNestedScrollWebView
+import com.example.instalive.utils.DeeplinkHelper
 import com.example.instalive.utils.marsToast
+import com.venus.framework.rest.UrlSignature
 import kotlinx.coroutines.*
 import org.json.JSONException
 import org.json.JSONObject
 import splitties.dimensions.dp
 import splitties.fragmentargs.argOrNull
+import splitties.intents.start
 import timber.log.Timber
 
 class InstaWebFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, BridgeHandler {
@@ -252,10 +256,125 @@ class InstaWebFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Bridg
                 val payload = JSONObject(data)
                 val jsFieldData = payload.optJSONObject(JS_FIELD_DATA)
                 when (payload.optString(JS_FIELD_ACTION, "")) {
+                    ACTION_SIGN -> {
+                        onSignAjaxRequest(payload, function)
+                    }
+                    ACTION_REDIRECT -> {
+                        val url = try {
+                            jsFieldData?.getString("url")
+                        } catch (e: Exception) {
+                            null
+                        }
+
+                        val window = try {
+                            jsFieldData?.getString("window")
+                        } catch (e: Exception) {
+                            null
+                        }
+                        if (window != null && window == "new" && url != null) {
+                            activity?.finish()
+                            start(InstaWebActivity) { _, extrasSpec ->
+                                InstaWebActivity.WebExtraSpec.url = url
+                            }
+                        }
+
+                        if (window != null && window == "parallel" && url != null) {
+                            start(InstaWebActivity) { _, extrasSpec ->
+                                InstaWebActivity.WebExtraSpec.url = url
+                            }
+                        }
+
+                        if (url != null && window == null) {
+                            loadUrl(url)
+                        }
+
+                        val deeplink = try {
+                            jsFieldData?.getString("deeplink")
+                        } catch (e: Exception) {
+                            null
+                        }
+
+                        if (deeplink != null) {
+                            context?.let {
+                                DeeplinkHelper.handleDeeplink(
+                                    Uri.parse(deeplink),
+                                    it,
+                                )
+                            }
+                        }
+
+                    }
+                    ACTION_ADD_MENU -> {
+                        val title = try {
+                            jsFieldData?.getString("title")
+                        } catch (e: Exception) {
+                            null
+                        }
+
+                        val url = try {
+                            jsFieldData?.getString("url")
+                        } catch (e: Exception) {
+                            null
+                        }
+
+                        val act = try {
+                            jsFieldData?.getString("act")
+                        } catch (e: Exception) {
+                            null
+                        }
+
+                        val color = try {
+                            jsFieldData?.getString("color")
+                        } catch (e: Exception) {
+                            null
+                        }
+
+                        val bold = try {
+                            jsFieldData?.getBoolean("color")
+                        } catch (e: Exception) {
+                            false
+                        }
+
+                        if (title != null && url != null) {
+                            (activity as InstaWebActivity).addMenu(title, url)
+                        } else if (title != null && act != null) {
+                            (activity as InstaWebActivity).addMenuAction(title, act, color, bold)
+                        }
+                    }
+
+                    ACTION_REMOVE_MENU -> {
+                        (activity as InstaWebActivity).removeMenu()
+                    }
                 }
             }
         } catch (e: Exception) {
         }
+    }
+
+    private fun onSignAjaxRequest(payload: JSONObject, function: CallBackFunction?) {
+        val data = payload.optJSONObject(JS_FIELD_DATA)
+        if (data == null) {
+            function?.onCallBack(
+                createResponseData(
+                    ACTION_SIGN,
+                    BridgeHandler.STATUS_FAILURE,
+                    "invalid data"
+                )
+            )
+            return
+        }
+        val method = data.optString("method")
+        val base = data.optString("base")
+        val params = data.optJSONObject("params")
+        val sig = if (BuildConfig.BUILD_TYPE == "debug") {
+            UrlSignature.getInstance().signVenusWebUrl(appInstance, method, base, params)
+        } else {
+            //TODO
+            UrlSignature.getInstance().signMarsWebPlayUrl(appInstance, method, base, params)
+        }
+        val result = JSONObject()
+        result.put("sign", sig)
+        function?.onCallBack(createResponseData(ACTION_SIGN, result))
     }
 
     private fun sendMessageSyncingEventToWeb(step: Int, error: String?) {
@@ -331,6 +450,10 @@ class InstaWebFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Bridg
         const val JS_FIELD_ACTION = "act"
         const val JS_FIELD_DATA = "data"
 
+        const val ACTION_SIGN = "sign"
+        const val ACTION_REDIRECT = "redirect"
+        const val ACTION_ADD_MENU = "add_menu"
+        const val ACTION_REMOVE_MENU = "remove_menu"
 
         fun createResponseData(act: String, status: Int, msg: String): String {
             return try {

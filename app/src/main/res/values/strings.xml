@@ -303,4 +303,8 @@
     <string name="title_delete_conversation">Are you sure you want to delete this conversation?</string>
     <string name="fb_invite_to_live">Invite to Live</string>
     <string name="fb_move_to_audience">Move to Audience</string>
+
+    <string name="fb_gift_more_to_level_up">Gift more to level up</string>
+    <string name="fb_full_level_tip">Congrats! You\'ve reached full level</string>
+    <string name="fb_send_coins_to_level_up">Send %1$s Coins to level up</string>
 </resources>

@@ -3,6 +3,7 @@ package com.example.instalive.utils
 import android.content.Context
 import android.net.Uri
 import com.example.instalive.app.web.InstaWebActivity
+import com.venus.framework.util.isNeitherNullNorEmpty
 import splitties.intents.start
 import timber.log.Timber
 
@@ -78,7 +79,26 @@ object DeeplinkHelper {
     }
 
     private fun redirectWeb(uri: Uri, context: Context): Boolean {
-        return true
+        val url = uri.getQueryParameter("url")
+        val method = uri.getQueryParameter("method")
+        return if (url != null) {
+            if (method.isNeitherNullNorEmpty()) {
+                if (method == "browser") {
+                    redirectCustomTabs(url, context)
+                } else {
+                    context.start(InstaWebActivity) { _, extrasSpec ->
+                        extrasSpec.url = url
+                    }
+                }
+            } else {
+                context.start(InstaWebActivity) { _, extrasSpec ->
+                    extrasSpec.url = url
+                }
+            }
+            true
+        } else {
+            false
+        }
     }
 
     private fun redirectMessage(uri: Uri, context: Context): Boolean {

@@ -291,4 +291,19 @@ object LiveDataRepository : ILiveDataRepository, BaseRemoteRepository() {
             pendingMessageJobsMap.remove(uuid)?.cancel()
         }
     }
+
+    override suspend fun sendLiveGift(
+        liveId: String,
+        giftId: String,
+        uuid: String,
+        liveData: MutableLiveData<LiveSendGiftResponse>,
+        remoteEventEmitter: RemoteEventEmitter
+    ) {
+        val response = safeApiCall(remoteEventEmitter) {
+            instaApi.sendLiveGift(liveId, giftId, uuid)
+        }
+        if (response != null && response.resultOk()) {
+            liveData.postValue(response.data)
+        }
+    }
 }

@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_bottom_282f3f_36c1">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/titleContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen_10dp"
+        android:paddingVertical="6dp"
+        android:paddingStart="@dimen/dimen_16dp"
+        android:paddingEnd="9dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/levelIconContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_level_icon"
+            android:minWidth="35dp"
+            android:paddingHorizontal="@dimen/dimen_2dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible">
+
+            <ImageView
+                android:id="@+id/levelIconView"
+                android:layout_width="@dimen/dimen_17dp"
+                android:layout_height="13dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/levelTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:lineSpacingExtra="0sp"
+                android:textColor="#ffffff"
+                android:textSize="13sp"
+                android:textStyle="normal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/levelIconView"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="4" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/progressBarContainer"
+            android:layout_width="@dimen/dimen_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_18dp"
+            android:layout_marginEnd="37dp"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/levelIconContainer"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible">
+
+            <ProgressBar
+                android:id="@+id/progressBarLevel"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/dimen_1dp"
+                android:background="@color/colorPrimaryDark"
+                android:max="505"
+                android:progressDrawable="@drawable/progress_bar_drawable" />
+
+            <TextView
+                android:id="@+id/levelDesc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:letterSpacing="0.03"
+                android:text="@string/fb_gift_more_to_level_up"
+                android:textColor="#dddde8"
+                android:textSize="13sp"
+                android:textStyle="normal"
+                tools:text="30000 Coins to level up" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/gotoLevel"
+            android:layout_width="20dp"
+            android:layout_height="@dimen/dimen_22dp"
+            android:padding="@dimen/dimen_6dp"
+            android:rotation="180"
+            android:src="@mipmap/icon_back_white"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/selected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dimen_16dp"
+        android:layout_marginTop="@dimen/dimen_10dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="@string/fb_dialog_gift_select_gift"
+        android:textColor="#ffffff"
+        android:textSize="18sp"
+        android:textStyle="normal"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Select a Gift"
+        tools:visibility="visible" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="selected, titleContainer" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/giftsRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="256dp"
+        android:layout_marginTop="@dimen/dimen_16dp"
+        app:layout_constraintTop_toBottomOf="@+id/barrier"
+        app:layout_goneMarginTop="@dimen/dimen_14dp"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/giftsPager"
+        android:layout_width="match_parent"
+        android:layout_height="256dp"
+        android:layout_marginTop="@dimen/dimen_16dp"
+        app:layout_constraintTop_toBottomOf="@+id/barrier"
+        app:layout_goneMarginTop="@dimen/dimen_14dp"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+    <com.zhpan.indicator.IndicatorView
+        android:id="@+id/pagerIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen_2dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/giftsPager" />
+
+    <LinearLayout
+        android:id="@+id/rechargeContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dimen_16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="@dimen/dimen_20dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pagerIndicator">
+
+        <TextView
+            android:id="@+id/txtRechargeAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_8dp"
+            android:layout_marginEnd="@dimen/dimen_4dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/fb_recharge"
+            android:textColor="#ffffff"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/sendGiftText"
+        style="@style/yellow_12c_button_style_with_selector"
+        android:layout_width="@dimen/dimen_86dp"
+        android:layout_height="@dimen/dimen_30dp"
+        android:layout_marginEnd="@dimen/dimen_16dp"
+        android:lineSpacingExtra="3sp"
+        android:text="@string/send"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="@+id/rechargeContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/rechargeContainer"
+        app:layout_goneMarginBottom="@dimen/dimen_16dp" />
+
+    <ProgressBar
+        android:id="@+id/sendGiftProgress"
+        android:layout_width="@dimen/dimen_18dp"
+        android:layout_height="@dimen/dimen_18dp"
+        android:layout_gravity="center"
+        android:layout_marginEnd="@dimen/dimen_6dp"
+        android:indeterminateTint="#fff"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/sendGiftText"
+        app:layout_constraintEnd_toEndOf="@+id/sendGiftText"
+        app:layout_constraintTop_toTopOf="@+id/sendGiftText" />
+
+    <FrameLayout
+        android:id="@+id/loadingAnimContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/loadingAnim"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:lottie_autoPlay="true"
+            app:lottie_fileName="lotLoading.json"
+            app:lottie_loop="true" />
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
