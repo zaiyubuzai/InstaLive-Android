@@ -16,11 +16,6 @@ import com.example.baselibrary.utils.baseToast
 
 import android.net.Uri
 
-import android.text.InputFilter
-import android.text.InputFilter.LengthFilter
-
-import android.widget.EditText
-import androidx.appcompat.app.AlertDialog
 import com.example.instalive.app.SessionPreferences
 import com.example.instalive.app.conversation.ConversationListActivity
 import com.example.instalive.app.ui.OtherProfileDialog
@@ -79,12 +74,12 @@ class HomeActivity : InstaBaseActivity<HomeViewModel, ActivityHomeBinding>() {
         btnShare.onClick {
             ShareUtility.shareCopy("instalive://profile?id=${SessionPreferences.id}")
         }
-        btnLink.onClick{
+        btnLink.onClick {
             gangUpInvite()
         }
 
         btnSet.onClick {
-            start<SettingsActivity> {  }
+            start<SettingsActivity> { }
         }
         btnDM.onClick {
             start<ConversationListActivity> { }
@@ -92,25 +87,21 @@ class HomeActivity : InstaBaseActivity<HomeViewModel, ActivityHomeBinding>() {
     }
 
     private fun gangUpInvite() {
-        val inputServer = EditText(this)
-        inputServer.filters = arrayOf<InputFilter>(LengthFilter(100))
-        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-        builder.setTitle("Invite").setView(inputServer)
-            .setNegativeButton(R.string.fb_cancel, null)
-        builder.setPositiveButton(
-            R.string.fb_confirm
-        ) { _, _ ->
-            val sign = inputServer.text.toString()
-            val uri = Uri.parse(sign)
+        XPopup.Builder(this).asInputConfirm(
+            "Invite",
+            "",
+            "",
+            ""
+        ) { url ->
+            val uri = Uri.parse(url)
             val userId = uri.getQueryParameter("id")
             if (userId != null) {
                 viewModel.getUserDetail(userId, null) {
                     showOtherProfileDialog(null, it)
                 }
             }
-            baseToast(sign)
-        }
-        builder.show()
+            baseToast(url)
+        }.show()
     }
 
     private fun showOtherProfileDialog(userId: String?, userData: UserData?) {

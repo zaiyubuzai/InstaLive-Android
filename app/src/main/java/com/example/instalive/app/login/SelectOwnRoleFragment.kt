@@ -1,7 +1,9 @@
 package com.example.instalive.app.login
 
 import android.os.Bundle
-import com.example.instalive.utils.marsToast
+import androidx.core.view.isVisible
+import com.example.baselibrary.api.StatusEvent
+import com.example.baselibrary.utils.baseToast
 import com.example.baselibrary.views.BaseFragment
 import com.example.baselibrary.views.DataBindingConfig
 import com.example.instalive.R
@@ -36,19 +38,29 @@ class SelectOwnRoleFragment : BaseFragment<SelectOwnRoleViewModel, FragmentSelec
 
     override fun initData(savedInstanceState: Bundle?) {
         asHost.onClick{
-            marsToast("host")
+            baseToast("host")
             viewModel.phoneLogin(phone?:"",passcode?:"", username, portrait, birthDay, gender, "1")
         }
         asViewer.onClick{
-            marsToast("viewer")
+            baseToast("viewer")
             viewModel.phoneLogin(phone?:"",passcode?:"", username, portrait, birthDay, gender, "2")
         }
+
+        loadingAnimContainer.onClick{}
 
         viewModel.loginResponse.observe(this, {
             SESSION.saveLoginData(it)
             start<HomeActivity> {}
             LiveEventBus.get(Constants.EVENT_BUS_KEY_LOGIN).post(Constants.EVENT_BUS_LOGIN_SUCCESS)
             requireActivity().finish()
+        })
+
+        viewModel.errorInfo.observe(this, {
+            baseToast(it.second.toString())
+        })
+
+        viewModel.loadingStatsLiveData.observe(this, {
+            loadingAnimContainer?.isVisible = it == StatusEvent.LOADING
         })
     }
 }

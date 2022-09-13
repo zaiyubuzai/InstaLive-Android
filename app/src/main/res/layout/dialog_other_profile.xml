@@ -73,7 +73,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/dimen_22dp"
-                android:drawableStart="@color/light_blue_50"
                 android:drawablePadding="@dimen/dimen_8dp"
                 android:gravity="center_horizontal"
                 android:text="Blocked"
@@ -84,19 +83,80 @@
                 app:layout_constraintBottom_toBottomOf="@+id/usernameTv"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/usernameTv"
-                tools:visibility="gone" />
+                tools:visibility="gone"
+                app:drawableStartCompat="@color/light_blue_50" />
 
             <LinearLayout
                 android:id="@+id/websiteListLayout"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dimen_36dp"
                 android:layout_marginTop="@dimen/dimen_32dp"
-                android:layout_marginBottom="@dimen/dimen_28dp"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/fl_bio"
                 app:layout_goneMarginBottom="@dimen/dimen_36dp" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                app:layout_constraintTop_toBottomOf="@+id/websiteListLayout"
+                tools:visibility="visible">
+
+                <Button
+                    android:id="@+id/btnInviteToLive"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dimen_44dp"
+                    android:layout_marginStart="@dimen/dimen_32dp"
+                    android:layout_marginEnd="@dimen/dimen_32dp"
+                    android:background="@drawable/bg_btn_999stro_12c"
+                    android:text="@string/fb_invite_to_live"
+                    android:textColor="#dddde8"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="DuplicateClickableBoundsCheck"
+                    tools:visibility="visible" />
+
+                <Button
+                    android:id="@+id/btnToAudience"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/dimen_44dp"
+                    android:layout_marginStart="@dimen/dimen_32dp"
+                    android:layout_marginEnd="@dimen/dimen_32dp"
+                    android:background="@drawable/bg_btn_999stro_12c"
+                    android:text="@string/fb_move_to_audience"
+                    android:textColor="#dddde8"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="DuplicateClickableBoundsCheck"
+                    tools:visibility="visible" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/bottomBarrier"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimen_0dp"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="clBtn, websiteListLayout"/>
+
+            <androidx.legacy.widget.Space
+                android:id="@+id/bottomSpace"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimen_16dp"
+                app:layout_constraintTop_toBottomOf="@+id/bottomBarrier" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/blockedContainer"

@@ -35,11 +35,6 @@ class InstaWebActivity : BaseActivity<InstaWebViewModel, ActivityInstaWebBinding
     private var mAct: String? = null
     private var isCanBack = true
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_insta_web)
-    }
-
     companion object :
         ActivityIntentSpec<InstaWebActivity, WebExtraSpec> by activitySpec(WebExtraSpec)
 
@@ -52,7 +47,6 @@ class InstaWebActivity : BaseActivity<InstaWebViewModel, ActivityInstaWebBinding
         BarUtils.setStatusBarLightMode(this, false)
         top_toolbar.navigationIcon = getDrawable(R.mipmap.icon_back_white)
         setSupportActionBar(findViewById(R.id.top_toolbar))
-        container.setPadding(0, BarUtils.statusBarHeight, 0, 0)
         supportActionBar?.also {
             it.setDisplayHomeAsUpEnabled(true)
         }

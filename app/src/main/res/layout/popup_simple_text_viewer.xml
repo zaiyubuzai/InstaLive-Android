@@ -38,8 +38,6 @@
 
         </ScrollView>
 
-
-
         <ImageView
             android:id="@+id/close"
             android:layout_width="@dimen/dimen_32dp"
