@@ -41,7 +41,7 @@ import java.util.*
 
 class GiftsDialog(
     context: Context,
-    private val giftData: GiftListData?,
+    private val giftData: List<GiftData>?,
     private val conversationId: String,
     private val liveId: String,
     private val defaultGiftId: String?,

@@ -16,6 +16,7 @@ import com.bumptech.glide.request.transition.Transition
 import com.example.instalive.app.Constants
 import com.example.instalive.app.SessionPreferences
 import com.example.instalive.app.base.InstaBaseActivity
+import com.example.instalive.app.ui.GiftsDialog
 import com.example.instalive.model.LikeEvent
 import com.opensource.svgaplayer.SVGADrawable
 import com.opensource.svgaplayer.SVGAParser
@@ -35,6 +36,8 @@ abstract class MessageBaseActivity<VDB : ViewDataBinding> :
     private val likedUuid = mutableSetOf<String>()
 
     private val emojiList = mutableListOf<Bitmap>()
+
+    protected var giftsDialog: GiftsDialog? = null
 
     override fun initData(savedInstanceState: Bundle?) {
         Constants.DEFAULT_EMOJI_LIST.forEach {

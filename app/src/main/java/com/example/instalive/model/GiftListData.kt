@@ -3,11 +3,6 @@ package com.example.instalive.model
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
-data class GiftListData(
-    val version: Int,
-    val gifts: List<GiftData>,
-) : Serializable
-
 data class GiftData(
     val id: String,
     val coins: Long,

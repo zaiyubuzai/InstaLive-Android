@@ -22,6 +22,7 @@ import android.graphics.Bitmap
 import android.os.Handler
 import android.os.Message
 import android.view.inputmethod.InputMethodManager
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.example.baselibrary.utils.debounceClick
@@ -30,6 +31,7 @@ import com.example.instalive.InstaLiveApp
 import com.example.instalive.app.SessionPreferences
 import com.example.instalive.app.base.SharedViewModel
 import com.example.instalive.app.base.TextPopupWindow
+import com.example.instalive.app.ui.GiftsDialog
 import com.example.instalive.utils.*
 import com.jeremyliao.liveeventbus.LiveEventBus
 import com.lxj.xpopup.XPopup
@@ -62,7 +64,6 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
 
     private val messageEventSyncList = ConcurrentLinkedQueue<MessageEvent>()//消息的队列
     private var messageEventJob: Job? = null//处理消息队列的线程
-
 
     private var isShowToFirstMessage = false//是否正在显示toFirstMessage按钮
     private var isLoadMentionSearch = false//正在加载@群成员列表
@@ -188,7 +189,7 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
 //                }
                 if (conversationsEntity.chatState != 1) return
                 scrollToBottom()
-//                popupOpenGift()
+                popupOpenGift()
             }
 
             override fun onClickLike(conversationsEntity: ConversationsEntity) {
@@ -928,6 +929,72 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
             }
             cancelButton()
         }.show()
+    }
+
+    fun popupOpenGift(
+    ) {
+        if (giftsDialog == null || giftsDialog?.isShow == false) {
+            val giftData = viewModel.getGifts.value ?: LiveGiftData(0, listOf())
+            giftsDialog = GiftsDialog(
+                this,
+                if (newestLiveGiftVersion != currentLiveGiftVersion) null else giftData,
+                SessionPreferences.recentConversationID ?: "",
+                onRecharge = { refer, balance, position, bindingCardDialog, livePackageList, livePackageExt ->
+                    if (Utils.isFastClick()) {
+                        goRecharge(
+                            refer, balance, position, livePackageList,
+                            livePackageExt
+                        )
+                    }
+                },
+                onGiftSent = { gift, dialog ->
+                    //insert gift event to sequence
+                    onNewGift(gift)
+                    if (gift.giftInfo?.specialEffect?.show == true) {
+                        dialog.dismiss()
+                    }
+
+                    if (isNonGifter) {
+                        nonGifterJoinGroup()
+                    }
+                },
+                onDismiss = {
+                    messageContainer?.let {
+                        val set = ConstraintSet()
+                        set.clone(it)
+                        set.setMargin(
+                            R.id.giftSecondContainer,
+                            ConstraintSet.BOTTOM,
+                            context?.dip(300) ?: 0
+                        )
+                        set.applyTo(it)
+                    }
+
+                },
+                onSelectedGift = {},
+                "-1",
+                giftId ?: MarsApp.appInstance.giftId,
+                1,
+                RecentConversation.conversationsEntity.level,
+                RecentConversation.conversationsEntity.type == 2,
+                isOpenIAP,
+                iapProductId,
+                isNonGifter = isNonGifter,
+                gotoFirstRecharge = { it1, isPaymentByCard ->
+                    showWelcomeRechargeBonusDialog(it1, 0, isPaymentByCard, false)
+                }
+            )
+
+            XPopup.Builder(c)
+                .isDestroyOnDismiss(true)
+                .hasShadowBg(false)
+                .asCustom(liveGiftDialog).show()
+
+            val set = ConstraintSet()
+            set.clone(messageContainer)
+            set.setMargin(R.id.giftSecondContainer, ConstraintSet.BOTTOM, context?.dip(420) ?: 0)
+            set.applyTo(messageContainer)
+        }
     }
 
     private fun isFullScreen(recyclerView: RecyclerView?): Boolean {
