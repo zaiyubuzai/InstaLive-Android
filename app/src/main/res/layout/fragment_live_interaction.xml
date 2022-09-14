@@ -402,7 +402,7 @@
         </LinearLayout>
 
         <FrameLayout
-            android:id="@+id/liveProfileLoadingView"
+            android:id="@+id/loadingAnimContainer"
             android:layout_width="match_parent"
             android:layout_height="300dp"
             android:background="@drawable/bg_88_black_transparent_gradient"

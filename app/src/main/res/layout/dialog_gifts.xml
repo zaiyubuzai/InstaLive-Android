@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_bottom_282f3f_36c1">
+    android:background="@drawable/bg_374055_36c0100">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -216,7 +216,8 @@
     <FrameLayout
         android:id="@+id/loadingAnimContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="gone">
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/loadingAnim"

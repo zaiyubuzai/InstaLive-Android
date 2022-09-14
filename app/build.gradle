@@ -3,7 +3,12 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-android-extensions'
     id 'kotlin-kapt'
+    id 'com.google.gms.google-services'
 }
+
+// serial number for this build
+project.ext.BUILD_SERIAL = getBuildSerial()
+project.ext.BUILD_VERSION_SUFFIX = getBuildVersionNameSuffix()
 
 android {
     compileSdk 32
@@ -27,7 +32,18 @@ android {
         enabled = true
     }
 
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = outputFileName.replace(".apk", "-${getArtifactFileName variant.versionName, BUILD_SERIAL}.apk")
+        }
+    }
+
     buildTypes {
+        debug {
+            versionNameSuffix = "." + BUILD_VERSION_SUFFIX
+            debuggable true
+            minifyEnabled false
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -100,4 +116,21 @@ dependencies {
     implementation "androidx.paging:paging-runtime-ktx:3.1.1"
     //gift indicator
     implementation 'com.github.zhpanvip:viewpagerindicator:1.0.7'
+    // Import the Firebase BoM
+    implementation platform('com.google.firebase:firebase-bom:30.4.1')
+
+    // When using the BoM, don't specify versions in Firebase dependencies
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+}
+
+static def getBuildSerial() {
+    new Date().format('MMddHHmm')
+}
+
+static def getBuildVersionNameSuffix() {
+    new Date().format('MMdd-HHmm')
+}
+
+static def getArtifactFileName(versionCode, serial) {
+    "${versionCode}-${serial}"
 }

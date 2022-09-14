@@ -1,5 +1,6 @@
 package com.example.instalive.app.conversation
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.baselibrary.api.ErrorType
 import com.example.baselibrary.api.RemoteEventEmitter
@@ -8,14 +9,42 @@ import com.example.baselibrary.views.BaseViewModel
 import com.example.instalive.InstaLiveApp
 import com.example.instalive.api.ConversationDataRepository
 import com.example.instalive.api.DataRepository
+import com.example.instalive.app.InstaLivePreferences
 import com.example.instalive.db.InstaLiveDBProvider
 import com.example.instalive.db.MessageComposer
+import com.example.instalive.model.GiftData
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.venus.dm.db.entity.MessageEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 abstract class MessageBaseViewModel:BaseViewModel() {
     protected val dao = InstaLiveDBProvider.db.directMessagingDao()
+    var giftListLiveData = MutableLiveData<List<GiftData>>()
+
+    fun getGiftList(onError: (code: Int, msg: String) -> Unit) {
+        if (InstaLivePreferences.liveGiftList != null) {
+            val giftList =
+                Gson().fromJson<List<GiftData>>(InstaLivePreferences.liveGiftList, object : TypeToken<List<GiftData>>() {}.type)
+            giftListLiveData.postValue(giftList)
+            return
+        }
+        viewModelScope.launch {
+            val apiPath =
+                InstaLiveApp.appInstance.appInitData.value?.cacheConfig?.liveGiftsCache?.apiPath
+                    ?: return@launch
+            DataRepository.giftList(apiPath, giftListLiveData, object : RemoteEventEmitter {
+                override fun onError(code: Int, msg: String, errorType: ErrorType) {
+                    onError.invoke(code, msg)
+                }
+
+                override fun onEvent(event: StatusEvent) {
+                }
+            })
+        }
+    }
+
     fun buildPromptMessage(
         conversationId: String,
         msg: String,

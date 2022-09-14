@@ -16,9 +16,8 @@ class GiftListAdapter(
     var giftId: String?,
     val GLST: Int,
     val isLiveMode: Boolean,
-    var onReset: (index: Int, giftId: String) -> Unit,
+    var onReset: (index: Int, giftData:GiftData) -> Unit,
     val showGlobal: (Boolean) -> Unit,
-    val onSendGift: (GiftData) -> Unit
 ) : RecyclerView.Adapter<GiftListAdapter.GiftsViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GiftsViewHolder {
         return GiftsViewHolder(
@@ -44,10 +43,10 @@ class GiftListAdapter(
 //            holder.binding.giftName.textColorResource = R.color.white
 //            holder.binding.coins1.textColorResource = R.color.color_ccc
 //        }
-        val liveGiftDetail = viewList[position]
+        val giftData = viewList[position]
         holder.binding.giftName.text = holder.itemView.context.getString(
             R.string.lbl_live_gift_coin_cost,
-            liveGiftDetail.coins.toString()
+            giftData.coins.toString()
         )
 //        holder.binding.coins1.text = holder.itemView.context.getString(
 //            R.string.lbl_live_gift_coin_cost,
@@ -55,7 +54,7 @@ class GiftListAdapter(
 //        )
 //        holder.binding.giftName.text = liveGiftDetail.name
         Glide.with(holder.itemView.context)
-            .load(liveGiftDetail.image)
+            .load(giftData.image)
             .skipMemoryCache(true)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .placeholder(R.mipmap.ic_live_gift_default)
@@ -63,10 +62,10 @@ class GiftListAdapter(
             .into(holder.binding.giftImage)
 
         holder.itemView.onClick {
-            onSendGift.invoke(liveGiftDetail)
+            onReset.invoke(position, giftData)
             holder.binding.container.setBackgroundResource(R.drawable.bg_live_gifts_list_selected)
         }
-        if (giftId == liveGiftDetail.id) {
+        if (giftId == giftData.id) {
             holder.binding.container.setBackgroundResource(R.drawable.bg_live_gifts_list_selected)
         } else {
             holder.binding.container.setBackgroundResource(0)

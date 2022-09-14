@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "679711350972",
+    "project_id": "instalive-d7d57",
+    "storage_bucket": "instalive-d7d57.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:679711350972:android:49609f9eea2f53edcd70b9",
+        "android_client_info": {
+          "package_name": "com.example.instalive"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "679711350972-dt7istc8iqjaqb4ta0hqa8kr3me3ujnn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAQvABnFJ1OJfx5x2ST2_-lXquDnet0qk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "679711350972-dt7istc8iqjaqb4ta0hqa8kr3me3ujnn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

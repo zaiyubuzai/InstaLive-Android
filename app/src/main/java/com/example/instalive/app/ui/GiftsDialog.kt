@@ -1,5 +1,6 @@
 package com.example.instalive.app.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
@@ -39,12 +40,13 @@ import splitties.views.textResource
 import timber.log.Timber
 import java.util.*
 
+@SuppressLint("ViewConstructor")
 class GiftsDialog(
     context: Context,
-    private val giftData: List<GiftData>?,
+    private val giftDatas: List<GiftData>?,
     private val conversationId: String,
     private val liveId: String,
-    private val defaultGiftId: String?,
+    private var checkedGiftId: String?,
     private val liveGiftMode: Int,//1:send gift; 2:check ticket; 3:check ticket and open pay live
     private var level: Int,
     val onGiftSent: (LiveGiftEvent, GiftsDialog) -> Unit,
@@ -68,13 +70,12 @@ class GiftsDialog(
 
     private val MAX_PROGRESS = 505
     private var pageFlips = 0
-
-    var checkedGift: GiftData? = null
-    var paperPosition: Int = 0
-    var position: Int = 0
-    var isVertical = true
-    private val giftListObserver = Observer<GiftListData> {
-        if (it.gifts.isNotEmpty()) {
+    private var checkedGift: GiftData? = null
+    private var paperPosition: Int = 0
+    private var position: Int = 0
+    private var isVertical = false
+    private val giftListObserver = Observer<List<GiftData>> {
+        if (it.isNotEmpty()) {
             if (isVertical) {
                 val gridLayoutManager = GridLayoutManager(
                     context,
@@ -83,45 +84,59 @@ class GiftsDialog(
                     false
                 )
 
+                if (checkedGiftId != null) {
+                    checkedGift = it.find { liveGift ->
+                        liveGift.id == checkedGiftId
+                    }
+                } else {
+                    checkedGiftId = it[0].id
+                    checkedGift = it[0]
+                }
+
                 giftsRecyclerView.layoutManager = gridLayoutManager
                 giftAdapter =
                     GiftListAdapter(
-                        it.gifts,
-                        defaultGiftId,
+                        it,
+                        checkedGiftId,
                         3,
                         false,
-                        onReset = { _, id ->
+                        onReset = { _, giftData ->
+                            val oldIndex = giftAdapter?.viewList?.indexOfLast {it1 ->
+                                it1.id == checkedGiftId
+                            }
+                            checkedGiftId = giftData.id
+                            checkedGift = giftData
+                            if (oldIndex != null) {
+                                giftAdapter?.giftId = giftData.id
+                                giftAdapter?.notifyItemChanged(oldIndex)
+                            }
                         },
-                        showGlobal = { _ ->
-                        },
-                        onSendGift = { it1 ->
-                            sendGift(it1)
-                        })
+                        showGlobal = {})
                 giftsRecyclerView.adapter = giftAdapter
 
-                if (defaultGiftId.isNeitherNullNorEmpty()) {
-                    val index = it.gifts.indexOfFirst { lgd ->
-                        lgd.id == defaultGiftId
+                if (checkedGiftId.isNeitherNullNorEmpty()) {
+                    val index = it.indexOfFirst { lgd ->
+                        lgd.id == checkedGiftId
                     }
                     giftsRecyclerView.scrollToPosition(index)
                 }
             } else {
-                val size = it.gifts.size
+                val size = it.size
                 val count = if (size % 6 > 0) size / 6 + 1 else size / 6
 
-                if (it.gifts.isNotEmpty()) checkedGift = it.gifts[0]
+                if (it.isNotEmpty()) checkedGift = it[0]
                 var ininin = 0
                 val pageListView = mutableListOf<GiftListPageView>()
                 for (i in 0 until count) {
-                    val sublist = if (it.gifts.size > ((i + 1) * 6)) {
-                        it.gifts.subList(i * 6, i * 6 + 6)
+                    val sublist = if (it.size > ((i + 1) * 6)) {
+                        it.subList(i * 6, i * 6 + 6)
                     } else {
-                        it.gifts.subList(i * 6, it.gifts.size)
+                        it.subList(i * 6, it.size)
                     }
 
-                    if (defaultGiftId != null) {
+                    if (checkedGiftId != null) {
                         val giftIdIndex = sublist.filter { liveGift ->
-                            liveGift.id == defaultGiftId
+                            liveGift.id == checkedGiftId
                         }
                         if (giftIdIndex.isNeitherNullNorEmpty()) {
                             checkedGift = giftIdIndex[0]
@@ -140,7 +155,7 @@ class GiftsDialog(
                                     it.reset()
                                 }
                             },
-                            giftId = defaultGiftId
+                            giftId = checkedGiftId
                         )
                     giftListPageView.onChecked = checkedGiftBack
                     giftListPageView.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, dip(256))
@@ -246,10 +261,10 @@ class GiftsDialog(
         pageFlips = 0
     }
 
-    private fun onGiftData(giftData: GiftListData?) {
-        if (giftData?.gifts?.isNotEmpty() == true) {
+    private fun onGiftData(giftDatas: List<GiftData>?) {
+        if (giftDatas?.isNotEmpty() == true) {
             loadingAnim.isVisible = false
-            viewModel.giftListLiveData.postValue(giftData)
+            viewModel.giftListLiveData.postValue(giftDatas)
         } else {
             viewModel.getGiftList { _: Int, msg: String ->
                 loadingAnim.isVisible = false
@@ -295,7 +310,7 @@ class GiftsDialog(
 //            packageData = it1
 //            packageExtData = it2
 //        }
-        onGiftData(giftData)
+        onGiftData(giftDatas)
 //        marketingRecharge.onClick {
 //            CollectHelper.collectUV(1004)
 //            viewModel.getRechargePackages(2, null) { it1, it2 ->
@@ -340,7 +355,7 @@ class GiftsDialog(
                 onGiftSent(liveGiftEvent, this)
             }
             currentBalance = it.balance
-            if (currentBalance == 0L) {
+            if (currentBalance <= 0L) {
                 txtRechargeAmount.textResource = R.string.fb_recharge
             } else {
                 txtRechargeAmount.text = currentBalance.toInt().toString()
@@ -372,16 +387,16 @@ class GiftsDialog(
             }
         }
 //        if (liveGiftMode == MODE_SEND_GIFT) {
-//            sharedViewModel.getAccountBalance()
-//            sharedViewModel.accountBalanceData.observe(this) {
-//                val balance = it.coinBalance.balance.toInt()
-//                currentBalance = balance.toLong()
-//                if (balance == 0) {
-//                    txtRechargeAmount.textResource = R.string.recharge
-//                } else {
-//                    txtRechargeAmount.text = balance.toString()
-//                }
-//            }
+            sharedViewModel.getAccountBalance()
+            sharedViewModel.accountBalanceData.observe(this) {
+                val balance = it.coinBalance.balance.toInt()
+                currentBalance = balance.toLong()
+                if (balance <= 0) {
+                    txtRechargeAmount.textResource = R.string.fb_recharge
+                } else {
+                    txtRechargeAmount.text = balance.toString()
+                }
+            }
 //        }
 //        viewModel.rechargeBonusData.observe(this, rechargeBonusObserver)
 //        viewModel.turnOnPayLiveData.observe(this, turnOnPayLiveObserver)
@@ -418,8 +433,7 @@ class GiftsDialog(
         super.dismiss()
     }
 
-    override fun initViewModel() = appInstance.getAppViewModelProvider()
-        .get(GiftsViewModel::class.java)
+    override fun initViewModel() = GiftsViewModel()
 
     override fun getImplLayoutId(): Int = R.layout.dialog_gifts
 

@@ -2,13 +2,8 @@ package com.example.instalive.api
 
 import androidx.lifecycle.MutableLiveData
 import com.example.baselibrary.api.RemoteEventEmitter
-import com.example.instalive.model.AppInitData
-import com.example.instalive.model.CacheConfig
-import com.example.instalive.model.GiftListData
-import com.example.instalive.model.LoginData
+import com.example.instalive.model.*
 import com.venus.dm.model.UserData
-import retrofit2.http.Field
-import retrofit2.http.Query
 
 interface IRemoteRequest {
 
@@ -104,7 +99,12 @@ interface IRemoteRequest {
 
     suspend fun giftList(
         apiPath: String,
-        liveData: MutableLiveData<GiftListData>,
+        liveData: MutableLiveData<List<GiftData>>,
+        remoteEventEmitter: RemoteEventEmitter
+    )
+
+    suspend fun getAccountBalance(
+        liveData: MutableLiveData<AccountBalanceData>,
         remoteEventEmitter: RemoteEventEmitter
     )
 }

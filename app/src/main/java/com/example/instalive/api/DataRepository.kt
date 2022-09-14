@@ -369,11 +369,11 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
 
     override suspend fun giftList(
         apiPath: String,
-        liveData: MutableLiveData<GiftListData>,
+        liveData: MutableLiveData<List<GiftData>>,
         remoteEventEmitter: RemoteEventEmitter
     ) {
         val response = safeApiCall(null) {
-            baseApi.getAnyData<GiftListData>(apiPath)
+            baseApi.getAnyData<List<GiftData>>(apiPath)
         }
         if (response != null) {
             liveData.postValue(response.data)
@@ -404,6 +404,18 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
 //            processListData<GroupMember>(response, meta, liveData, isRefresh)
 //        }
 
+    }
+
+    override suspend fun getAccountBalance(
+        liveData: MutableLiveData<AccountBalanceData>,
+        remoteEventEmitter: RemoteEventEmitter,
+    ) {
+        val response = safeApiCall(remoteEventEmitter) {
+            baseApi.accountBalance()
+        }
+        if (response != null && response.resultOk()) {
+            liveData.postValue(response.data)
+        }
     }
 
     suspend fun cacheGift(imageUrl: String) {

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
@@ -30,6 +31,7 @@ import com.example.instalive.app.live.ui.GoLiveWithInviteDialog
 import com.example.instalive.app.live.ui.LiveMoreDialog
 import com.example.instalive.app.live.ui.LiveRaiseYourHandDialog
 import com.example.instalive.app.live.ui.LiveRelativeLayout
+import com.example.instalive.app.ui.GiftsDialog
 import com.example.instalive.databinding.FragmentLiveInteractionBinding
 import com.example.instalive.model.*
 import com.example.instalive.utils.GlideEngine
@@ -42,7 +44,6 @@ import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.language.LanguageConfig
 import com.luck.picture.lib.listener.OnResultCallbackListener
 import com.lxj.xpopup.XPopup
-import kotlinx.android.synthetic.main.activity_live_audience.*
 import kotlinx.android.synthetic.main.fragment_live_interaction.*
 import kotlinx.android.synthetic.main.fragment_live_interaction.hostDiamond
 import kotlinx.android.synthetic.main.fragment_live_interaction.nameContainer
@@ -50,6 +51,7 @@ import kotlinx.android.synthetic.main.fragment_live_interaction.onlineCount
 import kotlinx.android.synthetic.main.fragment_live_interaction.onlineCountContainer
 import kotlinx.android.synthetic.main.fragment_live_interaction.startLoop
 import kotlinx.coroutines.*
+import splitties.dimensions.dp
 import splitties.views.onClick
 import timber.log.Timber
 import java.util.*
@@ -64,6 +66,7 @@ class LiveInteractionFragment :
     private var likeJob: Job? = null
 
     private var goWithInviteDialog: GoLiveWithInviteDialog? = null
+    private var giftsDialog: GiftsDialog? = null
     private var moreDialog: LiveMoreDialog? = null
 
     private var lastLikeTimeStamp = 0L
@@ -90,13 +93,10 @@ class LiveInteractionFragment :
         }
 
         icGift.alphaClick {
-//            popupOpenGift()
+            popupOpenGift()
         }
 
-        icLiveWithGift.onClick {}
-        icLiveWithGift.tinyMoveClickListener {
-//            popupOpenGift()
-        }
+        icLiveWithGift.onClick {popupOpenGift()}
 
         nameContainer.onClick {
             ownerLiveUserInfo?.let { it1 -> showPersonBottomDialog(it1, 1) }
@@ -470,7 +470,7 @@ class LiveInteractionFragment :
                 viewModel.handsDown(liveId, {
                     isRaiseClicking = false
                 }) {
-                    loadingAnim?.isVisible = it == StatusEvent.LOADING
+                    loadingAnimContainer?.isVisible = it == StatusEvent.LOADING
                 }
             } else {
                 doRequestHandsUp()
@@ -524,7 +524,7 @@ class LiveInteractionFragment :
                 .asCustom(LiveRaiseYourHandDialog(c) {
 //                    logFirebaseEvent("raised_hand")
                     viewModel.raiseHand(liveId, { isRaiseClicking = false }) {
-                        loadingAnim?.isVisible = it == StatusEvent.LOADING
+                        loadingAnimContainer?.isVisible = it == StatusEvent.LOADING
                     }
                 })
                 .show()
@@ -532,18 +532,49 @@ class LiveInteractionFragment :
         } else {
 //            logFirebaseEvent("raised_hand")
             viewModel.raiseHand(liveId, { isRaiseClicking = false }) {
-                loadingAnim?.isVisible = it == StatusEvent.LOADING
+                loadingAnimContainer?.isVisible = it == StatusEvent.LOADING
             }
         }
     }
 
-//    private fun popupOpenGift(isOpenIAP: Boolean = false, iapProductId: RechargeBonusData? = null, giftId: String? = null) {
-//        val isMyShown = (activity as LiveAudienceActivity).popupOpenGift(isOpenIAP, iapProductId, giftId)
-//        if (isMyShown){
-//            icGiftReddot.isVisible = false
-//            icLiveWithGiftReddot.isVisible = false
-//        }
-//    }
+    private fun popupOpenGift(giftId: String? = null) {
+        if (!isAdded) return
+        val c = context?:return
+        if (giftsDialog == null || giftsDialog?.isShow == false) {
+            giftsDialog = GiftsDialog(
+                c,
+                viewModel.giftListLiveData.value,
+                "",
+                liveId,
+                giftId,
+                1,
+                -1,
+                onGiftSent = { gift, dialog ->
+                    //insert gift event to sequence
+                    gift.isOwnerGift = true
+                    LiveEventBus.get(EVENT_BUS_KEY_LIVE).post(gift)
+                    if (gift.giftInfo?.specialEffect?.show == true) {
+                        dialog.dismiss()
+                    }
+                },
+                onDismiss = {
+
+                },
+                onSelectedGift = {},
+                gotoFirstRecharge = { it1, isPaymentByCard ->
+
+                }
+            )
+
+            XPopup.Builder(c)
+                .isDestroyOnDismiss(true)
+                .hasShadowBg(false)
+                .asCustom(giftsDialog).show()
+
+            icGiftReddot.isVisible = false
+            icLiveWithGiftReddot.isVisible = false
+        }
+    }
 
     override fun showCornerLikes(voteEvent: LikeEvent) {
         if (!likedUuid.contains(voteEvent.uuid)) {

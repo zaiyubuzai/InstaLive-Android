@@ -189,7 +189,7 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
 //                }
                 if (conversationsEntity.chatState != 1) return
                 scrollToBottom()
-                popupOpenGift()
+//                popupOpenGift()
             }
 
             override fun onClickLike(conversationsEntity: ConversationsEntity) {
@@ -648,7 +648,7 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
     }
 
     private fun openImageAndVideo() {
-        openPictureAndVideoSelector(go = {result ->
+        openPictureAndVideoSelector(go = { result ->
             if (result != null) {
                 when ((result[0].mimeType).lowercase(Locale.getDefault())) {
                     "video/mp4", "video/quicktime" -> {
@@ -931,69 +931,42 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
         }.show()
     }
 
-    fun popupOpenGift(
-    ) {
+    fun popupOpenGift() {
         if (giftsDialog == null || giftsDialog?.isShow == false) {
-            val giftData = viewModel.getGifts.value ?: LiveGiftData(0, listOf())
             giftsDialog = GiftsDialog(
                 this,
-                if (newestLiveGiftVersion != currentLiveGiftVersion) null else giftData,
-                SessionPreferences.recentConversationID ?: "",
-                onRecharge = { refer, balance, position, bindingCardDialog, livePackageList, livePackageExt ->
-                    if (Utils.isFastClick()) {
-                        goRecharge(
-                            refer, balance, position, livePackageList,
-                            livePackageExt
-                        )
-                    }
-                },
+                viewModel.giftListLiveData.value,
+                conId,
+                "",
+                null,
+                1,
+                -1,
                 onGiftSent = { gift, dialog ->
                     //insert gift event to sequence
-                    onNewGift(gift)
+                    gift.isOwnerGift = true
+                    LiveEventBus.get(Constants.EVENT_BUS_KEY_LIVE).post(gift)
                     if (gift.giftInfo?.specialEffect?.show == true) {
                         dialog.dismiss()
                     }
-
-                    if (isNonGifter) {
-                        nonGifterJoinGroup()
-                    }
                 },
                 onDismiss = {
-                    messageContainer?.let {
-                        val set = ConstraintSet()
-                        set.clone(it)
-                        set.setMargin(
-                            R.id.giftSecondContainer,
-                            ConstraintSet.BOTTOM,
-                            context?.dip(300) ?: 0
-                        )
-                        set.applyTo(it)
-                    }
 
                 },
                 onSelectedGift = {},
-                "-1",
-                giftId ?: MarsApp.appInstance.giftId,
-                1,
-                RecentConversation.conversationsEntity.level,
-                RecentConversation.conversationsEntity.type == 2,
-                isOpenIAP,
-                iapProductId,
-                isNonGifter = isNonGifter,
                 gotoFirstRecharge = { it1, isPaymentByCard ->
-                    showWelcomeRechargeBonusDialog(it1, 0, isPaymentByCard, false)
+
                 }
             )
 
-            XPopup.Builder(c)
+            XPopup.Builder(this)
                 .isDestroyOnDismiss(true)
                 .hasShadowBg(false)
-                .asCustom(liveGiftDialog).show()
+                .asCustom(giftsDialog).show()
 
             val set = ConstraintSet()
-            set.clone(messageContainer)
-            set.setMargin(R.id.giftSecondContainer, ConstraintSet.BOTTOM, context?.dip(420) ?: 0)
-            set.applyTo(messageContainer)
+            set.clone(container)
+            set.setMargin(R.id.giftSecondContainer, ConstraintSet.BOTTOM, dp(420))
+            set.applyTo(container)
         }
     }
 

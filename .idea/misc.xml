@@ -13,6 +13,7 @@
         <entry key="app/src/main/res/drawable/bg_66000_12c0011.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_88_black_transparent_gradient.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_99000000_12c.xml" value="0.34444444444444444" />
+        <entry key="app/src/main/res/drawable/bg_bf374055_36c0100.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_bottom_282f3f_36c1.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_btn_999stro_12c.xml" value="0.34444444444444444" />
         <entry key="app/src/main/res/drawable/bg_btn_disable_3a_12.xml" value="0.4" />
@@ -61,6 +62,7 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/activity_message.xml" value="0.31965811965811963" />
         <entry key="app/src/main/res/layout/activity_settings.xml" value="0.3311965811965812" />
+        <entry key="app/src/main/res/layout/dialog_gift_animation.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/dialog_gifts.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/dialog_go_live_with.xml" value="0.3311965811965812" />
         <entry key="app/src/main/res/layout/dialog_live_comment_input.xml" value="0.3311965811965812" />

@@ -331,4 +331,7 @@ interface InstaApi : BaseApi {
         @Field("gift_id") content: String,
         @Field("uuid") uuid:String
     ): BaseResponse<LiveSendGiftResponse>
+
+    @GET("api/pay/account/accounts/")
+    suspend fun accountBalance(): BaseResponse<AccountBalanceData>
 }

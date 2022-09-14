@@ -10,13 +10,14 @@ import com.example.instalive.InstaLiveApp
 import com.example.instalive.api.DataRepository
 import com.example.instalive.api.LiveDataRepository
 import com.example.instalive.app.InstaLivePreferences
-import com.example.instalive.model.GiftListData
+import com.example.instalive.model.GiftData
 import com.example.instalive.model.LiveSendGiftResponse
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.launch
 
 class GiftsViewModel : BaseViewModel() {
-    var giftListLiveData = MutableLiveData<GiftListData>()
+    var giftListLiveData = MutableLiveData<List<GiftData>>()
     var sendGiftLiveData = MutableLiveData<LiveSendGiftResponse>()
 
     fun sendLiveGift(
@@ -50,7 +51,7 @@ class GiftsViewModel : BaseViewModel() {
     fun getGiftList(onError: (code: Int, msg: String) -> Unit) {
         if (InstaLivePreferences.liveGiftList != null) {
             val giftList =
-                Gson().fromJson(InstaLivePreferences.liveGiftList, GiftListData::class.java)
+                Gson().fromJson<List<GiftData>>(InstaLivePreferences.liveGiftList, object : TypeToken<List<GiftData>>() {}.type)
             giftListLiveData.postValue(giftList)
             return
         }

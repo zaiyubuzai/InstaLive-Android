@@ -123,7 +123,7 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
     private var newMessagePushTimeToken = 0L
     private var keyboardState = false
     private var subtitleFloatingView: View? = null
-    private var giftListData: GiftListData? = null
+    private var giftListData: List<GiftData>? = null
 
     private val messageEventSyncList = ConcurrentLinkedQueue<LiveMsgEvent>()
     private val ownerMessageEventSyncList = ConcurrentLinkedQueue<LiveMsgEvent>()
@@ -1364,7 +1364,7 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
                 }
             }
 
-            giftListData?.gifts?.let { giftList ->
+            giftListData?.let { giftList ->
                 val gift =
                     giftList.find { it.id == topMessage.giftId }
                 if (gift != null) {

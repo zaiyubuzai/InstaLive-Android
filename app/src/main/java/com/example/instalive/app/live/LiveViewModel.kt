@@ -12,6 +12,7 @@ import com.example.instalive.app.conversation.MessageBaseViewModel
 import com.example.instalive.db.InstaLiveDBProvider
 import com.example.instalive.model.*
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.venus.dm.db.entity.MessageEntity
 import com.venus.dm.model.UserData
 import kotlinx.coroutines.*
@@ -28,12 +29,14 @@ abstract class LiveViewModel : MessageBaseViewModel() {
     val liveInfoLiveData = MutableLiveData<LiveDataInfo>()
     val liveCloseLiveData = MutableLiveData<LiveCloseData>()
 
-    fun joinLive(userId: String,
-                 liveId: String,
-                 liveJoinData: MutableLiveData<Pair<LiveStateInfo?, JoinLiveError?>>,
-                 password: String? = null) {
+    fun joinLive(
+        userId: String,
+        liveId: String,
+        liveJoinData: MutableLiveData<Pair<LiveStateInfo?, JoinLiveError?>>,
+        password: String? = null
+    ) {
         viewModelScope.launch {
-            LiveDataRepository.joinLive(liveId, liveJoinData, object : RemoteEventEmitter{
+            LiveDataRepository.joinLive(liveId, liveJoinData, object : RemoteEventEmitter {
                 override fun onError(code: Int, msg: String, errorType: ErrorType) {
                     this@LiveViewModel.onError(code, msg, errorType)
                 }
@@ -193,7 +196,6 @@ abstract class LiveViewModel : MessageBaseViewModel() {
     val likeLiveData = MutableLiveData<Any>()
     val cancelLiveWithData = MutableLiveData<Any>()
     val hangUpLiveData = MutableLiveData<Any>()
-    val giftListLiveData = MutableLiveData<GiftListData>()
     val raiseHandData = MutableLiveData<Any>()
     val handsDownData = MutableLiveData<Any>()
     val muteLiveData = MutableLiveData<Any>()
@@ -380,7 +382,10 @@ abstract class LiveViewModel : MessageBaseViewModel() {
     fun getGiftList() {
         if (InstaLivePreferences.liveGiftList != null) {
             val giftList =
-                Gson().fromJson(InstaLivePreferences.liveGiftList, GiftListData::class.java)
+                Gson().fromJson<List<GiftData>>(
+                    InstaLivePreferences.liveGiftList,
+                    object : TypeToken<List<GiftData>>() {}.type
+                )
             giftListLiveData.postValue(giftList)
             return
         }
@@ -388,7 +393,8 @@ abstract class LiveViewModel : MessageBaseViewModel() {
 //            DataRepository.liveGiftList(liveGiftListData, this@LiveInteractionViewModel)
 //        }
     }
-//
+
+    //
     fun raiseHand(liveId: String, onError: (String) -> Unit, onStatus: (StatusEvent) -> Unit) {
         viewModelScope.launch {
             LiveDataRepository.raiseHandLive(liveId, raiseHandData, object : RemoteEventEmitter {
@@ -421,19 +427,28 @@ abstract class LiveViewModel : MessageBaseViewModel() {
         }
     }
 
-    fun hangUpLiveWith(liveId: String, userId: String, onError: (String) -> Unit, onStatus: (StatusEvent) -> Unit) {
+    fun hangUpLiveWith(
+        liveId: String,
+        userId: String,
+        onError: (String) -> Unit,
+        onStatus: (StatusEvent) -> Unit
+    ) {
         viewModelScope.launch {
-            LiveDataRepository.hangUpLive(liveId, userId, hangUpLiveData, object : RemoteEventEmitter {
-                override fun onError(code: Int, msg: String, errorType: ErrorType) {
-                    this@LiveViewModel.onError(code, msg, errorType)
-                    onError.invoke(msg)
-                }
+            LiveDataRepository.hangUpLive(
+                liveId,
+                userId,
+                hangUpLiveData,
+                object : RemoteEventEmitter {
+                    override fun onError(code: Int, msg: String, errorType: ErrorType) {
+                        this@LiveViewModel.onError(code, msg, errorType)
+                        onError.invoke(msg)
+                    }
 
-                override fun onEvent(event: StatusEvent) {
-                    this@LiveViewModel.onEvent(event)
-                    onStatus.invoke(event)
-                }
-            })
+                    override fun onEvent(event: StatusEvent) {
+                        this@LiveViewModel.onEvent(event)
+                        onStatus.invoke(event)
+                    }
+                })
         }
     }
 //

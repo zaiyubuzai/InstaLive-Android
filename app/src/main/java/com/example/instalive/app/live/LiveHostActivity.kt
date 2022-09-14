@@ -36,6 +36,7 @@ import com.example.instalive.utils.LiveSocketIO
 import com.example.instalive.utils.VenusNumberFormatter
 import com.example.instalive.view.CountDownProgressBar
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.jeremyliao.liveeventbus.LiveEventBus
 import com.venus.dm.db.entity.ConversationsEntity
 import com.venus.framework.util.isNeitherNullNorEmpty
@@ -495,11 +496,11 @@ class LiveHostActivity : LiveBaseActivity<LiveHostViewModel, ActivityLiveHostBin
                 giftTicketName.isVisible = it.paidLiveEnable
                 giftTicketContainer.isVisible = it.paidLiveEnable
                 val giftList =
-                    Gson().fromJson(
+                    Gson().fromJson<List<GiftData>>(
                         InstaLivePreferences.liveGiftList,
-                        GiftListData::class.java
+                        object : TypeToken<List<GiftData>>() {}.type
                     )
-                val giftData = giftList.gifts.find { gift ->
+                val giftData = giftList.find { gift ->
                     gift.id == it.defaultTicketGiftId
                 }
                 if (giftData != null) {

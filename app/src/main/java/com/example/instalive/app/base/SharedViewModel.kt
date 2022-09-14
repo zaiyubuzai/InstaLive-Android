@@ -23,6 +23,7 @@ import com.example.instalive.api.LiveDataRepository
 import com.example.instalive.app.SessionPreferences
 import com.example.instalive.db.InstaLiveDBProvider
 import com.example.instalive.db.MessageComposer
+import com.example.instalive.model.AccountBalanceData
 import com.example.instalive.model.JoinLiveError
 import com.example.instalive.model.LiveStateInfo
 import com.example.instalive.model.TokenInfo
@@ -49,7 +50,7 @@ class SharedViewModel : BaseViewModel() {
     val phonePasscodeMap = mutableMapOf<String, Long>()
 
     val currentConversationData = MutableLiveData<ConversationsEntity>()
-
+    val accountBalanceData = MutableLiveData<AccountBalanceData>()
     val videoMessageQueue = ConcurrentLinkedQueue<MessageEntity>()
     val videoMessageLiveIdQueue = ConcurrentLinkedQueue<String>()
     val videoMessageDoingQueue = ConcurrentLinkedQueue<MessageEntity>()
@@ -57,6 +58,12 @@ class SharedViewModel : BaseViewModel() {
     val cloudinaryUploadJob = mutableMapOf<String, Job>()
 
     val liveLeaveData = MutableLiveData<Any>()
+
+    fun getAccountBalance() {
+        viewModelScope.launch {
+            DataRepository.getAccountBalance(accountBalanceData, this@SharedViewModel)
+        }
+    }
 
     fun leaveLive(liveId: String) {
         viewModelScope.launch {
