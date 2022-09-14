@@ -232,6 +232,7 @@ fun setImageViewAvatar(view: ImageView, uri: String?) {
         .load(uri)
         .apply(options)
         .skipMemoryCache(false)
+        .placeholder(R.mipmap.ic_default_avatar)
         .diskCacheStrategy(DiskCacheStrategy.ALL)
         .into(view)
 }

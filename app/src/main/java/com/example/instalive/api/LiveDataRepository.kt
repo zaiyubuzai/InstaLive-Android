@@ -24,6 +24,38 @@ object LiveDataRepository : ILiveDataRepository, BaseRemoteRepository() {
     private val dao = InstaLiveDBProvider.db.directMessagingDao()
     private val pendingMessageJobsMap = mutableMapOf<String, Job>()
 
+    override suspend fun liveViewerPagingList(
+        liveId: String,
+        page: Int,
+        limit: Int,
+        onLimitChange: (Int) -> Unit,
+        unlockedNumberLiveData: MutableLiveData<String>,
+        remoteEventEmitter: RemoteEventEmitter,
+    ): PagingSource.LoadResult<Int, LiveViewerData> {
+        val response = safeApiCall(remoteEventEmitter) {
+            instaApi.liveViewer(liveId, page * limit)
+        }
+        return if (response != null) {
+            if (limit != response.meta.limit) {
+                onLimitChange(response.meta.limit)
+            }
+            val nextKey = if (response.meta.hasNext) {
+                response.meta.nextOffset / response.meta.limit
+            } else {
+                null
+            }
+            unlockedNumberLiveData.postValue(response.dataExt?.unlocked ?: "0")
+
+            PagingSource.LoadResult.Page(
+                data = response.data,
+                prevKey = null,
+                nextKey = nextKey
+            )
+        } else {
+            throw NullPointerException()
+        }
+    }
+
     override suspend fun liveWithViewerPagingList(
         liveId: String,
         page: Int,

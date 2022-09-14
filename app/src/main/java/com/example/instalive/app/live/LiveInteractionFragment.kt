@@ -27,10 +27,7 @@ import com.example.instalive.app.Constants.LIVE_END
 import com.example.instalive.app.Constants.LIVE_START
 import com.example.instalive.app.InstaLivePreferences
 import com.example.instalive.app.SessionPreferences
-import com.example.instalive.app.live.ui.GoLiveWithInviteDialog
-import com.example.instalive.app.live.ui.LiveMoreDialog
-import com.example.instalive.app.live.ui.LiveRaiseYourHandDialog
-import com.example.instalive.app.live.ui.LiveRelativeLayout
+import com.example.instalive.app.live.ui.*
 import com.example.instalive.app.ui.GiftsDialog
 import com.example.instalive.databinding.FragmentLiveInteractionBinding
 import com.example.instalive.model.*
@@ -96,7 +93,7 @@ class LiveInteractionFragment :
             popupOpenGift()
         }
 
-        icLiveWithGift.onClick {popupOpenGift()}
+        icLiveWithGift.onClick { popupOpenGift() }
 
         nameContainer.onClick {
             ownerLiveUserInfo?.let { it1 -> showPersonBottomDialog(it1, 1) }
@@ -114,24 +111,22 @@ class LiveInteractionFragment :
             }
         }
 
-        onlineCountContainer.onClick {
-            val c = context
-            if (c != null) {
-//                XPopup.Builder(c)
-//                    .isDestroyOnDismiss(true)
-//                    .enableDrag(true)
-//                    .asCustom(
-//                        LiveViewersDialog(
-//                            c,
-//                            viewModel.roomId,
-//                            isMicrophone,
-//                            isPaidLive,
-//                            if (diamondPublicEnabled) 1 else 0,
-//                            currentLiveWithUser
-//                        )
-//                    )
-//                    .show()
-            }
+        onlineCountContainer.debounceClick {
+            val c = context ?: return@debounceClick
+            XPopup.Builder(c)
+                .isDestroyOnDismiss(true)
+                .enableDrag(true)
+                .asCustom(
+                    LiveViewersDialog(
+                        c,
+                        liveId,
+                        sharedViewModel.isMicrophone,
+                        isPaidLive,
+                        if (diamondPublicEnabled) 1 else 0,
+                        null
+                    )
+                )
+                .show()
         }
 
         icRaiseHand.debounceClick {
@@ -539,7 +534,7 @@ class LiveInteractionFragment :
 
     private fun popupOpenGift(giftId: String? = null) {
         if (!isAdded) return
-        val c = context?:return
+        val c = context ?: return
         InstaLivePreferences.liveSendGiftClicked = true
 
         if (giftsDialog == null || giftsDialog?.isShow == false) {

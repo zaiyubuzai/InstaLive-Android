@@ -120,4 +120,13 @@ interface ILiveDataRepository {
         liveData: MutableLiveData<Any>,
         remoteEventEmitter: RemoteEventEmitter?
     )
+
+    suspend fun liveViewerPagingList(
+        liveId: String,
+        page: Int,
+        limit: Int,
+        onLimitChange: (Int) -> Unit,
+        unlockedNumberLiveData: MutableLiveData<String>,
+        remoteEventEmitter: RemoteEventEmitter
+    ): PagingSource.LoadResult<Int, LiveViewerData>
 }

@@ -3,7 +3,8 @@ package com.example.instalive.app
 import com.example.instalive.R
 import io.agora.rtc.video.BeautyOptions
 
-object Constants {
+object
+Constants {
 
     const val EXTRA_USERNAME = "username"
     const val EXTRA_LOGIN_SOURCE = "login_source"
@@ -13,7 +14,8 @@ object Constants {
     const val DEFAULT_TIME_OUT = 15L
 
     //event cat
-    const val EVENT_BUS_KEY_LIVE_HOST_ACTIONS = "event_bus_live_host_actions"
+    const val EVENT_BUS_KEY_LIVE_HOST_ACTIONS = "event_bus_key_live_host_actions"
+    const val EVENT_BUS_KEY_REMOVE_FROM_LIVE = "event_bus_key_remove_from_live"
     const val EVENT_BUS_KEY_LIVE_MESSAGE = "event_bus_key_live_message"
     const val EVENT_BUS_KEY_NOT_GO_BACK = "event_bus_key_not_go_back"
     const val EVENT_BUS_KEY_TELEPHONY = "event_bus_key_telephony"

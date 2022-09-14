@@ -11,9 +11,12 @@ import com.example.instalive.R
 import kotlinx.android.synthetic.main.layout_discover_load_state.view.*
 
 class FooterLoadStateAdapter: LoadStateAdapter<FooterLoadStateAdapter.FooterLoadStateViewHolder>() {
+
+    var isShowNoMore = false
+
     override fun onBindViewHolder(holder: FooterLoadStateViewHolder, loadState: LoadState) {
         holder.itemView.loadingAnim.isVisible = loadState is LoadState.Loading
-        holder.itemView.noMore.isVisible = false
+        holder.itemView.noMore.isVisible = isShowNoMore
     }
 
     override fun displayLoadStateAsItem(loadState: LoadState): Boolean {

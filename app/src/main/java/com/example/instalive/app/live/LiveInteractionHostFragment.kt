@@ -27,6 +27,7 @@ import com.example.instalive.app.Constants.ITRCT_TYPE_MAKEUP_OFF
 import com.example.instalive.app.Constants.ITRCT_TYPE_MAKEUP_ON
 import com.example.instalive.app.live.ui.GoLiveWithDialog
 import com.example.instalive.app.live.ui.LiveMoreDialog
+import com.example.instalive.app.live.ui.LiveViewersDialog
 import com.example.instalive.model.*
 import com.example.instalive.utils.VenusNumberFormatter
 import kotlinx.android.synthetic.main.fragment_live_interaction_host.avatar
@@ -46,7 +47,7 @@ class LiveInteractionHostFragment :
     var goLiveWithTicker: ReceiveChannel<Unit>? = null
     var currentDiamonds: Long = 0L
 
-    //    private var liveViewersHostDialog: LiveViewersHostDialog? = null
+        private var liveViewersHostDialog: LiveViewersDialog? = null
     private var moreDialog: LiveMoreDialog? = null
     private var mute = 0
     private var hostGiftLiveTipJob: Job? = null
@@ -72,32 +73,25 @@ class LiveInteractionHostFragment :
 //            InstaLiveApp.appInstance.appInitData?.appFeature?.midwayPaidLiveEnabled == 1
 
         onlineCountContainer.onClick {
-//            val c = context
-//            if (c != null && (liveViewersHostDialog?.isShow == false || liveViewersHostDialog == null)) {
+            val c = context
+            if (c != null && (liveViewersHostDialog?.isShow == false || liveViewersHostDialog == null)) {
 //                logFirebaseEvent("open_viewer", bundleOf("from" to "viewer_count"))
-//
-//                liveViewersHostDialog = LiveViewersHostDialog(
-//                    c,
-//                    viewModel.roomId,
-//                    currentDiamonds,
-//                    isMicrophone,
-//                    isPaidLive,
-//                    currentLiveWithUser
-//                ) {
-//                    if (activity is RecordActivity) {
-//                        (activity as RecordActivity).tryHangUp(
-//                            currentLiveWithUser?.nickname ?: "",
-//                            currentLiveWithUser?.userId ?: ""
-//                        )
-//                    }
-//                }
-//
-//                XPopup.Builder(c)
-//                    .isDestroyOnDismiss(true)
-//                    .enableDrag(true)
-//                    .asCustom(liveViewersHostDialog)
-//                    .show()
-//            }
+
+                liveViewersHostDialog = LiveViewersDialog(
+                    c,
+                    liveId,
+                    sharedViewModel.isMicrophone,
+                    false,
+                    1,
+                    null
+                )
+
+                XPopup.Builder(c)
+                    .isDestroyOnDismiss(true)
+                    .enableDrag(true)
+                    .asCustom(liveViewersHostDialog)
+                    .show()
+            }
         }
 
         hostDiamond.onClick {

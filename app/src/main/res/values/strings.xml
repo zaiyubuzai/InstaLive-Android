@@ -307,4 +307,7 @@
     <string name="fb_gift_more_to_level_up">Gift more to level up</string>
     <string name="fb_full_level_tip">Congrats! You\'ve reached full level</string>
     <string name="fb_send_coins_to_level_up">Send %1$s Coins to level up</string>
+    <string name="fb_views_title">Contribution Ranking</string>
+    <string name="fb_no_live_viewers_yet">No viewer yet.</string>
+    <string name="fb_unlocked">Unlocked</string>
 </resources>

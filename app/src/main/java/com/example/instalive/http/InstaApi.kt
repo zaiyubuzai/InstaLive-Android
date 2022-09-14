@@ -310,6 +310,12 @@ interface InstaApi : BaseApi {
         @Query("offset") offset: Int,
     ): BaseResponse<List<LiveViewerData>>
 
+    @GET("api/live/live/online/members/")
+    suspend fun liveViewer(
+        @Query("live_id") roomId: String,
+        @Query("offset") offset: Int,
+    ): BaseResponseWithExt<List<LiveViewerData>, LiveViewerExtData>
+
     @FormUrlEncoded
     @POST("api/live/live/live_with/invite/")
     suspend fun goLiveWith(
