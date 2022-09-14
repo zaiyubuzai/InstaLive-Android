@@ -23,7 +23,7 @@
 
 # Gson
 -dontwarn sun.misc.**
--keep class sun.misc.Unsafe { *; }
+#-keep class sun.misc.Unsafe { *; }
 -keep class com.google.gson.examples.android.model.** { *; }
 -keep class * implements com.google.gson.TypeAdapterFactory
 -keep class * implements com.google.gson.JsonSerializer
@@ -75,3 +75,9 @@
 #svga
 -keep class com.squareup.wire.** { *; }
 -keep class com.opensource.svgaplayer.proto.** { *; }
+
+#jiaozi videoplayer
+-keep public class cn.jzvd.JZMediaSystem {*; }
+-keep class tv.danmaku.ijk.media.player.** {*; }
+-dontwarn tv.danmaku.ijk.media.player.*
+-keep interface tv.danmaku.ijk.media.player.** { *; }

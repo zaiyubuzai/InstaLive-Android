@@ -419,12 +419,12 @@ class LiveHostActivity : LiveBaseActivity<LiveHostViewModel, ActivityLiveHostBin
 //                    } else {
 //                        unlockLiveDiamonds.text = it.unlockLiveDiamonds.toString()
 //                    }
-//                    youGotDiamonds.isVisible = !it.loadingData
-//                    youGotProgress.isVisible = it.loadingData
-//                    moreProgress.isVisible = it.loadingData
-//                    if (it.loadingData) {
-//                        startLiveEndJob()
-//                    }
+                    youGotDiamonds.isVisible = !it.loadingData
+                    youGotProgress.isVisible = it.loadingData
+                    moreProgress.isVisible = it.loadingData
+                    if (it.loadingData) {
+                        startLiveEndJob()
+                    }
                 } else {
                     unlockLiveDiamonds.text = getString(R.string.un_know_views)
                     liveDuration.text = getString(R.string.un_know_time)

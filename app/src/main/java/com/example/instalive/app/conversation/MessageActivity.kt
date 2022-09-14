@@ -31,6 +31,8 @@ import com.example.instalive.InstaLiveApp
 import com.example.instalive.app.SessionPreferences
 import com.example.instalive.app.base.SharedViewModel
 import com.example.instalive.app.base.TextPopupWindow
+import com.example.instalive.app.conversation.viewer.MediaBrowserActivity
+import com.example.instalive.app.conversation.viewer.VideoMultyItem
 import com.example.instalive.app.ui.GiftsDialog
 import com.example.instalive.utils.*
 import com.jeremyliao.liveeventbus.LiveEventBus
@@ -43,8 +45,10 @@ import com.venus.dm.model.event.MessageEvent
 import kotlinx.android.synthetic.main.message_bottom_layout.*
 import kotlinx.coroutines.*
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
+import org.json.JSONArray
 import splitties.alertdialog.appcompat.*
 import splitties.dimensions.dp
+import splitties.intents.start
 import splitties.permissions.hasPermission
 import splitties.systemservices.clipboardManager
 import splitties.systemservices.inputMethodManager
@@ -229,24 +233,9 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
                         resendMessage(messageEntity)
                     }
 
-                    override fun onPlayVideo(messageEntity: MessageEntity) {
+                    override fun onPlayMediaMessage(messageEntity: MessageEntity) {
                         inputContainer.hideKeyboard()
-//                        buildMediaData(messageEntity)
-                    }
-
-                    override fun onViewImage(messageEntity: MessageEntity) {
-                        inputContainer.hideKeyboard()
-//                        buildMediaData(messageEntity)
-                    }
-
-                    override fun onReplyViewImage(messageEntity: MessageEntity) {
-                        inputContainer.hideKeyboard()
-//                        buildMediaData(messageEntity)
-                    }
-
-                    override fun onReplyViewVideo(messageEntity: MessageEntity) {
-                        inputContainer.hideKeyboard()
-//                        buildMediaData(messageEntity)
+                        buildMediaData(messageEntity)
                     }
 
                     override fun onReplyMessage(messageEntity: MessageEntity) {
@@ -967,6 +956,68 @@ class MessageActivity : MessageBaseActivity<ActivityMessageBinding>() {
             set.clone(container)
             set.setMargin(R.id.giftSecondContainer, ConstraintSet.BOTTOM, dp(420))
             set.applyTo(container)
+        }
+    }
+
+    private fun buildMediaData(
+        msg: MessageEntity
+    ) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val mediaDataList = JSONArray()
+            val messages = viewModel.getMediaMessages(conId)
+            var uuid = ""
+            val msgPayload = MessageEntity.Payload.fromJson(msg.payload) ?: return@launch
+            if (msg.type == 32) {
+                msgPayload.targetMessage?.let {
+                    uuid = it.uuid
+                }
+            } else {
+                uuid = msg.uuid
+            }
+
+            var msgIndex = 0
+
+            messages.forEachIndexed { index, it ->
+                Timber.d("payload : ${it.payload}")
+                val payload =
+                    MessageEntity.Payload.fromJson(it.payload) ?: return@forEachIndexed
+                if (it.uuid == uuid) msgIndex = index
+                if (it.type in 3..4) {
+                    if (it.localResPath != null && File(it.localResPath).exists()) {
+                        //缓存文件已存在无需下载
+                        mediaDataList.put(
+                            VideoMultyItem(
+                                it.uuid,
+                                payload.url ?: "",
+                                if (it.type == 4) 1 else 2,
+                                it.localResPath ?: "",
+                                if (it.type == 4) payload.cover ?: "" else payload.thumbnail
+                                    ?: ""
+                            ).toString()
+                        )
+                    } else {
+                        mediaDataList.put(
+                            VideoMultyItem(
+                                it.uuid,
+                                payload.url ?: "",
+                                if (it.type == 4) 1 else 2,
+                                it.localResPath ?: "",
+                                if (it.type == 4) payload.cover ?: "" else payload.thumbnail
+                                    ?: ""
+                            ).toString()
+                        )
+                    }
+                }
+            }
+
+            withContext(Dispatchers.Main) {
+                start(MediaBrowserActivity) { _, spec ->
+                    spec.mediaDataList = mediaDataList.toString()
+                    spec.position = msgIndex
+                    spec.uuid = uuid
+                    spec.showVideoVolume = true
+                }
+            }
         }
     }
 

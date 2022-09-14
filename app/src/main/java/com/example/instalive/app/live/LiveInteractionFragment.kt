@@ -540,6 +540,8 @@ class LiveInteractionFragment :
     private fun popupOpenGift(giftId: String? = null) {
         if (!isAdded) return
         val c = context?:return
+        InstaLivePreferences.liveSendGiftClicked = true
+
         if (giftsDialog == null || giftsDialog?.isShow == false) {
             giftsDialog = GiftsDialog(
                 c,

@@ -37,6 +37,12 @@ interface DirectMessageDao {
         timeToken: Long,
     ): List<MessageEntity>
 
+    @Query("SELECT * FROM messages WHERE conversation_id = :conId AND user_id = :currentUserId AND state == 1 AND type IN (3, 4) ORDER BY send_time LIMIT 100")
+    fun getMediaMessagesByConId(
+        conId: String,
+        currentUserId: String,
+    ): List<MessageEntity>
+
     @Query("SELECT * FROM conversations WHERE user_id = :currentUserId ORDER BY last_msg_timetoken DESC LIMIT 20")
     fun getLatestTenConversations(currentUserId: String): Flow<List<ConversationsEntity>>
 

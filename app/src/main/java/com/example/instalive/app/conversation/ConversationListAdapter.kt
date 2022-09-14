@@ -37,12 +37,12 @@ class ConversationListAdapter(
                 Timber.d("ispin:${conversationEntity.isPin}")
                 holder.binding.conversationEntity = conversationEntity
                 holder.binding.executePendingBindings()
-//                val options = RequestOptions.bitmapTransform(RoundedCorners(context.dp(16)))
-//                Glide.with(context).load(conversationEntity.recipientPortrait) //图片地址
-//                    .apply(options)
-//                    .skipMemoryCache(false)
-//                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-//                    .into(holder.binding.avatar)
+                val options = RequestOptions.bitmapTransform(RoundedCorners(context.dp(16)))
+                Glide.with(context).load(conversationEntity.recipientPortrait) //图片地址
+                    .apply(options)
+                    .skipMemoryCache(false)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(holder.binding.avatar)
                 if (currentID == conversationEntity.conversationId) {
                     holder.binding.constraint.setBackgroundColor(context.resources.getColor(R.color.purple_100))
                 } else {

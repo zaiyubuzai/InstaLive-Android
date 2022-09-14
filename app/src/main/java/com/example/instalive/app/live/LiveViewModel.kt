@@ -29,6 +29,12 @@ abstract class LiveViewModel : MessageBaseViewModel() {
     val liveInfoLiveData = MutableLiveData<LiveDataInfo>()
     val liveCloseLiveData = MutableLiveData<LiveCloseData>()
 
+    fun cancelLiveWith(liveId: String) {
+        viewModelScope.launch {
+            LiveDataRepository.cancelLiveWith(liveId, cancelLiveWithData, this@LiveViewModel)
+        }
+    }
+
     fun joinLive(
         userId: String,
         liveId: String,

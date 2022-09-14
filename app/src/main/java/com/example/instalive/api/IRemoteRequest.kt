@@ -107,4 +107,6 @@ interface IRemoteRequest {
         liveData: MutableLiveData<AccountBalanceData>,
         remoteEventEmitter: RemoteEventEmitter
     )
+
+    suspend fun calibrationTime()
 }

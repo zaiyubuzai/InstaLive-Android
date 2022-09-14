@@ -197,6 +197,19 @@ object LiveDataRepository : ILiveDataRepository, BaseRemoteRepository() {
         }
     }
 
+    override suspend fun cancelLiveWith(
+        liveId: String,
+        liveData: MutableLiveData<Any>,
+        remoteEventEmitter: RemoteEventEmitter?
+    ){
+        val response = safeApiCall(remoteEventEmitter) {
+            instaApi.cancelLiveWith(liveId)
+        }
+        if (response != null) {
+            liveData.postValue(response.data)
+        }
+    }
+
     override suspend fun agreeLiveWith(
         liveId: String,
         liveData: MutableLiveData<Any>,

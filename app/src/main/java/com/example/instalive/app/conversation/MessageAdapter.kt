@@ -301,7 +301,7 @@ class MessageAdapter(
                     )
                 }
                 holder.binding.messageContainer.onClick {
-                    onMessageActionsListener.onPlayVideo(item)
+                    onMessageActionsListener.onPlayMediaMessage(item)
                 }
                 holder.binding.messageContainer.onLongClick {
                     onMessageActionsListener.onMessageLongClicked(
@@ -330,7 +330,7 @@ class MessageAdapter(
                     )
                 }
                 holder.binding.imageCover.onClick {
-                    onMessageActionsListener.onViewImage(item)
+                    onMessageActionsListener.onPlayMediaMessage(item)
                 }
                 holder.binding.imageCover.onLongClick {
                     onMessageActionsListener.onMessageLongClicked(
@@ -377,9 +377,9 @@ class MessageAdapter(
                     holder.binding.replyContent.onClick { _ ->
                         if (payload?.targetMessage?.state == 2 || replyMsg == null) return@onClick
                         if (payload?.targetMessage?.type == 3) {
-                            onMessageActionsListener.onReplyViewImage(item)
+                            onMessageActionsListener.onPlayMediaMessage(item)
                         } else if (payload?.targetMessage?.type == 4) {
-                            onMessageActionsListener.onReplyViewVideo(item)
+                            onMessageActionsListener.onPlayMediaMessage(item)
                         } else if (payload?.targetMessage?.type == 1) {
                             onMessageActionsListener.onReplyMessage(item)
                         } else {
@@ -903,10 +903,7 @@ class MessageAdapter(
     interface OnMessageActionsListener {
         fun onPortraitClicked(senderId: String, senderRole: Int? = 9)
         fun onResendClicked(messageEntity: MessageEntity)
-        fun onPlayVideo(messageEntity: MessageEntity)
-        fun onViewImage(messageEntity: MessageEntity)
-        fun onReplyViewImage(messageEntity: MessageEntity)
-        fun onReplyViewVideo(messageEntity: MessageEntity)
+        fun onPlayMediaMessage(messageEntity: MessageEntity)
         fun onReplyMessage(messageEntity: MessageEntity)
         fun onMessageLongClicked(
             view: View,

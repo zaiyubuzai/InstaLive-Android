@@ -143,6 +143,12 @@
         <activity android:name=".utils.DebugActivity"
             android:exported="true"
             android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".app.conversation.viewer.MediaBrowserActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:exported="true"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

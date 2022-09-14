@@ -38,7 +38,7 @@ class InstaLiveApp: Application(), ViewModelStoreOwner, IAgoraConfig {
     override var mRtcEngine: RtcEngine? = null
 
     var isColdLaunch: Boolean = true
-    val timeDiscrepancy: Long = 0
+    var timeDiscrepancy: Long = 0
     var startActivityCount = 0
     val activityList = ArrayList<Activity>()
     var appInitData = MutableLiveData<AppInitData?>()

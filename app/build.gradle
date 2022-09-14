@@ -121,6 +121,10 @@ dependencies {
 
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation 'com.google.firebase:firebase-analytics-ktx'
+
+    //视频播放；视、图轮播
+    implementation 'cn.jzvd:jiaozivideoplayer:7.7.2.3300'
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
 }
 
 static def getBuildSerial() {

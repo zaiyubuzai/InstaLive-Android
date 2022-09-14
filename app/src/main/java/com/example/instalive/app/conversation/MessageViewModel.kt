@@ -125,6 +125,10 @@ class MessageViewModel : MessageBaseViewModel() {
         }
     }
 
+    suspend fun getMediaMessages(conversationId: String): List<MessageEntity> {
+         return dao.getMediaMessagesByConId(conversationId, SessionPreferences.id)
+    }
+
     fun sendMessage(
         conversationId: String,
         msg: String,

@@ -37,6 +37,7 @@ import kotlinx.android.synthetic.main.fragment_live_interaction_host.onlineCount
 import kotlinx.android.synthetic.main.fragment_live_interaction_host.startLoop
 import splitties.dimensions.dp
 import splitties.views.onClick
+import timber.log.Timber
 
 @ExperimentalStdlibApi
 class LiveInteractionHostFragment :
@@ -372,7 +373,7 @@ class LiveInteractionHostFragment :
         goLiveWithWaitingContainer.isVisible = true
         txtGoLiveWithWaiting.text = getString(R.string.lbl_live_with_waiting_for, targetUsername)
         cancelLiveWith.onClick {
-//            viewModel.cancelLiveWith(id)
+            viewModel.cancelLiveWith(liveId)
         }
         goLiveWithWaitingContainer.onClick {}
 
@@ -381,6 +382,8 @@ class LiveInteractionHostFragment :
             val ticker = goLiveWithTicker
             if (ticker != null) {
                 for (event in ticker) {
+                    val time = System.currentTimeMillis()
+                    Timber.d("time: $time timeDiscrepancy: ${InstaLiveApp.appInstance.timeDiscrepancy} endTime: $endTime")
                     if ((System.currentTimeMillis() - InstaLiveApp.appInstance.timeDiscrepancy) / 1000 > endTime) {
                         withContext(Dispatchers.Main) {
                             goLiveWithWaitingContainer.isVisible = false

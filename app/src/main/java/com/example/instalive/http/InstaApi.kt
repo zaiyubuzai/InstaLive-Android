@@ -291,6 +291,12 @@ interface InstaApi : BaseApi {
     ): BaseResponse<Any>
 
     @FormUrlEncoded
+    @POST("api/live/live/live_with/cancel/")
+    suspend fun cancelLiveWith(
+        @Field("live_id") liveId: String
+    ): BaseResponse<Any>
+
+    @FormUrlEncoded
     @POST("api/live/live/live_with/agree/")
     suspend fun agreeLiveWith(@Field("live_id") liveId: String): BaseResponse<Any>
 

@@ -66,6 +66,8 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
                     fetchGifts(it)
                 }
             }
+
+            calibrationTime()
         }
     }
 
@@ -115,6 +117,17 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
             Timber.d("country code: $string")
             InstaLivePreferences.liveGiftList = string
             InstaLivePreferences.liveGiftVersion = giftsCache.version
+        }
+    }
+
+    override suspend fun calibrationTime(){
+        val response = safeApiCall(null) {
+            baseApi.calibrationTime()
+        }
+        if (response != null) {
+            val time = System.currentTimeMillis()
+            Timber.d("localTime:$time remoteTime:${response.data.timestamp}")
+            InstaLiveApp.appInstance.timeDiscrepancy = time - response.data.timestamp * 1000
         }
     }
 

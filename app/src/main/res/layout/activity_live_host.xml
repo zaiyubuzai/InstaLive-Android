@@ -513,7 +513,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
-            tools:visibility="gone">
+            tools:visibility="visible">
 
             <ImageView
                 android:id="@+id/cover"
@@ -703,7 +703,7 @@
                         android:textColor="#ffffff"
                         android:textSize="20sp"
                         android:textStyle="normal"
-                        tools:text="-" />
+                        android:text="@string/un_know_views" />
 
                     <TextView
                         android:id="@+id/unlockLiveDiamondsDesc"

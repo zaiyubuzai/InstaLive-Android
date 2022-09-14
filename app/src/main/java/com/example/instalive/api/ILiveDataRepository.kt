@@ -114,4 +114,10 @@ interface ILiveDataRepository {
         liveData: MutableLiveData<LiveSendGiftResponse>,
         remoteEventEmitter: RemoteEventEmitter
     )
+
+    suspend fun cancelLiveWith(
+        liveId: String,
+        liveData: MutableLiveData<Any>,
+        remoteEventEmitter: RemoteEventEmitter?
+    )
 }
