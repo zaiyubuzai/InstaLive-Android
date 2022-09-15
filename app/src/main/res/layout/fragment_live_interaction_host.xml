@@ -214,7 +214,8 @@
             <FrameLayout
                 android:layout_width="@dimen/dimen_0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/icDiamondView"
@@ -275,6 +276,21 @@
                     tools:visibility="visible" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <FrameLayout
+                android:layout_width="@dimen/dimen_0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:id="@+id/icShare"
+                    android:layout_width="@dimen/dimen_40dp"
+                    android:layout_height="@dimen/dimen_40dp"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:src="@mipmap/icon_link"
+                    android:visibility="visible" />
+
+            </FrameLayout>
 
             <FrameLayout
                 android:layout_width="@dimen/dimen_0dp"
@@ -400,7 +416,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            tools:visibility="visible">
+            tools:visibility="gone">
 
             <TextView
                 android:id="@+id/cancelLiveWith"
@@ -440,7 +456,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <FrameLayout
-            android:id="@+id/liveProfileLoadingView"
+            android:id="@+id/loadingAnimContainer"
             android:layout_width="match_parent"
             android:layout_height="300dp"
             android:background="@drawable/bg_88_black_transparent_gradient"

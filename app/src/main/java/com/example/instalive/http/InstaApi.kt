@@ -1,9 +1,6 @@
 package com.example.instalive.http
 
-import com.example.baselibrary.api.BaseApi
-import com.example.baselibrary.api.BaseResponse
-import com.example.baselibrary.api.BaseResponseWithExt
-import com.example.baselibrary.api.Meta
+import com.example.baselibrary.api.*
 import com.example.baselibrary.model.CountryCodeListData
 import com.example.baselibrary.model.PresignData
 import com.example.instalive.model.*
@@ -25,7 +22,7 @@ interface InstaApi : BaseApi {
     suspend fun getCountryCode(@Url url: String): BaseResponse<CountryCodeListData>
 
     @GET
-    suspend fun getGifts(@Url url: String): BaseResponse<List<GiftData>>
+    suspend fun getGifts(@Url url: String): BaseListResponse<List<GiftData>>
 
     @GET("api/core/system/current_time/")
     suspend fun calibrationTime(): BaseResponse<CalibrationTimeData>
@@ -277,7 +274,7 @@ interface InstaApi : BaseApi {
     @GET("api/live/live/list/")
     suspend fun getLiveList(
         @Query("offset") offset: Int
-    ): BaseResponseWithExt<List<LiveData>, Meta>
+    ): BaseListResponseWithExt<List<LiveData>, Meta>
 
     @GET("api/live/live/token/")
     suspend fun getLiveToken(
@@ -308,13 +305,13 @@ interface InstaApi : BaseApi {
     suspend fun liveWithViewer(
         @Query("live_id") liveId: String,
         @Query("offset") offset: Int,
-    ): BaseResponse<List<LiveViewerData>>
+    ): BaseListResponse<List<LiveViewerData>>
 
     @GET("api/live/live/online/members/")
     suspend fun liveViewer(
         @Query("live_id") roomId: String,
         @Query("offset") offset: Int,
-    ): BaseResponseWithExt<List<LiveViewerData>, LiveViewerExtData>
+    ): BaseListResponseWithExt<List<LiveViewerData>, LiveViewerExtData>
 
     @FormUrlEncoded
     @POST("api/live/live/live_with/invite/")
@@ -322,6 +319,31 @@ interface InstaApi : BaseApi {
         @Field("live_id") liveId: String,
         @Field("target_user_id") userId: String
     ): BaseResponse<Any>
+
+    @FormUrlEncoded
+    @POST("api/live/live/mute/")
+    suspend fun liveMute(
+        @Field("live_id") liveId: String,
+    ): BaseResponse<Any>
+
+    @FormUrlEncoded
+    @POST("api/live/live/unmute/")
+    suspend fun liveUnmute(
+        @Field("live_id") liveId: String,
+    ): BaseResponse<Any>
+
+    @FormUrlEncoded
+    @POST("api/live/live/host/mute/")
+    suspend fun liveHostMute(
+        @Field("live_id") liveId: String,
+        @Field("target_user_id") userId: String
+    ): BaseResponse<Any>
+
+    @FormUrlEncoded
+    @POST("api/live/live/share/")
+    suspend fun liveShare(
+        @Field("live_id") liveId: String,
+    ): BaseResponse<LiveShareData>
 
     @GET("api/live/live/detail/refresh/")
     suspend fun liveRefresh(

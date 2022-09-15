@@ -154,9 +154,9 @@ object InstaLiveStringTemplate {
 data class StringTemplate(
     val version: Int,
     @SerializedName("unsupported_msg_type_tips")val unsupportedMsgTypeTips: String,
-    @SerializedName("performer_valid_time_options")val performerValidTimeOptions: List<OptionsData>,
-    @SerializedName("performer_take_rate_options")val performerTake_rateOptions: List<OptionsData>,
-    @SerializedName("live_divide_take_rate_options")val liveDivideTakeRateOptions: List<OptionsData>,
+    @SerializedName("performer_valid_time_options")val performerValidTimeOptions: List<OptionsData> = listOf(),
+    @SerializedName("performer_take_rate_options")val performerTake_rateOptions: List<OptionsData> = listOf(),
+    @SerializedName("live_divide_take_rate_options")val liveDivideTakeRateOptions: List<OptionsData> = listOf(),
     @SerializedName("bonus_tips_title")val bonusTipsTitle: String,
     @SerializedName("bonus_tips_img")val bonusTipsImg: String,
     @SerializedName("bonus_tips_desc")val bonusTipsDesc: String,

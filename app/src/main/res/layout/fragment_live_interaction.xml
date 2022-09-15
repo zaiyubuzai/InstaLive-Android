@@ -360,6 +360,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:visibility="gone"
                 android:src="@mipmap/live_beauty_yes" />
 
             <ImageView
@@ -368,6 +369,13 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:src="@mipmap/live_mute_open" />
+
+            <ImageView
+                android:id="@+id/icLiveWithShare"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@mipmap/icon_link" />
 
             <RelativeLayout
                 android:id="@+id/icLiveWithGift"

@@ -105,7 +105,7 @@ abstract class BaseRemoteRepository {
     open fun repositoryIOException() {}
 
     open fun <T> processListData(
-        response: BaseResponse<List<T>>,
+        response: BaseListResponse<List<T>>,
         meta: MutableLiveData<Meta>,
         liveData: MutableLiveData<List<T>>,
         isRefresh: Boolean = false,
@@ -118,7 +118,7 @@ abstract class BaseRemoteRepository {
             if (oldList == null || oldList.isEmpty()) {
                 liveData.postValue(response.data)
             } else {
-                val newItems = response.data
+                val newItems = response.data?: listOf()
                 val newList = oldList.toMutableList()
                 newList.addAll(newItems)
                 liveData.postValue(newList)
@@ -127,7 +127,7 @@ abstract class BaseRemoteRepository {
     }
 
     open fun <T, E> processListData(
-        response: BaseResponseWithExt<List<T>, E>,
+        response: BaseListResponseWithExt<List<T>, E>,
         meta: MutableLiveData<Meta>,
         liveData: MutableLiveData<List<T>>,
         isRefresh: Boolean = false,
@@ -140,7 +140,7 @@ abstract class BaseRemoteRepository {
             if (oldList == null || oldList.isEmpty()) {
                 liveData.postValue(response.data)
             } else {
-                val newItems = response.data
+                val newItems = response.data?: listOf()
                 val newList = oldList.toMutableList()
                 newList.addAll(newItems)
                 liveData.postValue(newList)

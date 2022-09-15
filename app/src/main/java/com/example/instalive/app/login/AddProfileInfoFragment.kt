@@ -1,6 +1,5 @@
 package com.example.instalive.app.login
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.content.pm.ActivityInfo
@@ -12,7 +11,6 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StyleSpan
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
@@ -26,19 +24,14 @@ import com.example.baselibrary.api.StatusEvent
 import com.example.baselibrary.utils.*
 import com.example.baselibrary.views.BaseFragment
 import com.example.baselibrary.views.DataBindingConfig
-import com.example.instalive.BuildConfig
 import com.example.instalive.R
 import com.example.instalive.app.SessionPreferences
 import com.example.instalive.databinding.FragmentAddProfileInfoBinding
 import com.example.instalive.mypicker.listener.TimePickerListener
 import com.example.instalive.mypicker.popup.TimePickerPopup
 import com.example.instalive.utils.GlideEngine
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionDeniedResponse
-import com.karumi.dexter.listener.PermissionGrantedResponse
-import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.single.PermissionListener
+import com.example.instalive.utils.requestCameraPermission
+import com.example.instalive.utils.requestPhotoPermission
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
@@ -50,10 +43,9 @@ import kotlinx.coroutines.launch
 import splitties.alertdialog.appcompat.*
 import splitties.fragmentargs.arg
 import splitties.fragmentargs.argOrNull
-import splitties.mainhandler.mainHandler
-import splitties.systemservices.inputMethodManager
 import splitties.views.onClick
 import splitties.views.textResource
+import timber.log.Timber
 import java.util.*
 
 @ExperimentalStdlibApi
@@ -64,17 +56,18 @@ class AddProfileInfoFragment :
     var portrait: String? by argOrNull()
     var source: String by arg()
 
-    private var gender = 1
+    private var gender: Int? = null
     private val ageLimit = 18//age limit
 
+    private var portraitLocalPath: String? = null
     private var currentDate: Calendar? = null
 
     private var isShowToUser = true
-    private var permissionDialog: AlertDialog? = null
 
-    private val months: Array<String>  by lazy {
+    private val months: Array<String> by lazy {
         resources.getStringArray(R.array.AbbrMonths)
     }
+
     override fun initViewModel(): AddProfileInfoViewModel {
         return getActivityViewModel(AddProfileInfoViewModel::class.java)
     }
@@ -94,12 +87,6 @@ class AddProfileInfoFragment :
             }
         }
 
-        portrait?.let {
-            val options = RequestOptions.bitmapTransform(RoundedCorners(activity.dip(20)))
-            Glide.with(activity).load(it)
-                .apply(options)
-                .into(portraitIV)
-        }
         if (SessionPreferences.birthdayError) {
             showBirthdayError()
         } else {
@@ -107,10 +94,10 @@ class AddProfileInfoFragment :
             fullNameInput.showKeyboard()
         }
 
-        if (SessionPreferences.birthday.isNotEmpty()){
+        if (SessionPreferences.birthday.isNotEmpty()) {
             birthdayText.text = SessionPreferences.birthday
         }
-        genderText.textResource = R.string.fb_man
+
         next.onClick {
             currentDate?.let { calendar ->
                 if (TimeUtils.checkAdult(calendar.time, ageLimit)) {
@@ -133,15 +120,18 @@ class AddProfileInfoFragment :
         }
 
         portraitIV.onClick {
+            fullNameInput.clearFocus()
             selectImageDialog()
         }
         imageSelector.onClick {
+            fullNameInput.clearFocus()
             selectImageDialog()
         }
-        genderText.onClick{
+        genderText.onClick {
+            fullNameInput.clearFocus()
             showList()
         }
-        birthdayText.onClick{
+        birthdayText.onClick {
             fullNameInput.clearFocus()
             fullNameInput.hideKeyboard()
             if (!SessionPreferences.birthdayError) showBirthdayDialog()
@@ -169,27 +159,36 @@ class AddProfileInfoFragment :
 
         fullNameInput.doAfterTextChanged {
             it?.let {
-                next?.isEnabled = it.length > 1
+                next?.isEnabled =
+                    portrait != null && it.length > 5 && currentDate != null && gender != null
             }
         }
         initObserver()
     }
 
-    private fun initObserver(){
+    private fun initObserver() {
         viewModel.checkUsernameData.observe(this, {
             (activity as LoginActivity).redirectSelectOwnRole(
-                phone, passcode, fullNameInput.text.toString(), SessionPreferences.birthday, gender
+                phone,
+                passcode,
+                fullNameInput.text.toString(),
+                SessionPreferences.birthday,
+                gender ?: 1
             )
         })
 
         viewModel.resultData.observe(this, {
             (activity as LoginActivity).portrait = it
+            portrait = it
             if (portraitIV == null) return@observe
-            val options = RequestOptions.bitmapTransform(RoundedCorners(activity.dip(20)))
-            Glide.with(activity).load(it)
+            val c = context ?: return@observe
+            val options = RequestOptions.bitmapTransform(RoundedCorners(c.dip(20)))
+            Glide.with(c)
+                .load(portraitLocalPath)
                 .apply(options)
                 .into(portraitIV)
             baseToast(R.string.fb_upload_success)
+            next?.isEnabled = isCanNext()
         })
         viewModel.loadingStatsLiveData.observe(this, {
             progress.isVisible = it == StatusEvent.LOADING
@@ -206,77 +205,16 @@ class AddProfileInfoFragment :
         })
     }
 
+    private fun isCanNext(): Boolean {
+        return portrait != null && fullNameInput.text.toString().length > 5 && currentDate != null && gender != null
+    }
+
     private fun checkPhotoPermission() {
-        Dexter.withContext(context)
-            .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            .withListener(object : PermissionListener {
-                override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
-                    goPickAndCrop()
-                }
-
-                override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
-                    if (p0?.isPermanentlyDenied == true) {
-                        showSettingDialog(
-                            R.string.fb_photo_permission_dialog_title,
-                            R.string.fb_photo_permission_dialog_message
-                        )
-                    }
-                }
-
-                override fun onPermissionRationaleShouldBeShown(
-                    p0: PermissionRequest?,
-                    p1: PermissionToken?,
-                ) {
-                    p1?.continuePermissionRequest()
-                }
-
-            }).check()
+        context?.requestPhotoPermission({ goPickAndCrop() })
     }
 
     private fun checkCameraPermission() {
-        Dexter.withContext(context)
-            .withPermission(Manifest.permission.CAMERA)
-            .withListener(object : PermissionListener {
-                override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
-                    openCamera()
-                }
-
-                override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
-                    if (p0?.isPermanentlyDenied == true) {
-                        showSettingDialog(
-                            R.string.fb_camera_permission_dialog_title,
-                            R.string.fb_camera_permission_dialog_message
-                        )
-                    }
-                }
-
-                override fun onPermissionRationaleShouldBeShown(
-                    p0: PermissionRequest?,
-                    p1: PermissionToken?,
-                ) {
-                    p1?.continuePermissionRequest()
-                }
-
-            }).check()
-    }
-
-    private fun showSettingDialog(title: Int, message: Int) {
-        if (permissionDialog == null) {
-            permissionDialog = context?.alertDialog {
-                titleResource = title
-                messageResource = message
-                positiveButton(R.string.fb_allow) {
-                    Utils.goToAppSettings(context, BuildConfig.APPLICATION_ID)
-                }
-                negativeButton(R.string.fb_dont_allow) {
-                    it.dismiss()
-                }
-                onDismiss {
-                    permissionDialog = null
-                }
-            }
-            permissionDialog?.show()
-        }
+        context?.requestCameraPermission({ openCamera() })
     }
 
     private fun showBirthdayDialog() {
@@ -312,7 +250,7 @@ class AddProfileInfoFragment :
                             "${months[mMonth]}/${if (mDay < 10) "0$mDay" else mDay}/${mYear}"
                         // 将选择的日期赋值给TextView
                         birthdayText?.text = mDate
-                        next?.isEnabled = true
+                        next?.isEnabled = isCanNext()
                     }
                 })
         popup.dividerColor = 0xFF788093.toInt()
@@ -339,7 +277,7 @@ class AddProfileInfoFragment :
         BarUtils.setStatusBarColor(activity, Color.TRANSPARENT)
         appBar?.setBackgroundColor(Color.TRANSPARENT)
         errText?.text = ""
-        next?.isEnabled = true
+        next?.isEnabled = isCanNext()
         SessionPreferences.birthdayError = false
     }
 
@@ -371,9 +309,7 @@ class AddProfileInfoFragment :
         ) { _, which ->
             when (which) {
                 0 -> checkCameraPermission()
-//                0 -> openCamera()
                 1 -> checkPhotoPermission()
-//                1 -> goPickAndCrop()
             }
         }
         builder.create().show()
@@ -423,6 +359,7 @@ class AddProfileInfoFragment :
     }
 
     private fun doUpload(path: String) {
+        portraitLocalPath = path
         viewModel.uploadAvatar(path, {
             lifecycleScope.launch {
                 showCommonProgress()
@@ -437,10 +374,10 @@ class AddProfileInfoFragment :
     private fun showList() {
         val c = context ?: return
         val items = arrayOf(
-                c.getString(R.string.fb_man),
-                c.getString(R.string.fb_woman),
-                c.getString(R.string.fb_cancel)
-            )
+            c.getString(R.string.fb_male),
+            c.getString(R.string.fb_female),
+            c.getString(R.string.fb_cancel)
+        )
 
         AlertDialog.Builder(c)
             .setTitle(c.getString(R.string.fb_login_gender_placeholder))
@@ -448,29 +385,47 @@ class AddProfileInfoFragment :
                 when (i) {
                     0 -> {
                         gender = 1
-                        genderText.textResource = R.string.fb_man
+                        genderText.textResource = R.string.fb_male
                     }
                     1 -> {
                         gender = 2
-                        genderText.textResource = R.string.fb_woman
+                        genderText.textResource = R.string.fb_female
                     }
                     else -> {
 
                     }
                 }
+                next?.isEnabled = isCanNext()
                 dialogInterface?.dismiss()
             }.create().show()
     }
 
     override fun onResume() {
         super.onResume()
-//        if (isShowToUser) fullNameInput.requestFocus()
+//        if (isShowToUser) fullNameInput.setText("")
+
+        val mdate = Calendar.getInstance()
+        mdate[2000, 0] = 1
+        currentDate = mdate
+
+        portrait?.let {
+            val c = context ?: return@let
+            val options = RequestOptions.bitmapTransform(RoundedCorners(c.dip(20)))
+            Glide.with(c)
+                .load(it)
+                .apply(options)
+                .into(portraitIV)
+        }
+
+        next.isEnabled = isCanNext()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
+        Timber.d("onHiddenChanged hidden:$hidden")
         isShowToUser = !hidden
-        if (!hidden){
+        if (!hidden) {
+            next.isEnabled = isCanNext()
 //            mainHandler.postDelayed({
 //                fullNameInput?.requestFocus()
 //                fullNameInput?.showKeyboard()
@@ -479,4 +434,15 @@ class AddProfileInfoFragment :
         }
     }
 
+    override fun onDestroyView() {
+        genderText.text = ""
+        gender = null
+        super.onDestroyView()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.reset()
+        Timber.d("onDestroy")
+    }
 }

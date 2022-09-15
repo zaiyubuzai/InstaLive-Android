@@ -28,6 +28,7 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.baselibrary.utils.BarUtils
 import com.example.baselibrary.utils.Utils.processTemplate
+import com.example.baselibrary.utils.baseToast
 import com.example.baselibrary.utils.liveGiftAnimatorSet
 import com.example.baselibrary.views.BaseFragment
 import com.example.baselibrary.views.DataBindingConfig
@@ -45,10 +46,7 @@ import com.example.instalive.app.conversation.TopSmoothScroller
 import com.example.instalive.app.live.ui.LiveCommentInputDialog
 import com.example.instalive.mentions.Mentionable
 import com.example.instalive.model.*
-import com.example.instalive.utils.LiveSocketIO
-import com.example.instalive.utils.NoUnderlineClickableSpanBuilder
-import com.example.instalive.utils.VenusNumberFormatter
-import com.example.instalive.utils.marsToast
+import com.example.instalive.utils.*
 import com.example.instalive.view.KsgLikeView
 import com.jeremyliao.liveeventbus.LiveEventBus
 import com.jeremyliao.liveeventbus.core.LiveEvent
@@ -157,7 +155,7 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
                 BitmapFactory.decodeResource(context?.resources, it, BitmapFactory.Options())
             emojiList.add(bitmap)
         }
-        val options = RequestOptions.bitmapTransform(RoundedCorners(activity.dp(12)))
+
         svgaParser = SVGAParser(activity)
 
         initList()
@@ -239,6 +237,7 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
 
         sharedViewModel.liveStateInfoLiveData.observe(this, {
             it.first?.let { info ->
+                val options = RequestOptions.bitmapTransform(RoundedCorners(activity.dp(12)))
                 Glide.with(activity)
                     .load(info.owner.portrait)
                     .apply(options)
@@ -285,7 +284,15 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
         }
 
         viewModel.errorInfo.observe(this, {
-            marsToast(it.second)
+            baseToast(it.second)
+        })
+
+        viewModel.liveShareLD.observe(this, {
+            ShareUtility.shareCopy(it.shareLink)
+            val textIntent = Intent(Intent.ACTION_SEND)
+            textIntent.type = "text/plain"
+            textIntent.putExtra(Intent.EXTRA_TEXT, it.shareLink)
+            startActivity(Intent.createChooser(textIntent, getString(R.string.fb_share)))
         })
 
         giftAnim?.callback = object : SVGACallback {
@@ -1143,12 +1150,12 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
             return
         }
         isProfileLoading = true
-        liveProfileLoadingView.isVisible = true
+        loadingAnimContainer.isVisible = true
         if (info.userId == SessionPreferences.id) {
             val userData = SESSION.retrieveMeInfo()
             if (userData != null) {
                 showMeProfileDialog(userData)
-                liveProfileLoadingView.isVisible = false
+                loadingAnimContainer.isVisible = false
                 isProfileLoading = false
             } else {
 //                start(NotLoginYetActivity) { _, spec ->
@@ -1157,7 +1164,7 @@ abstract class LiveInteractionBaseFragment<VDB : ViewDataBinding> :
             }
         } else {
             showOtherProfileDialog(info.userId, info.userName, role)
-            liveProfileLoadingView.isVisible = false
+            loadingAnimContainer.isVisible = false
             isProfileLoading = false
         }
     }

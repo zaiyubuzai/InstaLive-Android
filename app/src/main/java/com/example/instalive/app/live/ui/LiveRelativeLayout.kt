@@ -50,8 +50,6 @@ class LiveRelativeLayout : RelativeLayout {
                 .into(callAudioAvatar)
             Glide.with(this)
                 .load(value?.portrait)
-                .apply(RequestOptions.bitmapTransform(
-                    RoundedCorners(dp(12))))
                 .skipMemoryCache(false)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .placeholder(R.mipmap.ic_default_avatar)

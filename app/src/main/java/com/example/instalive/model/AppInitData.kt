@@ -22,7 +22,7 @@ data class ServerInformation(
 data class AppFeature(
     @SerializedName("app_update_title") val appUpdateTitle: String,
     @SerializedName("app_update_description") val appUpdateDescription: String,
-    @SerializedName("app_update_buttons") val appUpdateButtons: List<String>,
+    @SerializedName("app_update_buttons") val appUpdateButtons: List<String> = listOf(),
     @SerializedName("app_update_type") val appUpdateType: Int,// 0:not update; 1:update; 2:power update
 )
 

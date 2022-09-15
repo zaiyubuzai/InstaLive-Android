@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
 data class ConversationListData(
-    @SerializedName("conversation_list") val conversationList: List<ConversationInfo>,
+    @SerializedName("conversation_list") val conversationList: List<ConversationInfo> = listOf(),
 ) : Serializable
 
 data class ConversationInfo(

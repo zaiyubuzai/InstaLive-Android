@@ -102,7 +102,7 @@ class PhoneLoginFragment : BaseFragment<PhoneLoginViewModel, FragmentPhoneLoginB
 
             policyText.compoundDrawablePadding = context?.dp(4) ?: 10
         } else {
-            phoneLoginTitle2.text = getString(R.string.fb_login_welcome_to_fambase)
+            phoneLoginTitle2.text = getString(R.string.fb_login_welcome_to_liveify)
             phoneLoginTitle2.isVisible = true
             phoneLoginTitle1.isVisible = false
             val policy = Spanner(getString(R.string.fb_login_policy))

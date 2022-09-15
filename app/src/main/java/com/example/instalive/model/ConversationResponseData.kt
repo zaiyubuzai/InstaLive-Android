@@ -9,7 +9,7 @@ data class ConversationResponseData(
     val id: String,
     val type: Int,
     val mute: Int,
-    val recipients: List<RecipientsData>?,
+    val recipients: List<RecipientsData>? = listOf(),
     @SerializedName("state") val chatState: Int?,
     @SerializedName("permanent_tips") val permanentTips: PermanentTipsInfo?,
     val online: Int,

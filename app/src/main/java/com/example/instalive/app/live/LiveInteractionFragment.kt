@@ -297,6 +297,12 @@ class LiveInteractionFragment :
             showMoreDialog()
         }
 
+        icLiveWithShare.alphaClick {
+            viewModel.liveShare(liveId) {
+                loadingAnimContainer?.isVisible = it
+            }
+        }
+
         icLikeLiveWith.alphaClick {
             doLikeFavor()
         }
@@ -324,7 +330,7 @@ class LiveInteractionFragment :
     private fun showMoreDialog() {
         val c = context ?: return
         if (moreDialog == null || moreDialog?.isShow == false) {
-            moreDialog = LiveMoreDialog(activity, activity, liveId = liveId, 2, false,
+            moreDialog = LiveMoreDialog(activity, activity, liveId = liveId, 2, makeUpEnabled,
                 showMessage = {
                     openComment()
                 }, onMakeupClick = {

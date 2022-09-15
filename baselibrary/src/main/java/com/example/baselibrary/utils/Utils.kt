@@ -132,4 +132,15 @@ object Utils {
         params.height = h
         imageView.layoutParams = params
     }
+
+    fun getSubString(start: String, end: String, content: String, result: (String?)-> Unit) {
+        val compileString = "${start}(.*?)${end}"
+        val p: Pattern = Pattern.compile(compileString)
+        val m: Matcher = p.matcher(content)
+        if (m.find()){
+            result.invoke(m.group(1))
+        } else {
+            result.invoke(null)
+        }
+    }
 }

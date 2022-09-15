@@ -122,7 +122,7 @@ abstract class ChatMessagesDecomposer {
                         handleMessageWrapper(messageWrapper)
 
                         val time = System.currentTimeMillis()
-                        LiveEventBus.get(ChatConstants.EVENT_BUS_KEY_MESSAGE_EVENT).post(
+                        LiveEventBus.get(ChatConstants.EVENT_BUS_KEY_MESSAGE_EVENT).postDelay(
                             MessageEvent(
                                 2,
                                 null,
@@ -133,7 +133,7 @@ abstract class ChatMessagesDecomposer {
                                     ?: 0L,
                                 timestampEnd = messageEntityList.lastOrNull()?.sendTime
                                     ?: 0L,
-                            )
+                            ), 120
                         )
                     } else {
                         if (isDecomposerUnreadMessage) {

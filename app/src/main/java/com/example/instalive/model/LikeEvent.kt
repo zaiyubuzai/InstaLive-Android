@@ -7,7 +7,7 @@ import com.jeremyliao.liveeventbus.core.LiveEvent
 import java.io.Serializable
 
 data class LikeEvent(
-    @SerializedName("target_user_ids") val targetUserIds: List<String>?,
+    @SerializedName("target_user_ids") val targetUserIds: List<String>? = listOf(),
     @SerializedName("like_num") val likeNum: Int,
     val uuid: String,
     @SerializedName("user_info") val userInfo: LiveUserInfo?,
@@ -15,7 +15,7 @@ data class LikeEvent(
 ) : LiveEvent
 
 data class LiveActivityEvent(
-    @SerializedName("target_user_ids") val targetUserIds: List<String>?,
+    @SerializedName("target_user_ids") val targetUserIds: List<String>? = listOf(),
     val event: Int,
     val content: String,
     @SerializedName("members_num") val membersNum: String?,

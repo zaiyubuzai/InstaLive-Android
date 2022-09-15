@@ -47,7 +47,7 @@ object LiveDataRepository : ILiveDataRepository, BaseRemoteRepository() {
             unlockedNumberLiveData.postValue(response.dataExt?.unlocked ?: "0")
 
             PagingSource.LoadResult.Page(
-                data = response.data,
+                data = response.data?: listOf(),
                 prevKey = null,
                 nextKey = nextKey
             )
@@ -76,7 +76,7 @@ object LiveDataRepository : ILiveDataRepository, BaseRemoteRepository() {
                 null
             }
             PagingSource.LoadResult.Page(
-                data = response.data,
+                data = response.data?: listOf(),
                 prevKey = null,
                 nextKey = nextKey
             )
@@ -276,6 +276,19 @@ object LiveDataRepository : ILiveDataRepository, BaseRemoteRepository() {
     ) {
         val response = safeApiCall(remoteEventEmitter) {
             instaApi.goLiveWith(liveId, userId)
+        }
+        if (response != null) {
+            liveData.postValue(response.data)
+        }
+    }
+
+    override suspend fun liveShare(
+        liveId: String,
+        liveData: MutableLiveData<LiveShareData>,
+        remoteEventEmitter: RemoteEventEmitter
+    ) {
+        val response = safeApiCall(remoteEventEmitter) {
+            instaApi.liveShare(liveId)
         }
         if (response != null) {
             liveData.postValue(response.data)

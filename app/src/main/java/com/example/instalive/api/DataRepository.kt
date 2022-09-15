@@ -109,7 +109,7 @@ object DataRepository : BaseRemoteRepository(), IRemoteRequest {
         val response = safeApiCall(null) {
             baseApi.getGifts(giftsCache.apiPath)
         }
-        if (response != null) {
+        if (response?.data != null) {
             val string = Gson().toJson(
                 response.data,
                 object : TypeToken<List<GiftData>>() {}.type

@@ -18,7 +18,7 @@ import com.google.gson.annotations.SerializedName
 data class LiveEndDetailData(
     @SerializedName("duration") val duration: String?,
     @SerializedName("got_diamonds") val gotDiamonds: Long,
-    val more: List<LiveEndMoreData>?
+    val more: List<LiveEndMoreData>? = listOf()
 )
 
 data class LiveEndMoreData(

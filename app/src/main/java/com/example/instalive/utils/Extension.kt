@@ -71,7 +71,7 @@ fun View.aAnimatorSet(view: ImageView) {
 }
 
 
-fun Context.requestStoragePermission(go: () -> Unit, no: (()->Unit)? = null){
+fun Context.requestStoragePermission(go: () -> Unit, no: (() -> Unit)? = null) {
     Dexter.withContext(this)
         .withPermissions(
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -94,7 +94,7 @@ fun Context.requestStoragePermission(go: () -> Unit, no: (()->Unit)? = null){
                         onDismiss {
                             no?.invoke()
                         }
-                    }
+                    }.show()
                 }
             }
 
@@ -112,7 +112,81 @@ fun Context.requestStoragePermission(go: () -> Unit, no: (()->Unit)? = null){
         .check()
 }
 
-fun Context.requestLivePermission(go: () -> Unit, no: (() -> Unit)? = null){
+fun Context.requestPhotoPermission(go: () -> Unit, no: (() -> Unit)? = null) {
+    Dexter.withContext(this)
+        .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        .withListener(object : PermissionListener {
+            override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
+                go.invoke()
+            }
+
+            override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
+                if (p0?.isPermanentlyDenied == true) {
+                    alertDialog {
+                        titleResource = R.string.fb_photo_permission_dialog_title
+                        messageResource = R.string.fb_photo_permission_dialog_message
+                        positiveButton(R.string.fb_allow) {
+                            Utils.goToAppSettings(context, BuildConfig.APPLICATION_ID)
+                        }
+                        negativeButton(R.string.fb_dont_allow) {
+                            it.dismiss()
+                        }
+                        onDismiss {
+                            it.dismiss()
+                        }
+                    }.show()
+                    no?.invoke()
+                }
+            }
+
+            override fun onPermissionRationaleShouldBeShown(
+                p0: PermissionRequest?,
+                p1: PermissionToken?,
+            ) {
+                p1?.continuePermissionRequest()
+            }
+
+        }).check()
+}
+
+fun Context.requestCameraPermission(go: () -> Unit, no: (() -> Unit)? = null) {
+    Dexter.withContext(this)
+        .withPermission(Manifest.permission.CAMERA)
+        .withListener(object : PermissionListener {
+            override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
+                go.invoke()
+            }
+
+            override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
+                if (p0?.isPermanentlyDenied == true) {
+                    alertDialog {
+                        titleResource = R.string.fb_camera_permission_dialog_title
+                        messageResource = R.string.fb_camera_permission_dialog_message
+                        positiveButton(R.string.fb_allow) {
+                            Utils.goToAppSettings(context, BuildConfig.APPLICATION_ID)
+                        }
+                        negativeButton(R.string.fb_dont_allow) {
+                            it.dismiss()
+                        }
+                        onDismiss {
+                            it.dismiss()
+                        }
+                    }.show()
+                    no?.invoke()
+                }
+            }
+
+            override fun onPermissionRationaleShouldBeShown(
+                p0: PermissionRequest?,
+                p1: PermissionToken?,
+            ) {
+                p1?.continuePermissionRequest()
+            }
+
+        }).check()
+}
+
+fun Context.requestLivePermission(go: () -> Unit, no: (() -> Unit)? = null) {
     Dexter.withContext(this)
         .withPermissions(
             Manifest.permission.CAMERA,
@@ -129,7 +203,7 @@ fun Context.requestLivePermission(go: () -> Unit, no: (() -> Unit)? = null){
                         if (it.permissionName == Manifest.permission.CAMERA) {
                             alertDialog {
                                 titleResource = R.string.camera_permission_dialog_title
-                                messageResource =  R.string.camera_permission_dialog_message
+                                messageResource = R.string.camera_permission_dialog_message
                                 positiveButton(R.string.go_to_settings) {
                                     Utils.goToAppSettings(context, BuildConfig.APPLICATION_ID)
                                 }
@@ -140,7 +214,7 @@ fun Context.requestLivePermission(go: () -> Unit, no: (() -> Unit)? = null){
                         } else if (it.permissionName == Manifest.permission.RECORD_AUDIO) {
                             alertDialog {
                                 titleResource = R.string.microphone_permission_dialog_title
-                                messageResource =  R.string.microphone_permission_dialog_message
+                                messageResource = R.string.microphone_permission_dialog_message
                                 positiveButton(R.string.go_to_settings) {
                                     Utils.goToAppSettings(context, BuildConfig.APPLICATION_ID)
                                 }
@@ -164,7 +238,7 @@ fun Context.requestLivePermission(go: () -> Unit, no: (() -> Unit)? = null){
         .check()
 }
 
-fun Context.requestMicrophonePermission(go: () -> Unit, no: (()->Unit)? = null){
+fun Context.requestMicrophonePermission(go: () -> Unit, no: (() -> Unit)? = null) {
     Dexter.withContext(this)
         .withPermission(Manifest.permission.RECORD_AUDIO)
         .withListener(object : PermissionListener {
@@ -202,7 +276,10 @@ fun Context.requestMicrophonePermission(go: () -> Unit, no: (()->Unit)? = null){
         .check()
 }
 
-fun AppCompatActivity.openPictureAndVideoSelector(go: (result: MutableList<LocalMedia>?) -> Unit, no: (()->Unit)? = null){
+fun AppCompatActivity.openPictureAndVideoSelector(
+    go: (result: MutableList<LocalMedia>?) -> Unit,
+    no: (() -> Unit)? = null
+) {
     val filterMimeType = ArrayList<String>()
     filterMimeType.add("video/mp4")
     filterMimeType.add("video/quicktime")

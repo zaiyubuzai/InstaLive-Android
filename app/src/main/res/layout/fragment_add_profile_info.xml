@@ -83,8 +83,8 @@
                 android:layout_alignParentBottom="true"
                 android:gravity="center"
                 android:src="@color/purple_200"
-                app:layout_constraintBottom_toBottomOf="@+id/portrait"
-                app:layout_constraintEnd_toEndOf="@+id/portrait" />
+                app:layout_constraintBottom_toBottomOf="@+id/portraitIV"
+                app:layout_constraintEnd_toEndOf="@+id/portraitIV" />
 
         </RelativeLayout>
 
@@ -115,6 +115,7 @@
             android:background="@drawable/bg_primary_color_8c"
             android:gravity="center_vertical"
             android:hint="@string/fb_login_name_placeholder"
+            android:inputType="textNoSuggestions"
             android:paddingStart="@dimen/dimen_16dp"
             android:paddingEnd="@dimen/dimen_16dp"
             android:textColor="@color/white"

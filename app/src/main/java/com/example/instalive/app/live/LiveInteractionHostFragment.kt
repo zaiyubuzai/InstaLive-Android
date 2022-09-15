@@ -127,6 +127,12 @@ class LiveInteractionHostFragment :
 //            }
         }
 
+        icShare.alphaClick {
+            viewModel.liveShare(liveId){
+                loadingAnimContainer?.isVisible = it
+            }
+        }
+
         icMore.alphaClick {
             showMoreDialog()
         }

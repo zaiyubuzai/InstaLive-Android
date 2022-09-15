@@ -2,7 +2,6 @@ package com.example.instalive.app.live
 
 import android.os.Bundle
 import android.view.SurfaceView
-import android.view.View
 import android.view.WindowManager
 import android.widget.RelativeLayout
 import androidx.appcompat.app.AppCompatActivity
@@ -111,9 +110,9 @@ class LiveAudienceActivity : LiveBaseActivity<LiveAudienceViewModel, ActivityLiv
 //        this.mUid = mUid
 
         isLiving = true
-        val clientRoleOptions = ClientRoleOptions()
+//        val clientRoleOptions = ClientRoleOptions()
 //        if (MarsApp.appInstance.appInitData.value?.appFeature?.liveLatencyLevel == 0) {
-        clientRoleOptions.audienceLatencyLevel = Constants.AUDIENCE_LATENCY_LEVEL_LOW_LATENCY
+//        clientRoleOptions.audienceLatencyLevel = Constants.AUDIENCE_LATENCY_LEVEL_LOW_LATENCY
 //        } else {
 //            clientRoleOptions.audienceLatencyLevel =
 //                AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY
@@ -128,10 +127,6 @@ class LiveAudienceActivity : LiveBaseActivity<LiveAudienceViewModel, ActivityLiv
             VideoEncoderConfiguration.STANDARD_BITRATE
         )
         appInstance.rtcEngine()?.leaveChannel()
-        agoraManager.mRtcEngine?.setClientRole(
-            io.agora.rtc.Constants.CLIENT_ROLE_AUDIENCE,
-            clientRoleOptions
-        )
         agoraManager.enableLocalAudio = false
         agoraManager.joinChannel(this, false, AgoraTokenInfo(token, liveId ?: "", null, mUid))
     }
@@ -270,7 +265,7 @@ class LiveAudienceActivity : LiveBaseActivity<LiveAudienceViewModel, ActivityLiv
                     }
                 }
                 is LiveWithAgreeEvent -> {
-                    if (sharedViewModel.isMicrophoneUser != true) {
+                    if (!sharedViewModel.isMicrophoneUser) {
                         it.liveUserWithUidInfos.any { it1 ->
                             if (it1.userInfo.userId == SessionPreferences.id) {
                                 sharedViewModel.isMicrophoneUser = true
@@ -287,7 +282,7 @@ class LiveAudienceActivity : LiveBaseActivity<LiveAudienceViewModel, ActivityLiv
                             }
                             it1.userInfo.userId == SessionPreferences.id
                         }
-                        if (sharedViewModel.isMicrophoneUser != true) {
+                        if (!sharedViewModel.isMicrophoneUser) {
                             liveUIController(it.liveUserWithUidInfos)
                         }
                     } else {
@@ -295,7 +290,7 @@ class LiveAudienceActivity : LiveBaseActivity<LiveAudienceViewModel, ActivityLiv
                     }
                 }
                 is LiveWithHangupEvent -> {
-                    val user = liveUserWithUids.firstOrNull() { it1 ->
+                    val user = liveUserWithUids.firstOrNull { it1 ->
                         it1.userInfo.userId == it.targetUserId
                     }
                     if (user != null) {
@@ -303,13 +298,13 @@ class LiveAudienceActivity : LiveBaseActivity<LiveAudienceViewModel, ActivityLiv
                     }
                 }
                 is LiveWithCancelEvent -> {
-                    val user = liveUserWithUids.firstOrNull() { it1 ->
+                    val user = liveUserWithUids.firstOrNull { it1 ->
                         it1.userInfo.userId == it.targetUserId
                     }
                     if (user != null) {
                         hungUpLiveWithUI(user)
                     } else if (it.targetUserId == SessionPreferences.id) {
-                        agoraManager.mRtcEngine?.setClientRole(io.agora.rtc.Constants.CLIENT_ROLE_AUDIENCE)
+                        agoraManager.mRtcEngine?.setClientRole(Constants.CLIENT_ROLE_AUDIENCE)
                         agoraManager.mRtcEngine?.enableLocalAudio(false)
                         agoraManager.mRtcEngine?.enableLocalVideo(false)
                     }
@@ -348,7 +343,7 @@ class LiveAudienceActivity : LiveBaseActivity<LiveAudienceViewModel, ActivityLiv
                                 R.string.you_are_Live_now_can_go_to_another_live_or_radio
                             okButton()
                         }.show()
-                    } else {
+//                    } else {
                         //观众
 //                        LiveEventBus.get(EVENT_BUS_CLOSE_ALL_LIVE).post(it)
                     }
@@ -476,6 +471,7 @@ class LiveAudienceActivity : LiveBaseActivity<LiveAudienceViewModel, ActivityLiv
         liveInteractionFragment.giftSecondContainer = giftSecondContainer
         liveInteractionFragment.giftFirstContainer = giftFirstContainer
         liveInteractionFragment.liveLikesAnimView = liveLikesAnimView
+        liveInteractionFragment.makeUpEnabled = isOpenBeauty
         liveInteractionFragment.giftAnim = giftAnim
         liveInteractionFragment.liveId = liveId ?: ""
         liveInteractionFragment.isHost = false
@@ -535,13 +531,13 @@ class LiveAudienceActivity : LiveBaseActivity<LiveAudienceViewModel, ActivityLiv
     }
 
     override fun showInteractionFragment() {
-
+        agoraManager.mRtcEngine?.enableAudio()
     }
 
     override fun setNetworkQuality(quality: Int) {
         when (quality) {
             1 -> {
-                if (sharedViewModel.isMicrophoneUser == true) {
+                if (sharedViewModel.isMicrophoneUser) {
                     networkQualityContainer.isVisible = true
                     networkQualityIcon.setBackgroundResource(R.drawable.icon_network_quality_green)
                     networkQuality.textResource = R.string.fb_network_is_good
@@ -553,13 +549,13 @@ class LiveAudienceActivity : LiveBaseActivity<LiveAudienceViewModel, ActivityLiv
                 networkQualityContainer.isVisible = true
                 networkQualityIcon.setBackgroundResource(R.drawable.icon_network_quality_orange)
                 networkQuality.textResource =
-                    if (sharedViewModel.isMicrophoneUser != true) R.string.fb_your_network_is_poor else R.string.fb_network_is_poor
+                    if (!sharedViewModel.isMicrophoneUser) R.string.fb_your_network_is_poor else R.string.fb_network_is_poor
             }
             3 -> {
                 networkQualityContainer.isVisible = true
                 networkQualityIcon.setBackgroundResource(R.drawable.icon_network_quality_red)
                 networkQuality.textResource =
-                    if (sharedViewModel.isMicrophoneUser != true) R.string.fb_you_are_disconnected else R.string.fb_disconnected
+                    if (!sharedViewModel.isMicrophoneUser) R.string.fb_you_are_disconnected else R.string.fb_disconnected
             }
         }
     }
@@ -734,7 +730,7 @@ class LiveAudienceActivity : LiveBaseActivity<LiveAudienceViewModel, ActivityLiv
                     liveContainers.add(localVideo)
                 }
                 localVideo?.onLiveVideoViewListener = this
-                addedUidSet.add(liveWithInfoWithUid.uid ?: 0)
+                addedUidSet.add(liveWithInfoWithUid.uid)
 //                    }
 //                }
             }
@@ -742,7 +738,7 @@ class LiveAudienceActivity : LiveBaseActivity<LiveAudienceViewModel, ActivityLiv
             microphoneAnchor()
 
             //设置为主播角色
-            agoraManager.mRtcEngine?.setClientRole(io.agora.rtc.Constants.CLIENT_ROLE_BROADCASTER)
+            agoraManager.mRtcEngine?.setClientRole(Constants.CLIENT_ROLE_BROADCASTER)
             agoraManager.mRtcEngine?.enableLocalAudio(true)
             agoraManager.mRtcEngine?.enableLocalVideo(true)
             agoraManager.mRtcEngine?.enableVideo()

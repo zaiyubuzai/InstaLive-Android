@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class LevelData(
     val version: Int,
-    @SerializedName("level_icons")val levelIcons: List<LevelIconData>
+    @SerializedName("level_icons")val levelIcons: List<LevelIconData> = listOf()
 )
 data class LevelIconData(
     val icon: String,

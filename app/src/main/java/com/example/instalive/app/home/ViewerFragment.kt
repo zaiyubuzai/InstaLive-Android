@@ -10,10 +10,10 @@ import com.example.instalive.R
 import com.example.instalive.app.Constants
 import com.example.instalive.app.live.LiveAudienceActivity
 import com.example.instalive.databinding.FragmentViewerBinding
-import com.example.instalive.utils.requestLivePermission
-import com.example.instalive.utils.requestMicrophonePermission
+import com.lxj.xpopup.XPopup
 import kotlinx.android.synthetic.main.fragment_viewer.*
 import splitties.activities.start
+import splitties.views.onClick
 import timber.log.Timber
 
 @ExperimentalStdlibApi
@@ -30,6 +30,40 @@ class ViewerFragment : BaseFragment<HomeViewModel, FragmentViewerBinding>() {
 
     override fun initData(savedInstanceState: Bundle?) {
         initList()
+        initObserver()
+        initListener()
+    }
+
+    private fun joinLive(url: String) {
+        val index = url.indexOfLast { it == '/' }
+        if (index != -1) {
+            val id = url.substring(index + 1)
+            val index2 = id.indexOfFirst { it == '?' }
+            if (index2 != -1) {
+                val id2 = id.substring(0, index2)
+                context?.start<LiveAudienceActivity> {
+                    putExtra(Constants.EXTRA_LIVE_ID, id2)
+                }
+            } else {
+                context?.start<LiveAudienceActivity> {
+                    putExtra(Constants.EXTRA_LIVE_ID, id)
+                }
+            }
+        }
+    }
+
+    private fun initListener() {
+        joinLive.onClick {
+            val c = context ?: return@onClick
+            XPopup.Builder(c).asInputConfirm(
+                getString(R.string.fb_join_a_live),
+                "",
+                "",
+                ""
+            ) { url ->
+                joinLive(url)
+            }.show()
+        }
     }
 
     private fun initList() {
@@ -43,19 +77,6 @@ class ViewerFragment : BaseFragment<HomeViewModel, FragmentViewerBinding>() {
         liveRecyclerView.setHasFixedSize(true)
         liveRecyclerView.adapter = liveAdapter
 
-        viewModel.liveList.observe(this) {
-            val list = it ?: listOf()
-            swipeRefreshLayout.isRefreshing = false
-            list.forEach { mm ->
-                Timber.d("${mm.liveOwner.nickname}")
-            }
-
-            liveAdapter.liveList = list
-            liveAdapter.notifyDataSetChanged()
-
-            noLiveYet.isVisible = list.isEmpty()
-        }
-
         swipeRefreshLayout.setOnRefreshListener {
             viewModel.getLiveList(true, {
             }, {
@@ -67,6 +88,21 @@ class ViewerFragment : BaseFragment<HomeViewModel, FragmentViewerBinding>() {
             viewModel.getLiveList(false, {
             }, {
             })
+        }
+    }
+
+    private fun initObserver() {
+        viewModel.liveList.observe(this) {
+            val list = it ?: listOf()
+            swipeRefreshLayout.isRefreshing = false
+            list.forEach { mm ->
+                Timber.d("${mm.liveOwner.nickname}")
+            }
+
+            liveAdapter.liveList = list
+            liveAdapter.notifyDataSetChanged()
+
+            noLiveYet.isVisible = list.isEmpty()
         }
 
         viewModel.getLiveList(true, {

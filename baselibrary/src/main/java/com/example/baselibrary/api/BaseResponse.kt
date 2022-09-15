@@ -23,6 +23,27 @@ data class BaseResponseWithExt<T, E>(
     }
 }
 
+data class BaseListResponse<T>(
+    val meta: Meta,
+    val result: String?,
+    val data: T?
+) {
+    fun resultOk(): Boolean {
+        return result == "ok"
+    }
+}
+
+data class BaseListResponseWithExt<T, E>(
+    val meta: Meta,
+    val result: String?,
+    val data: T?,
+    @SerializedName("data_ext") val dataExt: E?
+) {
+    fun resultOk(): Boolean {
+        return result == "ok"
+    }
+}
+
 data class Meta(
     @SerializedName("has_next") val hasNext: Boolean = true,
     @SerializedName("next_offset") val nextOffset: Int = 0,

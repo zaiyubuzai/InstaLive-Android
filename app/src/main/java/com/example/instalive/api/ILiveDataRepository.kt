@@ -129,4 +129,10 @@ interface ILiveDataRepository {
         unlockedNumberLiveData: MutableLiveData<String>,
         remoteEventEmitter: RemoteEventEmitter
     ): PagingSource.LoadResult<Int, LiveViewerData>
+
+    suspend fun liveShare(
+        liveId: String,
+        liveData: MutableLiveData<LiveShareData>,
+        remoteEventEmitter: RemoteEventEmitter
+    )
 }

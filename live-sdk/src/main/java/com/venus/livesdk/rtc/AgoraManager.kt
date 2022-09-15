@@ -93,15 +93,15 @@ class AgoraManager : ILiveManager {
     override fun initComponents(context: Context, isAnchor: Boolean, volume: Int) {
         mRtcEngine?.setParameters("{\"che.audio.keep.audiosession\":true}")
         mRtcEngine?.enableDualStreamMode(enableDualStreamMode)
-        mRtcEngine?.setChannelProfile(Constants.CHANNEL_PROFILE_COMMUNICATION)
+        mRtcEngine?.setChannelProfile(Constants.CHANNEL_PROFILE_LIVE_BROADCASTING)
         setClientRole(isAnchor)
 //        if (isAnchor){
             mRtcEngine?.enableVideo()
 //        }
         mRtcEngine?.enableAudioVolumeIndication(300, 3, false)
-//        if (isAnchor) {
+        if (isAnchor) {
             mRtcEngine?.enableAudio()
-//        }
+        }
         if (isAnchor) {
             mRtcEngine?.startPreview()
         }
@@ -122,6 +122,9 @@ class AgoraManager : ILiveManager {
             true,
             DEFAULT_BEAUTY_OPTIONS
         )
+        if (!isAnchor){
+            mRtcEngine?.disableAudio()//看播端必须先取消再在join成功后打开，否则手机会提示正在使用麦克风
+        }
         //获取直播view：getVideoSurfaceView
     }
 

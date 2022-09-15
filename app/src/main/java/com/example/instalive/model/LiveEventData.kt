@@ -28,6 +28,6 @@ data class EventDetailData(
     val name: String,
     val description: String,
     @SerializedName("event_ts") val eventTS: Long,
-    @SerializedName("interested_list") val interestedList: List<InterestedMemberData>?,
+    @SerializedName("interested_list") val interestedList: List<InterestedMemberData>? = listOf(),
     @SerializedName("interested_member_count") val interestedMemberCount: Int, //turn on start_live timestamp
 ): Serializable

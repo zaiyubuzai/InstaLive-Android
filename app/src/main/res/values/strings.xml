@@ -1,10 +1,10 @@
 <resources translatable="false">
-    <string name="app_name">InstaLive</string>
+    <string name="app_name">Liveify</string>
 
     <string name="fb_title_select_country">Select country/region</string>
 
     <string name="fb_not_login_already_have_account">Already have an account? Log in</string>
-    <string name="fb_login_welcome_to_fambase">Welcome to \nFambase.</string>
+    <string name="fb_login_welcome_to_liveify">Welcome to \nLiveify.</string>
     <string name="fb_login">Login</string>
     <string name="fb_login_new_phone_number">What\’s your new phone number</string>
     <string name="fb_login_enter_new_phone_number">Please enter your new phone number</string>
@@ -32,7 +32,7 @@
     <string name="fb_login_gender_desc">Please select your gender below</string>
     <string name="fb_login_birthday_placeholder">Birthday</string>
     <string name="fb_login_gender_placeholder">Gender</string>
-    <string name="fb_login_birthday_error">Sorry, looks like you are NOT eligible for Fambase.\nBut thanks for checking us out!</string>
+    <string name="fb_login_birthday_error">Sorry, looks like you are NOT eligible for Liveify.\nBut thanks for checking us out!</string>
 
     <string name="fb_login_username_title">Create a username</string>
     <string name="fb_login_username_desc">Please create a unique username, you can change your username once every 180 days</string>
@@ -56,11 +56,11 @@
     <string name="fb_take_a_photo">Take a photo</string>
     <string name="fb_choose_from_photo_gallery">Choose from photo gallery</string>
 
-    <string name="fb_camera_permission_dialog_title">\“InstaLive\” Would Like to Access the Camera</string>
+    <string name="fb_camera_permission_dialog_title">\“Liveify\” Would Like to Access the Camera</string>
     <string name="fb_camera_permission_dialog_message">By allowing access to your camera, you\'ll be able to capture photo, scan QR code or start Live.</string>
-    <string name="fb_microphone_permission_dialog_title">\“InstaLive\” Would Like to Access the Microphone</string>
+    <string name="fb_microphone_permission_dialog_title">\“Liveify\” Would Like to Access the Microphone</string>
     <string name="fb_microphone_permission_dialog_message">By allowing access to your microphone, you\'ll be able to start Live.</string>
-    <string name="fb_photo_permission_dialog_title">\"InstaLive\" Would Like to Access the Photo</string>
+    <string name="fb_photo_permission_dialog_title">\"Liveify\" Would Like to Access the Photo</string>
     <string name="fb_photo_permission_dialog_message">By allowing access to your photos, you\'ll be able to send photos and videos to friends, or set your profile photo.</string>
     <string name="fb_allow">Allow</string>
     <string name="fb_dont_allow">don`t allow</string>
@@ -148,8 +148,8 @@
     <string name="fb_everyone_">everyone</string>
     <string name="fb_log_out">Logout</string>
     <string name="fb_Link">Link</string>
-    <string name="fb_woman">Woman</string>
-    <string name="fb_man">Man</string>
+    <string name="fb_female">Female</string>
+    <string name="fb_male">Male</string>
 
     <string name="fb_profile_followers">Followers</string>
     <string name="fb_profile_following">Following</string>
@@ -219,7 +219,7 @@
     <string name="fb_host_gift_live_tip1">You charge </string>
     <string name="fb_host_gift_live_tip2"> coins) to unlock this live.</string>
     <string name="other_profile_bio_placeholder">He said nothing\n...</string>
-    <string name="fb_personal_qrcode_desc">Scan my QR code, add me as friend on Fambase.</string>
+    <string name="fb_personal_qrcode_desc">Scan my QR code, add me as friend on Liveify.</string>
     <string name="fb_owner_delete_other_owner_prompt">You deleted a message from</string>
     <string name="fb_owner_delete_other_other_prompt">Owner deleted a message from</string>
     <string name="fb_delete_self_self_prompt">You deleted a message</string>
@@ -241,18 +241,18 @@
     <string name="lbl_live_gift_coin_cost">%1$s Coins</string>
     <string name="you_are_Live_now_can_go_to_another_live_or_radio">You are Live now, can\'t go to another Live.</string>
 
-    <string name="camera_permission_dialog_title">\“Fambase\” Would Like to Access the Camera</string>
+    <string name="camera_permission_dialog_title">\“Liveify\” Would Like to Access the Camera</string>
     <string name="camera_permission_dialog_message">By allowing access to your camera, you\'ll be able to capture photo, scan QR code or start Live.</string>
-    <string name="microphone_permission_dialog_title">\“Fambase\” Would Like to Access the Microphone</string>
+    <string name="microphone_permission_dialog_title">\“Liveify\” Would Like to Access the Microphone</string>
     <string name="microphone_permission_dialog_message">By allowing access to your microphone, you\'ll be able to start Live.</string>
-    <string name="photo_permission_dialog_title">\"Fambase\" Would Like to Access the Photo</string>
+    <string name="photo_permission_dialog_title">\"Liveify\" Would Like to Access the Photo</string>
     <string name="photo_permission_dialog_message">By allowing access to your photos, you\'ll be able to send photos and videos to friends, or set your profile photo.</string>
     <string name="go_to_settings">Go to Settings</string>
     <string name="not_now">Not Now</string>
 
     <string name="fb_live_end_detail_failed_title">Your Live Income Will be Added to Wallet Within 24 hrs</string>
     <string name="fb_live_end_detail_failed_message">Keep the notification enable, you will get a push when your income is added.</string>
-    <string name="fb_live_end_detail_failed_right">Contact Fambase</string>
+    <string name="fb_live_end_detail_failed_right">Contact Liveify</string>
     <string name="fb_live_end_detail_failed_left">Get It</string>
 
     <string name="please_hang_up_your_live_video">Please hang up your live video.</string>
@@ -310,4 +310,5 @@
     <string name="fb_views_title">Contribution Ranking</string>
     <string name="fb_no_live_viewers_yet">No viewer yet.</string>
     <string name="fb_unlocked">Unlocked</string>
+    <string name="fb_join_a_live">Join a Live</string>
 </resources>

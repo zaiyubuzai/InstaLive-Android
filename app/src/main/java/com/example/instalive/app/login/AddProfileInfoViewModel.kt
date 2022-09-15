@@ -51,4 +51,10 @@ class AddProfileInfoViewModel : BaseViewModel() {
             DataRepository.checkBirthday(birthday, checkUsernameData, this@AddProfileInfoViewModel)
         }
     }
+
+    override fun reset() {
+        super.reset()
+        resultData = MutableLiveData<String>()
+        checkUsernameData = MutableLiveData<Any>()
+    }
 }

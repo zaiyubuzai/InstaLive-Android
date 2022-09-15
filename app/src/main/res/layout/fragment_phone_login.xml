@@ -41,7 +41,7 @@
             android:layout_marginHorizontal="@dimen/dimen_28dp"
             android:layout_marginBottom="73dp"
             android:lineSpacingExtra="2sp"
-            android:text="@string/fb_login_welcome_to_fambase"
+            android:text="@string/fb_login_welcome_to_liveify"
             android:textColor="#ffffff"
             android:textSize="28sp"
             android:textStyle="normal"

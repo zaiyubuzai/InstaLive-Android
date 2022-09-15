@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import com.jeremyliao.liveeventbus.core.LiveEvent
 
 data class LiveSystemEvent(
-    @SerializedName("target_user_ids") val targetUserIds: List<String>?,
+    @SerializedName("target_user_ids") val targetUserIds: List<String>? = listOf(),
     val content: String,
     val uuid: String,
     var isRequest: Int = 0,
